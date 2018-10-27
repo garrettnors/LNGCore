@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Http.Features
+
+@{
+    var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
+    var showBanner = !consentFeature?.CanTrack ?? false;
+    var cookieString = consentFeature?.CreateConsentCookie();
+}
+
+@if (showBanner)
+{
+    <div id="cookieConsent" class="alert alert-info alert-dismissable">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9 text-center text-md-left">
+                    We may use cookies to analyze our traffic - we do not collect or distribute any personal information. <a href="@Url.Action("Privacy","Home")">Learn More</a>.
+                </div>
+                <div class="col-md-3 text-center text-md-right">
+                    <button data-cookie-string="@cookieString" class="btn btn-sm btn-info" type="button" data-dismiss="alert">Accept</button>
+                    <a href="http://www.google.com/" class="btn btn-sm btn-outline-info">Oppose</a>
+                </div>
+            </div> 
+        </div>
+    </div>
+    <script>
+        (function () {
+            document.querySelector("#cookieConsent button[data-cookie-string]").addEventListener("click", function (el) {
+                document.cookie = el.target.dataset.cookieString;
+            }, false);
+        })();
+    </script>
+}
