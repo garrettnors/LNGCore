@@ -1,17 +1,22 @@
-﻿@{
-    ViewData["Title"] = "Contact";
-}
-<h2>@ViewData["Title"]</h2>
-<h3>@ViewData["Message"]</h3>
-
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
-
-<address>
-    <strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
+﻿<div class="container">
+    @using (Html.BeginForm("SendContactMessage", "Home"))
+    {
+        <div class="row">
+            <div class="col-sm-6 offset-sm-3">
+                <h2 class="text-center">Getting A Hold Of Us</h2>
+                <h4 class="text-center">Have a question? Need some help? Let us know!</h4>
+                <div class="form-group pt-4">
+                    <label for="EmailAddress">Email Address</label>
+                    <input type="email" class="form-control" id="EmailAddress" name="EmailAddress" aria-describedby="emailHelp" placeholder="Enter email">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                </div>
+                <div class="form-group">
+                    <label for="EmailMessage">Your Detailed Message</label>
+                    <textarea rows="3" maxlength="2000" class="form-control" id="EmailMessage" name="EmailMessage" aria-describedby="messageDetail" placeholder="Enter a detailed message"></textarea>
+                    <small id="messageDetail" class="form-text text-muted">Up to 2000 characters.</small>
+                </div>
+                <button class="btn btn-success" type="submit">Send Message</button>
+            </div>
+        </div>
+    }
+</div>

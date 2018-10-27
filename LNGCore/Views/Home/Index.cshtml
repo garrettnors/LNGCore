@@ -80,16 +80,4 @@
             }
         </div>
     </div>
-    <div class="">
-        @foreach (var customer in Model.Customers)
-        {
-            <h4>@($"{customer.Name} - {(customer.BusinessName ?? "No business name")}")</h4>
-            <ul>
-                @foreach (var invoice in customer.Invoice)
-                {
-                    <li>@($"{invoice.Id} - {invoice.LineItem.Sum(s => s.ItemPrice)}")</li>
-                }
-            </ul>
-        }
-    </div>
 </div>

@@ -13,6 +13,8 @@ using LNGCore.Domain.Abstract.Repository;
 using Newtonsoft.Json;
 using LNGCore.UI.Models;
 using Microsoft.Extensions.Configuration;
+using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace LNGCore.Controllers
 {
@@ -72,6 +74,21 @@ namespace LNGCore.Controllers
             ViewData["Message"] = "Your contact page.";
 
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult SendContactMessage(SendContactMessageViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorBannerMessage"] = "Please email us directly at Info@LNGLaserworks.com for immediate assistance.";
+            }
+            else
+            {
+                TempData["SuccessBannerMessage"] = "We have received your message and will get back with you as soon as we can!";
+            }
+
+            return RedirectToAction("Contact");
         }
 
         public IActionResult Privacy()

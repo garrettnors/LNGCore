@@ -35,12 +35,43 @@
 </head>
 <body>
     <partial name="_CookieConsentPartial" />
+    @if (TempData["ErrorBannerMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+            <div class="container">
+                <strong>Something went wrong!</strong> @TempData["ErrorBannerMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    }
+    @if (TempData["SuccessBannerMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+            <div class="container">
+                <strong>Great News!</strong> @TempData["SuccessBannerMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    }
     <partial name="_Header" />
     @RenderBody()
     <div class="container">
         <hr />
         <footer>
-            <p>&copy; 2018 - LNGCore</p>
+            <div class="row">
+                <div class="col-sm-3">
+                    <p>&copy; 2018 - LNG Laserworks</p>
+                </div>
+                <div class="col-sm-9 text-sm-right">
+                    <a href="@Url.Action("About","Home")">About Us</a> |
+                    <a href="@Url.Action("Contact","Home")">Contact Us</a> |
+                    <a href="@Url.Action("Privacy","Home")">Privacy Policy</a>
+                </div>
+            </div>
         </footer>
     </div>
 
