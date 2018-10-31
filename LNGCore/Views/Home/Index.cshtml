@@ -37,17 +37,19 @@
             <div class="carousel-item active">
                 <img class="d-block w-100" src="~/images/frontpagecarousel/slide1.jpeg">
                 <div class="carousel-caption d-none d-md-block">
-                    <h1 class="text-shadow">Wow look a thing!</h1>
-                    <p class="text-shadow">it's a nice thing</p>
-                    <button class="btn btn-xs btn-success">Buy the thing</button>
+                    @*<h1 class="text-shadow">Wow look a thing!</h1>
+                        <p class="text-shadow">it's a nice thing</p>*@
+                    @*<a href="https://www.etsy.com/listing/269316350/20-oz-yeti-custom-engraving-stainless?utm_source=lnglaserworks&utm_medium=api&utm_campaign=api"
+                        target="_blank" class="btn btn-xs btn-success">Customize Yours Today!</a>*@
                 </div>
             </div>
             <div class="carousel-item">
                 <img class="d-block w-100" src="~/images/frontpagecarousel/slide2.jpeg">
                 <div class="carousel-caption d-none d-md-block">
-                    <h1 class="text-shadow">Whoa another thing!</h1>
-                    <p class="text-shadow">it's also a pretty nice thing</p>
-                    <button class="btn btn-xs btn-success">Buy this thing too</button>
+                    @*<h1 class="text-shadow">Whoa another thing!</h1>
+                        <p class="text-shadow">it's also a pretty nice thing</p>*@
+                    <a href="https://www.etsy.com/listing/269316350/20-oz-yeti-custom-engraving-stainless?utm_source=lnglaserworks&utm_medium=api&utm_campaign=api"
+                       target="_blank" class="btn btn-xs btn-success">Customize Yours Today!</a>
                 </div>
             </div>
         </div>
@@ -74,7 +76,7 @@
                     <a class="no-decoration" target="_blank" href="@listing.value.url">
                         <div class="thumbContainer" style="background-image:url('@listing.value.Images[0].url_570xN');"></div>
                         <p class="small m-0">@listing.value.title</p>
-                        <p class="small m-0 font-weight-bold no-hover-color">@listing.value.price</p>
+                        <p class="small m-0 font-weight-bold no-hover-color">$@listing.value.price+</p>
                     </a>
                 </div>
             }

@@ -42,7 +42,7 @@ namespace LNGCore
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            services.AddSession();
             services.AddMvc()
                 .AddJsonOptions(options =>
                 {
@@ -74,7 +74,7 @@ namespace LNGCore
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

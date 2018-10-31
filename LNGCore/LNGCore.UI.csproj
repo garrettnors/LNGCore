@@ -22,4 +22,8 @@
     <ProjectReference Include="..\LNGCore.Domain\LNGCore.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Hubs\" />
+  </ItemGroup>
+
 </Project>

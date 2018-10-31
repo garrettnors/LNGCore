@@ -1,0 +1,78 @@
+﻿@model List<LNGCore.UI.Models.CustomOrderViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container">
+    <h2>Leatherette Ornament Order Form</h2>
+    <div class="alert alert-info text-center">
+        <h5>Items ordered on or before <strong>11/30/2018</strong> will be delivered on or before <strong>12/08/2018.</strong></h5>
+        <h5>Orders after <strong>11/30/2018</strong> will be shipped as soon as possible <span class="text-danger">but may be delayed or cancelled due to low stock.</span></h5>
+    </div>
+    <h4 class="text-center pt-4">Select your options and click Add to add the ornament to your order.</h4>
+    <hr />
+    @using (Html.BeginForm("AddOrnament", "CustomOrder", FormMethod.Post))
+    {
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label>Ornament Shape</label>
+                    <select name="OrnamentShape" class="form-control">
+                        <option value="Tree">Tree</option>
+                        <option value="Circle">Circle</option>
+                        <option value="Star">Star</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label>Ornament Design</label>
+                    <select name="OrnamentDesign" id="ornamentDesign" class="form-control">
+                        <option value="First">First</option>
+                        <option value="Second">Second</option>
+                        <option value="Third">Third</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div id="uploadContainer" class="d-none">
+                    <div class="form-group">
+                        <label>Upload Your Design</label>
+                        <input name="UploadFile" type="file" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label>Special Instructions</label>
+                    <textarea name="SpecialInstructions" class="form-control" rows="1" placeholder="Example: For the names please put..."></textarea>
+                </div>
+            </div>
+            <div class="col-lg-1">
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input name="Amount" class="form-control" type="number" max="99" min="1" value="1" />
+                </div>
+            </div>
+            <div class="col-lg-1">
+                <div class="pt-4">
+                    <div class="pt-2"></div>
+                    <button type="submit" class="btn btn-sm btn-success">Add</button>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <partial model="Model" name="_OrnamentOrderTable" />
+    </div>
+</div>
+
+<script>
+    $("#ornamentDesign").on("change",
+        function () {
+            if ($(this).val() === "custom") {
+                $("#uploadContainer").removeClass("d-none");
+            } else {
+                $("#uploadContainer").addClass("d-none");
+            }
+        });
+</script>
