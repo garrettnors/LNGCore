@@ -1,8 +1,6 @@
 ﻿using LNGCore.Domain.Abstract.Class;
-using System;
-using System.Collections.Generic;
 
-namespace LNGCore.Domain.Concrete
+namespace LNGCore.Domain.Concrete.Class
 {
     public partial class BillSheet : IBillSheet
     {

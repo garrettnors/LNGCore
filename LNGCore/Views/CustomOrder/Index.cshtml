@@ -1,78 +1,96 @@
-﻿@model List<LNGCore.UI.Models.CustomOrderViewModel>
+﻿@model LNGCore.UI.Models.CustomOrderViewModel
 @{
     ViewData["Title"] = "Index";
 }
-
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 <div class="container">
-    <h2>Leatherette Ornament Order Form</h2>
+    <h3>Leatherette Ornament Order Form</h3>
     <div class="alert alert-info text-center">
-        <h5>Items ordered on or before <strong>11/30/2018</strong> will be delivered on or before <strong>12/08/2018.</strong></h5>
-        <h5>Orders after <strong>11/30/2018</strong> will be shipped as soon as possible <span class="text-danger">but may be delayed or cancelled due to low stock.</span></h5>
+        <h6>Items ordered on or before <strong>11/30/2018</strong> will be delivered on or before <strong>12/08/2018.</strong></h6>
+        <h6 class="m-0">Orders after <strong>11/30/2018</strong> will be shipped as soon as possible <span class="text-danger">but may be delayed or cancelled due to low stock.</span></h6>
     </div>
-    <h4 class="text-center pt-4">Select your options and click Add to add the ornament to your order.</h4>
+    <h5 class="text-center pt-2">Add ornaments to your order, then click "Submit Order" to send your order to us for processing.</h5>
     <hr />
     @using (Html.BeginForm("AddOrnament", "CustomOrder", FormMethod.Post))
     {
-        <div class="row">
+        @Html.HiddenFor(f => f.ExistingOrders, Model.ExistingOrders)
+        @Html.AntiForgeryToken()
+
+        <div class="text-danger">
+            @Html.ValidationSummary()
+        </div>
+
+        <div class="form-row">
+            <div class="col-lg-3 offset-lg-3">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input class="form-control form-control-sm" asp-for="NewOrder.UserName" />
+                </div>
+            </div>
             <div class="col-lg-3">
                 <div class="form-group">
-                    <label>Ornament Shape</label>
-                    <select name="OrnamentShape" class="form-control">
+                    <label>Your Email</label>
+                    <input class="form-control form-control-sm" asp-for="NewOrder.UserEmail" />
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    <label>Ornament Style</label>
+                    <select asp-for="NewOrder.OrnamentStyle" class="form-control form-control-sm">
                         <option value="Tree">Tree</option>
                         <option value="Circle">Circle</option>
                         <option value="Star">Star</option>
                     </select>
                 </div>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-2">
                 <div class="form-group">
                     <label>Ornament Design</label>
-                    <select name="OrnamentDesign" id="ornamentDesign" class="form-control">
+                    <select asp-for="NewOrder.OrnamentDesign" id="ornamentDesign" class="form-control form-control-sm">
                         <option value="First">First</option>
                         <option value="Second">Second</option>
                         <option value="Third">Third</option>
-                        <option value="custom">Custom</option>
+                        <option value="custom">Custom (describe)</option>
                     </select>
                 </div>
-                <div id="uploadContainer" class="d-none">
-                    <div class="form-group">
-                        <label>Upload Your Design</label>
-                        <input name="UploadFile" type="file" value="" />
-                    </div>
-                </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-6">
                 <div class="form-group">
-                    <label>Special Instructions</label>
-                    <textarea name="SpecialInstructions" class="form-control" rows="1" placeholder="Example: For the names please put..."></textarea>
+                    <label>Description / Special Instructions</label>
+                    <textarea asp-for="NewOrder.SpecialInstructions" class="form-control form-control-sm" rows="1" placeholder="Example: For the names please put..."></textarea>
                 </div>
             </div>
             <div class="col-lg-1">
                 <div class="form-group">
                     <label>Amount</label>
-                    <input name="Amount" class="form-control" type="number" max="99" min="1" value="1" />
+                    <input asp-for="NewOrder.Amount" class="form-control form-control-sm" type="number" max="99" min="1" value="1" />
                 </div>
             </div>
-            <div class="col-lg-1">
-                <div class="pt-4">
-                    <div class="pt-2"></div>
-                    <button type="submit" class="btn btn-sm btn-success">Add</button>
+            <div class="col-lg-1 text-lg-right">
+                <div class="pt-lg-4">
+                    <div class="pt-lg-2"></div>
+                    <button type="submit" class="btn btn-sm btn-success"><span class="fas fa-plus pr-1"></span>Add</button>
                 </div>
             </div>
         </div>
+
     }
-    <div class="row">
+    <div class="pt-3 pt-lg-0">
         <partial model="Model" name="_OrnamentOrderTable" />
     </div>
-</div>
 
-<script>
-    $("#ornamentDesign").on("change",
-        function () {
-            if ($(this).val() === "custom") {
-                $("#uploadContainer").removeClass("d-none");
-            } else {
-                $("#uploadContainer").addClass("d-none");
-            }
-        });
-</script>
+    <div class="text-center">
+        @if (Model.ExistingOrders.Any())
+        {
+            <h3>SubTotal: @Model.TotalCost</h3>
+            <p>
+                <small class="text-muted">Plus tax and shipping if applicable</small>
+            </p>
+            <a href="@Url.Action("SaveOrder","CustomOrder")" class="btn btn-lg btn-success">Looks Good - Submit My Order</a>
+
+        }
+    </div>
+</div>

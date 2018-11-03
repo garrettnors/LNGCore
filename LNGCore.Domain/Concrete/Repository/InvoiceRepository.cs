@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using LNGCore.Domain.Concrete.Class;
 using Microsoft.EntityFrameworkCore;
 
 namespace LNGCore.Domain.Concrete.Repository

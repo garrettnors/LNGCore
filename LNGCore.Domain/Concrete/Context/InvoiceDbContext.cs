@@ -1,11 +1,8 @@
-﻿using System;
-using LNGCore.Domain.Concrete;
-using LNGCore.Domain.Concrete.Context;
+﻿using LNGCore.Domain.Concrete.Class;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
-namespace LNGCore.Domain.Abstract.Context
+namespace LNGCore.Domain.Concrete.Context
 {
     public partial class InvoiceDbContext : DbContext, IInvoiceDbContext
     {
@@ -23,6 +20,11 @@ namespace LNGCore.Domain.Abstract.Context
         public DbSet<Invoice> Invoice { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<LineItem> LineItem { get; set; }
+        public DbSet<OrnamentOrders> OrnamentOrders { get; set; }
+        public void Commit()
+        {
+            SaveChanges();
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -114,6 +116,25 @@ namespace LNGCore.Domain.Abstract.Context
                     .IsUnicode(false);
 
                 entity.HasMany(d => d.Invoice);
+            });
+
+            modelBuilder.Entity<OrnamentOrders>(entity =>
+            {
+                entity.Property(e => e.OrnamentDesign)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.OrnamentStyle)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.SpecialInstructions).HasMaxLength(50);
+
+                entity.Property(e => e.UserEmail)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UserName).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Invoice>(entity =>

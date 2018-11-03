@@ -1,9 +1,9 @@
-﻿@model List<LNGCore.UI.Models.CustomOrderViewModel>
+﻿@model LNGCore.UI.Models.CustomOrderViewModel
 
 <table id="tblOrnaments" class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>Shape</th>
+            <th>Style</th>
             <th>Design</th>
             <th>Instructions</th>
             <th>Amount</th>
@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        @if (!Model.Any())
+        @if (!Model.ExistingOrders.Any())
         {
             <tr>
                 <th colspan="5">
@@ -21,10 +21,10 @@
         }
         else
         {
-            foreach (var ornament in Model)
+            foreach (var ornament in Model.ExistingOrders)
             {
                 <tr>
-                    <td>@ornament.OrnamentShape</td>
+                    <td>@ornament.OrnamentStyle</td>
                     <td>@ornament.OrnamentDesign</td>
                     <td>@ornament.SpecialInstructions</td>
                     <td>@ornament.Amount</td>

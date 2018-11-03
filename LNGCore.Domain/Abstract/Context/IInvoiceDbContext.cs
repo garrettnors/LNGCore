@@ -1,4 +1,5 @@
 ﻿using LNGCore.Domain.Abstract.Class;
+using LNGCore.Domain.Concrete.Class;
 using Microsoft.EntityFrameworkCore;
 
 namespace LNGCore.Domain.Concrete.Context
@@ -10,5 +11,7 @@ namespace LNGCore.Domain.Concrete.Context
         DbSet<Invoice> Invoice { get; set; }
         DbSet<Item> Item { get; set; }
         DbSet<LineItem> LineItem { get; set; }
+        DbSet<OrnamentOrders> OrnamentOrders { get; set; }
+        void Commit();
     }
 }

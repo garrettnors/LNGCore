@@ -1,8 +1,8 @@
-﻿using LNGCore.Domain.Abstract.Class;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using LNGCore.Domain.Abstract.Class;
 
-namespace LNGCore.Domain.Concrete
+namespace LNGCore.Domain.Concrete.Class
 {
     public partial class Customer : ICustomer
     {
