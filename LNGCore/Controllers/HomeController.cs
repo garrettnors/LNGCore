@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 using LNGCore.UI.Models;
 using Microsoft.Extensions.Configuration;
 using System.Net;
+using System.Text;
+using LNGCore.Domain.Logical;
 using Microsoft.AspNetCore.Http;
 
 namespace LNGCore.Controllers
@@ -21,28 +23,41 @@ namespace LNGCore.Controllers
 
     public class HomeController : Controller
     {
-        private readonly IBillSheetRepository billSheetRepository;
-        private readonly ICustomerRepository customerRepository;
-        private readonly IConfiguration config;
+        private readonly IBillSheetRepository _billSheetRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IConfiguration _config;
         public HomeController(IBillSheetRepository billSheetRepositoryParam, ICustomerRepository customerRepositoryParam, IConfiguration configParam)
         {
-            billSheetRepository = billSheetRepositoryParam;
-            customerRepository = customerRepositoryParam;
-            config = configParam;
+            _billSheetRepository = billSheetRepositoryParam;
+            _customerRepository = customerRepositoryParam;
+            _config = configParam;
         }
         public async Task<IActionResult> Index()
         {
             var vm = new IndexViewModel
             {
                 EtsyListing = await GetEtsyListings(),
-                Customers = customerRepository.GetAllCustomers()
+                Customers = _customerRepository.GetAllCustomers()
+            };
+            return View(vm);
+        }
+
+        public async Task<IActionResult> Search(string searchTerm = null)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return RedirectToAction("Index");
+
+            var vm = new SearchViewModel
+            {
+                SearchTerm = searchTerm,
+                EtsyListing = await GetEtsyListings(searchTerm)
             };
             return View(vm);
         }
 
         public string GetBills()
         {
-            return JsonConvert.SerializeObject(billSheetRepository.GetAllBills());
+            return JsonConvert.SerializeObject(_billSheetRepository.GetAllBills());
         }
         public string GetCustomers()
         {
@@ -50,14 +65,19 @@ namespace LNGCore.Controllers
         }
         public string GetCustomerFromInvoice()
         {
-            return JsonConvert.SerializeObject(customerRepository.GetCustomer(2));
+            return JsonConvert.SerializeObject(_customerRepository.GetCustomer(2));
         }
-        public async Task<EtsyListings> GetEtsyListings()
+        public async Task<EtsyListings> GetEtsyListings(string searchTerm = null)
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var etsyKey = config["SiteConfiguration:EtsyAPIKey"];
-            var response = await client.GetAsync($"https://openapi.etsy.com/v2/shops/hoppergator/listings/active?api_key={etsyKey}&includes=Images");
+            var etsyKey = _config["SiteConfiguration:EtsyAPIKey"];
+
+            var searchTerms = "";
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                searchTerms = $"&keywords={searchTerm}";
+
+            var response = await client.GetAsync($"https://openapi.etsy.com/v2/shops/hoppergator/listings/active?api_key={etsyKey}{searchTerms}&includes=Images");
             var model = response.Content.ReadAsAsync<EtsyListings>();
             return await model;
         }
@@ -85,6 +105,23 @@ namespace LNGCore.Controllers
             }
             else
             {
+                var msg = new StringBuilder();
+                msg.AppendFormat("The following mail is being sent on behalf of '{0}'. ", model.EmailAddress);
+                msg.AppendLine();
+                msg.Append(model.EmailMessage);
+
+
+                var email = new Email(_config)
+                {
+                    MailSubject = $"Contact Us Form Submission from {model.EmailAddress}",
+                    Message = msg.ToString(),
+                    SenderEmail = model.EmailAddress,
+                    SenderDisplayName = model.EmailAddress,
+                    RecipientEmail = _config["SiteConfiguration:SiteEmail"],
+                    RecipientDisplayName = _config["SiteConfiguration:SiteName"]
+                };
+
+                //email.SendEmail();
                 TempData["SuccessBannerMessage"] = "We have received your message and will get back with you as soon as we can!";
             }
 

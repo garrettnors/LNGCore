@@ -1,0 +1,12 @@
+﻿@model LNGCore.UI.Models.SearchViewModel
+@{
+    ViewData["Title"] = "Search";
+}
+
+<div class="container">
+    <h2>Search Results for "@Model.SearchTerm"</h2>
+    <hr />
+    <div id="listingsContainer" class="text-center">
+        <partial name="_Listings" model="Model.EtsyListing.results" />
+    </div>
+</div>

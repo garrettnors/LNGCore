@@ -28,15 +28,16 @@
                     </li>
                 </ul>
             </nav>
-            <form method="get" id="small-search-box-form" action="/search">
+            @using (Html.BeginForm("Search", "Home"))
+            {
                 <div class="input-group">
-                    <input type="text" class="form-control ui-autocomplete-input" id="small-searchterms" autocomplete="off" name="q" placeholder="Search store">
+                    <input type="text" class="form-control ui-autocomplete-input" id="small-searchterms" autocomplete="off" name="searchTerm" placeholder="Search store">
 
                     <span class="input-group-append">
                         <input type="submit" class="btn btn-secondary" value="Search">
                     </span>
                 </div>
-            </form>
+            }
         </div>
     </div>
     <hr />

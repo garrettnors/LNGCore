@@ -1,0 +1,18 @@
+﻿@model LNGCore.Infrastructure.Result[]
+<div class="row">
+    @foreach (var listing in Model.Select((value, index) => new { index, value }))
+    {
+        if (listing.index % 3 == 0)
+        {
+        @:</div>
+        @:<div class="row">
+        }
+        <div class="col-md-4 mb-5">
+            <a class="no-decoration" target="_blank" href="@listing.value.url">
+                <div class="thumbContainer" style="background-image:url('@listing.value.Images[0].url_570xN');"></div>
+                <p class="small m-0">@listing.value.title</p>
+                <p class="small m-0 font-weight-bold no-hover-color">$@listing.value.price+</p>
+            </a>
+        </div>
+    }
+</div>
