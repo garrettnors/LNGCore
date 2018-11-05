@@ -12,6 +12,7 @@ namespace LNGCore.Domain.Concrete.Context
         DbSet<Item> Item { get; set; }
         DbSet<LineItem> LineItem { get; set; }
         DbSet<OrnamentOrders> OrnamentOrders { get; set; }
+        DbSet<Logs> Logs { get; set; }
         void Commit();
     }
 }

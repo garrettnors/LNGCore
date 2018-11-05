@@ -25,11 +25,13 @@ namespace LNGCore.Controllers
     {
         private readonly IBillSheetRepository _billSheetRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly ILogRepository _logRepository;
         private readonly IConfiguration _config;
-        public HomeController(IBillSheetRepository billSheetRepositoryParam, ICustomerRepository customerRepositoryParam, IConfiguration configParam)
+        public HomeController(IBillSheetRepository billSheetRepositoryParam, ICustomerRepository customerRepositoryParam, ILogRepository logRepositoryParam, IConfiguration configParam)
         {
             _billSheetRepository = billSheetRepositoryParam;
             _customerRepository = customerRepositoryParam;
+            _logRepository = logRepositoryParam;
             _config = configParam;
         }
         public async Task<IActionResult> Index()
@@ -121,8 +123,16 @@ namespace LNGCore.Controllers
                     RecipientDisplayName = _config["SiteConfiguration:SiteName"]
                 };
 
-                //email.SendEmail();
-                TempData["SuccessBannerMessage"] = "We have received your message and will get back with you as soon as we can!";
+                var error = email.SendEmail();
+                if (!string.IsNullOrWhiteSpace(error))
+                {
+                    _logRepository.SaveLog(error);
+                    TempData["ErrorBannerMessage"] = "Your correspondence didn't reach us, please email us directly at Info@LNGLaserworks.com for immediate assistance.";
+                }
+                else
+                {
+                    TempData["SuccessBannerMessage"] = "We have received your message and will get back with you as soon as we can!";
+                }
             }
 
             return RedirectToAction("Contact");

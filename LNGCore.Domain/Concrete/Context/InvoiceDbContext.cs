@@ -20,6 +20,7 @@ namespace LNGCore.Domain.Concrete.Context
         public DbSet<Invoice> Invoice { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<LineItem> LineItem { get; set; }
+        public DbSet<Logs> Logs { get; set; }
         public DbSet<OrnamentOrders> OrnamentOrders { get; set; }
         public void Commit()
         {
@@ -116,6 +117,13 @@ namespace LNGCore.Domain.Concrete.Context
                     .IsUnicode(false);
 
                 entity.HasMany(d => d.Invoice);
+            });
+
+            modelBuilder.Entity<Logs>(entity =>
+            {
+                entity.Property(e => e.Date).HasColumnType("datetime");
+
+                entity.Property(e => e.Log).IsRequired();
             });
 
             modelBuilder.Entity<OrnamentOrders>(entity =>
