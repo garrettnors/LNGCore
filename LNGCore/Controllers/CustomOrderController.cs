@@ -4,20 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using LNGCore.Domain.Abstract.Class;
 using LNGCore.Domain.Abstract.Repository;
+using LNGCore.Domain.Logical;
 using LNGCore.UI.Hubs;
 using LNGCore.UI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace LNGCore.UI.Controllers
 {
     public class CustomOrderController : Controller
     {
-        public IOrnamentOrderRepository ornamentRepo;
-        public CustomOrderController(IOrnamentOrderRepository ornamentOrderRepository)
+        private readonly IOrnamentOrderRepository _ornamentRepo;
+        private readonly ILogRepository _logRepository;
+        private readonly IConfiguration _config;
+        public CustomOrderController(IOrnamentOrderRepository ornamentOrderRepository, ILogRepository logRepository, IConfiguration config)
         {
-            ornamentRepo = ornamentOrderRepository;
+            _ornamentRepo = ornamentOrderRepository;
+            _logRepository = logRepository;
+            _config = config;
         }
 
         public IActionResult Index()
@@ -31,17 +37,26 @@ namespace LNGCore.UI.Controllers
                 HttpContext.Session.SetString("Ornaments", JsonConvert.SerializeObject(vm));
             }
 
+            vm.GooglePublicKey = _config.GetSection("SiteConfiguration")["RecaptchaSitePublic"];
             return View(vm);
         }
 
-        public async Task<IActionResult> SaveOrder()
+        public async Task<IActionResult> SaveOrder(string googleToken)
         {
-            var ornaments = JsonConvert.DeserializeObject<CustomOrderViewModel>(HttpContext.Session.GetString("Ornaments"));
-            ornamentRepo.SaveOrnamentOrder(ornaments.ExistingOrders.Cast<IOrnamentOrders>().ToList());
-
-            HttpContext.Session.Remove("Ornaments");
-            TempData["SuccessBannerMessage"] = "We've received your order! You'll get a confirmation email soon.";
-            await UpdateOrnamentCounts();
+            var verify = new RecaptchaVerify(_config, _logRepository);
+            var googleResponse = await verify.GetRecaptchaScore(googleToken);
+            if (googleResponse.success)
+            {
+                var ornaments = JsonConvert.DeserializeObject<CustomOrderViewModel>(HttpContext.Session.GetString("Ornaments"));
+                _ornamentRepo.SaveOrnamentOrder(ornaments.ExistingOrders.Cast<IOrnamentOrders>().ToList());
+                HttpContext.Session.Remove("Ornaments");
+                TempData["SuccessBannerMessage"] = "We've received your order! You'll get a confirmation email soon.";
+                await UpdateOrnamentCounts();
+            }
+            else
+            {
+                TempData["ErrorBannerMessage"] = "Something went wrong! Please check over your order and try submitting again.";
+            }
             return RedirectToAction("Index");
         }
 

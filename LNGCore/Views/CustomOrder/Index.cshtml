@@ -4,6 +4,15 @@
 }
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    grecaptcha.ready(function () {
+        grecaptcha.execute('@Model.GooglePublicKey', { action: 'lng_ornament_order' })
+            .then(function (token) {
+                console.log(token);
+                $("#btnSubmitOrder").prop("href", "@Url.Action("SaveOrder", "CustomOrder", new { googleToken = "__TOKEN__" })".replace("__TOKEN__", token));
+            });
+    });
+</script>
 <div class="container">
     <h3>Leatherette Ornament Order Form</h3>
     <div class="alert alert-info text-center">
@@ -91,7 +100,7 @@
             <p>
                 <small class="text-muted">Plus tax and shipping if applicable</small>
             </p>
-            <a href="@Url.Action("SaveOrder","CustomOrder")" class="btn btn-lg btn-success">Looks Good - Submit My Order</a>
+            <a id="btnSubmitOrder" href="#" class="btn btn-lg btn-success">Looks Good - Submit My Order</a>
 
         }
     </div>

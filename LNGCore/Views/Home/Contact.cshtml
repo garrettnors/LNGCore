@@ -2,8 +2,21 @@
 @{
     ViewData["Title"] = "Contact Us";
 }
+<script>
+    grecaptcha.ready(function () {
+        grecaptcha.execute('@Model.GooglePublicKey', { action: 'lng_contact_us' })
+            .then(function (token) {
+                $("#GoogleClientToken").val(token);
+            });
+    });
+    function DisableBtnAndSubmit(btn) {
+        $(btn).prop("disabled", "disabled");
+        $("#frmContact").submit();
+    }
+</script>
+
 <div class="container">
-    @using (Html.BeginForm("SendContactMessage", "Home"))
+    @using (Html.BeginForm("SendContactMessage", "Home", FormMethod.Post, new { id = "frmContact" }))
     {
         @Html.AntiForgeryToken()
         <div class="text-danger">
@@ -23,8 +36,9 @@
                     <textarea rows="3" maxlength="2000" class="form-control" asp-for="EmailMessage" aria-describedby="messageDetail" placeholder="Enter a detailed message"></textarea>
                     <small id="messageDetail" class="form-text text-muted">Up to 2000 characters.</small>
                 </div>
-                <button class="btn btn-success" type="submit">Send Message</button>
+                <button class="btn btn-success" onclick="DisableBtnAndSubmit(this)" type="button">Send Message</button>
             </div>
         </div>
+        @Html.Hidden("GoogleClientToken", null)
     }
 </div>

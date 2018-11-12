@@ -33,7 +33,7 @@ namespace LNGCore.Domain.Concrete.Context
             {
                 optionsBuilder
                     //.UseLazyLoadingProxies()
-                    .UseSqlServer(config["SiteConfiguration:DbContext"]);
+                    .UseSqlServer(config.GetSection("SiteConfiguration")["DbContext"]);
             }
         }
 

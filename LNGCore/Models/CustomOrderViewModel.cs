@@ -40,6 +40,7 @@ namespace LNGCore.UI.Models
 
         public NewOrnamentOrder NewOrder { get; set; }
         public List<NewOrnamentOrder> ExistingOrders { get; set; }
+        public string GooglePublicKey { get; set; }
     }
     public class NewOrnamentOrder : IOrnamentOrders
     {
@@ -58,5 +59,6 @@ namespace LNGCore.UI.Models
         public string UserEmail { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please enter your name.")]
         public string UserName { get; set; }
+
     }
 }

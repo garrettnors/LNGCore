@@ -73,7 +73,7 @@ namespace LNGCore.Controllers
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var etsyKey = _config["SiteConfiguration:EtsyAPIKey"];
+            var etsyKey = _config.GetSection("SiteConfiguration")["EtsyAPIKey"];
 
             var searchTerms = "";
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -94,49 +94,70 @@ namespace LNGCore.Controllers
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
-
-            return View();
+            var vm = new SendContactMessageViewModel
+            {
+                GooglePublicKey = _config.GetSection("SiteConfiguration")["RecaptchaSitePublic"]
+            };
+            return View(vm);
         }
 
         [HttpPost]
-        public IActionResult SendContactMessage(SendContactMessageViewModel model)
+        public async Task<IActionResult> SendContactMessage(SendContactMessageViewModel model)
         {
-            if (!ModelState.IsValid)
+            var errorMsg = string.Empty;
+
+            if (ModelState.IsValid)
             {
-                TempData["ErrorBannerMessage"] = "Please email us directly at Info@LNGLaserworks.com for immediate assistance.";
-            }
-            else
-            {
-                var msg = new StringBuilder();
-                msg.AppendFormat("The following mail is being sent on behalf of '{0}'. ", model.EmailAddress);
-                msg.AppendLine();
-                msg.Append(model.EmailMessage);
-
-
-                var email = new Email(_config)
+                var verify = new RecaptchaVerify(_config, _logRepository);
+                var googleResponse = await verify.GetRecaptchaScore(model.GoogleClientToken);
+                if (googleResponse.success)
                 {
-                    MailSubject = $"Contact Us Form Submission from {model.EmailAddress}",
-                    Message = msg.ToString(),
-                    SenderEmail = model.EmailAddress,
-                    SenderDisplayName = model.EmailAddress,
-                    RecipientEmail = _config["SiteConfiguration:SiteEmail"],
-                    RecipientDisplayName = _config["SiteConfiguration:SiteName"]
-                };
+                    var msg = new StringBuilder();
+                    msg.AppendFormat("The following mail is being sent on behalf of '{0}'. ", model.EmailAddress);
+                    msg.AppendLine();
+                    msg.Append(model.EmailMessage);
 
-                var error = email.SendEmail();
-                if (!string.IsNullOrWhiteSpace(error))
-                {
-                    _logRepository.SaveLog(error);
-                    TempData["ErrorBannerMessage"] = "Your correspondence didn't reach us, please email us directly at Info@LNGLaserworks.com for immediate assistance.";
+
+                    var email = new Email(_config)
+                    {
+                        MailSubject = $"Contact Us Form Submission from {model.EmailAddress}",
+                        Message = msg.ToString(),
+                        SenderEmail = model.EmailAddress,
+                        SenderDisplayName = model.EmailAddress,
+                        RecipientEmail = _config.GetSection("SiteConfiguration")["SiteEmail"],
+                        RecipientDisplayName = _config.GetSection("SiteConfiguration")["SiteName"]
+                    };
+
+                    var error = email.SendEmail();
+                    if (!string.IsNullOrWhiteSpace(error))
+                    {
+
+                        errorMsg = $"Email not sent - {error}";
+                    }
                 }
                 else
                 {
-                    TempData["SuccessBannerMessage"] = "We have received your message and will get back with you as soon as we can!";
+                    errorMsg = $"RECAPTCHA failed - score {googleResponse.score}";
                 }
             }
+            else
+            {
+                errorMsg = $"Model State Invalid: {string.Join('|', ModelState.Values.Select(s => s.Errors))}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorMsg))
+            {
+                _logRepository.SaveLog(errorMsg);
+                TempData["ErrorBannerMessage"] = "Your correspondence didn't reach us, please email us directly at Info@LNGLaserworks.com for immediate assistance.";
+            }
+
+            else
+                TempData["SuccessBannerMessage"] = "We have received your message and will get back with you as soon as we can!";
+
 
             return RedirectToAction("Contact");
         }
+
 
         public IActionResult Privacy()
         {

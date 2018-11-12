@@ -25,8 +25,8 @@ namespace LNGCore.Domain.Logical
         {
             try
             {
-                var mailerMail = _config["SiteConfiguration:MailerEmail"];
-                var mailerPassword = _config["SiteConfiguration:MailerPassword"];
+                var mailerMail = _config.GetSection("SiteConfiguration")["MailerEmail"];
+                var mailerPassword = _config.GetSection("SiteConfiguration")["MailerPassword"];
 
                 var senderMail = new MailAddress(SenderEmail, SenderDisplayName);
                 var recipientMail = new MailAddress(RecipientEmail, RecipientDisplayName);

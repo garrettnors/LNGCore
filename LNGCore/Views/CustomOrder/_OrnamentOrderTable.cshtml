@@ -5,9 +5,9 @@
         <tr>
             <th>Style</th>
             <th>Design</th>
-            <th>Instructions</th>
-            <th>Amount</th>
-            <th>Remove</th>
+            <th>Desc.</th>
+            <th style="width: 1%;">Amt.</th>
+            <th style="width: 1%;"></th>
         </tr>
     </thead>
     <tbody>
@@ -29,7 +29,7 @@
                     <td>@ornament.SpecialInstructions</td>
                     <td>@ornament.Amount</td>
                     <td>
-                        <a href="@Url.Action("RemoveOrnament","CustomOrder", new {ornament.Id})">Remove</a>
+                        <a href="@Url.Action("RemoveOrnament","CustomOrder", new {ornament.Id})"><span class="fa fa-trash-alt"></span></a>
                     </td>
                 </tr>
             }
