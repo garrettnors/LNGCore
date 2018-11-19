@@ -1,4 +1,5 @@
-﻿@model LNGCore.UI.Models.CustomOrderViewModel
+﻿@using System.Text.RegularExpressions
+@model LNGCore.UI.Models.CustomOrderViewModel
 
 <table id="tblOrnaments" class="table table-bordered table-striped">
     <thead>
@@ -24,8 +25,8 @@
             foreach (var ornament in Model.ExistingOrders)
             {
                 <tr>
-                    <td>@ornament.OrnamentStyle</td>
-                    <td>@ornament.OrnamentDesign</td>
+                    <td>@(Regex.Replace(ornament.OrnamentStyle, "(\\B[A-Z])", " $1"))</td>
+                    <td>@(Regex.Replace(ornament.OrnamentDesign, "(\\B[A-Z])", " $1"))</td>
                     <td>@ornament.SpecialInstructions</td>
                     <td>@ornament.Amount</td>
                     <td>

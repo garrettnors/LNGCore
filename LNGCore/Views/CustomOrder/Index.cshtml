@@ -5,6 +5,36 @@
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 <script>
+    $(document).ready(function() {
+        UpdateSampleShape();
+        UpdateSampleImage();
+    });
+    function UpdateSampleImage() {
+        var imgName = $(".ornament-design").val();
+        var filePath = "/images/OrnamentDesigns/" + imgName + ".jpg";
+        $("#imgPreview").attr("src", filePath);
+    }
+
+    function UpdateSampleShape() {
+        var fieldValue = $(".ornament-style").val();
+        var fieldArray = fieldValue.replace(/([A-Z])/g, ' $1').trim().split(' ');
+
+        var color = fieldArray[0];
+        var shape = fieldArray[1].toLowerCase();
+
+        switch (color) {
+            case "Rustic":
+                color = "#7e5738";
+                break;
+            case "Brown":
+                color = "#c38e5c";
+                break;
+        }
+
+        var span = '<span style="color:' + color + ';" class="fas fa-' + shape + ' fa-2x pt-lg-4 mt-lg-2"></span>';
+        $("#shapeContainer").html(span);
+    }
+
     grecaptcha.ready(function () {
         grecaptcha.execute('@Model.GooglePublicKey', { action: 'lng_ornament_order' })
             .then(function (token) {
@@ -31,65 +61,79 @@
         </div>
 
         <div class="form-row">
-            <div class="col-lg-3 offset-lg-3">
-                <div class="form-group">
-                    <label>Your Name</label>
-                    <input class="form-control form-control-sm" asp-for="NewOrder.UserName" />
+            <div class="col-lg-8">
+                <div class="form-row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input class="form-control form-control-sm" asp-for="NewOrder.UserName" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Your Email</label>
+                            <input class="form-control form-control-sm" asp-for="NewOrder.UserEmail" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Ornament Design</label>
+                            <select onchange="UpdateSampleImage();" asp-for="NewOrder.OrnamentDesign" id="ornamentDesign" class="form-control form-control-sm ornament-design">
+                                <option value="ChildFirstChristmasRockingHorse">Baby's First Christmas (Rocking Horse)</option>
+                                <option value="ChildFirstChristmasTruck">Baby's First Christmas (Truck)</option>
+                                <option value="ChildFirstChristmasStatsTruck">Baby's First Christmas Stats (Truck)</option>
+                                <option value="ChildFirstChristmasStatsBear">Baby's First Christmas Stats (Bear)</option>
+                                <option value="FirstChristmasEngaged">Our First Christmas (Engaged)</option>
+                                <option value="FirstChristmasMarried">Our First Christmas (Married)</option>
+                                <option value="FirstChristmasParents">Our First Christmas (Parents)</option>
+                                <option value="FirstChristmasGrandparents">Our First Christmas (Grandparents)</option>
+                                <option value="custom">Custom (describe)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="form-group">
+                            <label>Ornament Shape & Color</label>
+                            <select onchange="UpdateSampleShape();" asp-for="NewOrder.OrnamentStyle" class="form-control form-control-sm ornament-style">
+                                <option value="RusticTree">Rustic Tree</option>
+                                <option value="BrownTree">Brown Tree</option>
+                                <option value="RusticCircle">Rustic Circle</option>
+                                <option value="BrownCircle">Brown Circle</option>
+                                <option value="RusticStar">Rustic Star</option>
+                                <option value="BrownStar">Brown Star</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="shapeContainer" class="col-lg-1 text-center">
+
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-lg-10">
+                        <div class="form-group">
+                            <label>Description / Special Instructions</label>
+                            <textarea asp-for="NewOrder.SpecialInstructions" class="form-control form-control-sm" rows="3" placeholder="Example: For the names please put..."></textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group mb-2">
+                            <label>Amount</label>
+                            <input asp-for="NewOrder.Amount" class="form-control form-control-sm" type="number" max="99" min="1" value="1" />
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-block btn-success"><span class="fas fa-plus pr-1"></span>Add</button>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div class="form-group">
-                    <label>Your Email</label>
-                    <input class="form-control form-control-sm" asp-for="NewOrder.UserEmail" />
-                </div>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="col-lg-5">
-                <div class="form-group">
-                    <label>Ornament Shape & Color</label>
-                    <select asp-for="NewOrder.OrnamentStyle" class="form-control form-control-sm">
-                        <option value="Tree">Tree</option>
-                        <option value="Circle">Circle</option>
-                        <option value="Star">Star</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div class="form-group">
-                    <label>Ornament Design</label>
-                    <select asp-for="NewOrder.OrnamentDesign" id="ornamentDesign" class="form-control form-control-sm">
-                        <option value="First">First</option>
-                        <option value="Second">Second</option>
-                        <option value="Third">Third</option>
-                        <option value="custom">Custom (describe)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-lg-1">
-                <div class="form-group">
-                    <label>Amount</label>
-                    <input asp-for="NewOrder.Amount" class="form-control form-control-sm" type="number" max="99" min="1" value="1" />
-                </div>
-            </div>
-            <div class="col-lg-1 text-lg-right">
-                <div class="pt-lg-4">
-                    <div class="pt-lg-2"></div>
-                    <button type="submit" class="btn btn-sm btn-success"><span class="fas fa-plus pr-1"></span>Add</button>
-                </div>
-            </div>
-        </div>
-        <div class="form-row text-center">
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <label>Description / Special Instructions</label>
-                    <textarea asp-for="NewOrder.SpecialInstructions" class="form-control form-control-sm" rows="3" placeholder="Example: For the names please put..."></textarea>
-                </div>
+            <div class="col-lg-4 pt-lg-0 pt-4 text-center">
+                <img id="imgPreview" alt="Design Image" style="width:75%" src="#" />
             </div>
         </div>
 
+
     }
-    <div class="pt-3 pt-lg-0">
+    <div class="pt-3">
         <partial model="Model" name="_OrnamentOrderTable" />
     </div>
 
