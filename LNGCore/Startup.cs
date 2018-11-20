@@ -50,6 +50,8 @@ namespace LNGCore
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddHttpsRedirection(options => { options.HttpsPort = 443; });
+
             services.AddScoped<IBillSheetRepository, BillSheetRepository>();
             services.AddScoped<IInvoiceRepository, InvoiceRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
