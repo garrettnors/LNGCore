@@ -28,16 +28,38 @@
                     </li>
                 </ul>
             </nav>
-            @using (Html.BeginForm("Search", "Home"))
-            {
-                <div class="input-group">
-                    <input type="text" class="form-control ui-autocomplete-input" id="small-searchterms" autocomplete="off" name="searchTerm" placeholder="Search store">
+            <div class="container">
+                <div class="row">
 
-                    <span class="input-group-append">
-                        <input type="submit" class="btn btn-secondary" value="Search">
-                    </span>
+                    <div class="col-md-8 p-0">
+                        @using (Html.BeginForm("Search", "Home"))
+                        {
+                            <div class="input-group">
+                                <input type="text" class="form-control ui-autocomplete-input" id="small-searchterms" autocomplete="off" name="searchTerm" placeholder="Search store">
+
+                                <span class="input-group-append">
+                                    <input type="submit" class="btn btn-secondary" value="Search">
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-4 p-0 pt-2 pl-lg-1 pl-md-1 pt-lg-0 pt-md-0 text-center text-md-right">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary btn-block dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="d-xl-inline d-lg-none d-md-none d-sm-inline">View Our </span>Catalogs
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" target="_blank" href="http://www.premiercorporateawards.com/">Corporate Collection</a>
+                                <a class="dropdown-item" target="_blank" href="http://www.premiercrystal.com/">Crystal & Glass</a>
+                                <a class="dropdown-item" target="_blank" href="http://www.premieracrylic.com/main.php">Acrylic Awards</a>
+                                <a class="dropdown-item" target="_blank" href="http://www.premiersportawards.com/">Sports Awards</a>
+                                <a class="dropdown-item" target="_blank" href="http://www.premierleathergifts.com/">Leatherette Gifts & Promotional</a>
+                                <a class="dropdown-item" target="_blank" href="http://www.premierpersonalizedgifts.com/">Personalized Gifts & Promotional</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            }
+            </div>
         </div>
     </div>
     <hr />
