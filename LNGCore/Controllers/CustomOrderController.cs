@@ -48,7 +48,9 @@ namespace LNGCore.UI.Controllers
             if (googleResponse.success)
             {
                 var ornaments = JsonConvert.DeserializeObject<CustomOrderViewModel>(HttpContext.Session.GetString("Ornaments"));
-                _ornamentRepo.SaveOrnamentOrder(ornaments.ExistingOrders.Cast<IOrnamentOrders>().ToList());
+                var ornList = ornaments.ExistingOrders.Cast<IOrnamentOrders>().ToList();
+                _ornamentRepo.SaveOrnamentOrder(ornList);
+                SendOrderNotification(ornList);
                 HttpContext.Session.Remove("Ornaments");
                 TempData["SuccessBannerMessage"] = "We've received your order! You'll get a confirmation email soon.";
                 await UpdateOrnamentCounts();
@@ -104,6 +106,47 @@ namespace LNGCore.UI.Controllers
 
             await UpdateOrnamentCounts();
             return RedirectToAction("Index");
+        }
+
+        private void SendOrderNotification(List<IOrnamentOrders> orderList)
+        {
+            var mail = new Email(_config)
+            {
+                MailSubject = "New Ornament Order",
+                Message = "The following was ordered:<br>"
+            };
+            var thStyle = "style=\"text-align:left;\"";
+            mail.Message += "<table style=\"border:1px solid #333; min-width: 800px;word-wrap: break-word;\">";
+            mail.Message += "<thead>";
+            mail.Message += "<tr>";
+            mail.Message += $"<th {thStyle}>Amount</th>";
+            mail.Message += $"<th {thStyle}>Style</th>";
+            mail.Message += $"<th {thStyle}>Design</th>";
+            mail.Message += $"<th {thStyle}>Instructions</th>";
+            mail.Message += $"<th {thStyle}>User Name</th>";
+            mail.Message += $"<th {thStyle}>User Email</th>";
+            mail.Message += "</tr>";
+            mail.Message += "</thead>";
+            mail.Message += "<tbody>";
+
+            foreach (var order in orderList)
+            {
+                mail.Message += "<tr>";
+                mail.Message += $"<td>{order.Amount}</td>";
+                mail.Message += $"<td>{order.OrnamentStyle}</td>";
+                mail.Message += $"<td>{order.OrnamentDesign}</td>";
+                mail.Message += $"<td>{order.SpecialInstructions}</td>";
+                mail.Message += $"<td>{order.UserName}</td>";
+                mail.Message += $"<td>{order.UserEmail}</td>";
+                mail.Message += "</tr>";
+            }
+
+            mail.Message += "</tbody>";
+
+            mail.RecipientEmail = _config.GetSection("SiteConfiguration")["SiteEmail"];
+            mail.SenderDisplayName = _config.GetSection("SiteConfiguration")["SiteName"];
+            mail.SenderEmail = _config.GetSection("SiteConfiguration")["SiteEmail"];
+            mail.SendEmail();
         }
     }
 }

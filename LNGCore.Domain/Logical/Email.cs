@@ -34,7 +34,8 @@ namespace LNGCore.Domain.Logical
                 var message = new MailMessage(senderMail, recipientMail)
                 {
                     Subject = MailSubject,
-                    Body = Message
+                    Body = Message,
+                    IsBodyHtml = true
                 };
 
                 var client = new SmtpClient("smtp.gmail.com", 587)

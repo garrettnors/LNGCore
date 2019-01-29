@@ -136,7 +136,7 @@ namespace LNGCore.Domain.Concrete.Context
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.SpecialInstructions).HasMaxLength(50);
+                entity.Property(e => e.SpecialInstructions);
 
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
