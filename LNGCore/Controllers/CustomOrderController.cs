@@ -28,17 +28,18 @@ namespace LNGCore.UI.Controllers
 
         public IActionResult Index()
         {
-            var vm = new CustomOrderViewModel();
+            //var vm = new CustomOrderViewModel();
 
-            if (HttpContext.Session.GetString("Ornaments") != null)
-                vm = JsonConvert.DeserializeObject<CustomOrderViewModel>(HttpContext.Session.GetString("Ornaments"));
-            else
-            {
-                HttpContext.Session.SetString("Ornaments", JsonConvert.SerializeObject(vm));
-            }
+            //if (HttpContext.Session.GetString("Ornaments") != null)
+            //    vm = JsonConvert.DeserializeObject<CustomOrderViewModel>(HttpContext.Session.GetString("Ornaments"));
+            //else
+            //{
+            //    HttpContext.Session.SetString("Ornaments", JsonConvert.SerializeObject(vm));
+            //}
 
-            vm.GooglePublicKey = _config.GetSection("SiteConfiguration")["RecaptchaSitePublic"];
-            return View(vm);
+            //vm.GooglePublicKey = _config.GetSection("SiteConfiguration")["RecaptchaSitePublic"];
+            //return View(vm);
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> SaveOrder(string googleToken)
