@@ -1,4 +1,5 @@
-﻿using LNGCore.Domain.Concrete.Class;
+﻿using LNGCore.Domain.Abstract.Context;
+using LNGCore.Domain.Concrete.Class;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -18,6 +19,7 @@ namespace LNGCore.Domain.Concrete.Context
         public DbSet<BillSheet> BillSheet { get; set; }
         public DbSet<Customer> Customer { get; set; }
         public DbSet<Invoice> Invoice { get; set; }
+        public DbSet<Event> Event { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<LineItem> LineItem { get; set; }
         public DbSet<Logs> Logs { get; set; }
@@ -224,6 +226,17 @@ namespace LNGCore.Domain.Concrete.Context
                     .HasForeignKey(d => d.ItemId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LineItem_Item");
+            });
+
+            modelBuilder.Entity<Event>(entity =>
+            {
+                entity.Property(e => e.EventName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(e => e.Employee);
+                entity.HasOne(e => e.Invoice);
             });
         }
     }

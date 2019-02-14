@@ -1,0 +1,55 @@
+﻿@using Microsoft.Extensions.Configuration
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LNG Laserworks</title>
+
+    <link href="https://fonts.googleapis.com/css?family=.|Playfair+Display:light,normal,bold|Montserrat:light,normal,bold|Roboto:light,normal,bold" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+    <link href="@Url.Content("~/css/site.css")" rel="stylesheet" asp-append-version="true" />
+    <link href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css")" rel="stylesheet" asp-append-version="true" />
+    <link href="@Url.Content("~/lib/SweetAlert/sweetalert2.min.css")" rel="stylesheet" asp-append-version="true" />
+    <script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/lib/jquery-validation/dist/jquery.validate.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.bundle.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/lib/SweetAlert/sweetalert2.all.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+</head>
+<body class="admin-body">
+    @if (TempData["ErrorBannerMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+            <div class="container">
+                <strong>Something went wrong!</strong> @TempData["ErrorBannerMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    }
+    @if (TempData["SuccessBannerMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+            <div class="container">
+                <strong>Success!</strong> @TempData["SuccessBannerMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    }
+    <partial name="_AdminHeader" />
+    <div class="container pt-3">
+        @RenderBody()
+    </div>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+<script>
+    $('[data-toggle="tooltip"]').tooltip();
+</script>

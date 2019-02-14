@@ -1,0 +1,121 @@
+﻿@model LNGCore.UI.Models.Admin.InvoiceViewModel
+
+
+<div class="card border-top-0">
+    <div class="card-header">
+        <h2 class="m-0">Open Invoices</h2>
+    </div>
+    <div class="card-body">
+        @if (Model.Invoices.Any())
+        {
+            foreach (var invoice in Model.Invoices)
+            {
+                <div class=" pb-2" id="invoice@(invoice.Id)">
+                    <div class="card bg-light">
+                        <div class="card-body p-3">
+                            <div class="row no-gutters">
+                                <div class="col-lg-2">
+                                    <span class="h4 d-lg-block m-0 float-left float-lg-none" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
+                                    <span class="text-secondary float-right float-lg-none">Invoice #@invoice.Id</span>
+                                    <div class="clearfix"></div>
+                                    <span class="d-none d-lg-block text-primary">@($"{invoice.LineItem.Count()} Item{(invoice.LineItem.Count() > 1 ? "s" : "")}")</span>
+                                </div>
+                                <div class="col-lg-3 text-right text-lg-center">
+                                    <span class="text-info d-none d-lg-block mb-1">
+                                        Ordered <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
+                                    </span>
+                                    <span class="text-danger d-lg-block mb-1">
+                                        Needed <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
+                                    </span>
+                                    <hr class="d-lg-none" />
+                                </div>
+                                <div class="col-lg-5 pr-lg-4">
+                                    @invoice.Notes
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="d-none d-lg-block">
+                                        <button class="btn btn-sm btn-block btn-success" onclick="markPaid(@invoice.Id);">Mark Paid</button>
+                                        <div class="pt-1">
+                                            <a class="btn btn-sm btn-block btn-secondary" target="_self" href="#">Edit Invoice</a>
+                                        </div>
+                                        <div class="pt-1">
+                                            <a class="btn btn-sm btn-block btn-info" target="_self" href="#">Print Invoice</a>
+                                        </div>
+                                    </div>
+                                    <div class="d-lg-none d-xl-none text-center pt-2">
+                                        <button class="btn btn-sm btn-success" onclick="markPaid();">Mark Paid</button>
+                                        <button class="btn btn-sm btn-secondary" onclick="markPaid();">Edit Invoice</button>
+                                        <button class="btn btn-sm btn-info" onclick="markPaid();">Print Invoice</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <partial name="_Pagination" model="Model.PaginationParameters" />
+        }
+        else
+        {
+            var searchTermText = $" for search term \"{Model.SearchTerm}\"";
+            <h2 class="text-center">@($"No Items Found{(string.IsNullOrWhiteSpace(Model.SearchTerm) ? "" : searchTermText)}.")</h2>
+        }
+    </div>
+</div>
+
+<script>
+    function markPaid(invoiceId) {
+        Swal.fire({
+            text: "Are you sure you want to mark this invoice as paid?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#57c386',
+            cancelButtonColor: '#888',
+            confirmButtonText: 'Yes, Mark Paid'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: "@Url.Action("MarkInvoicePaid","Admin", new {invoiceId = "__INVOICE__"})".replace("__INVOICE__", invoiceId),
+                    success: function () {
+                        var timerInterval;
+                        Swal.fire({
+                            position: 'middle',
+                            type: 'success',
+                            title: 'Success',
+                            html: 'The invoice has been marked paid and moved to the Paid Invoices tab.' +
+                                '<br /><br />' +
+                                '<div class="progress">' +
+                                '<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" id="successProgress"' +
+                                ' role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>' +
+                                '</div>',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            onBeforeOpen: function() {
+                                timerInterval = setInterval(function () {
+                                    var timeLeft = Swal.getTimerLeft();
+                                    if (timeLeft === undefined) {
+                                        clearInterval(timerInterval); //stops interval loop if the timer is out of time
+                                    } else {
+                                        //swal sends milliseconds left, flipping and adding total timer gives upward count
+                                        var progress = (((Swal.getTimerLeft() * -1) + 4000) / 100).toFixed(0);
+
+                                        //putting final value over 100% will give a few milliseconds at the end to finish animation (5*4 is 120% total, so the bar will be full 1 second early)
+                                        $("#successProgress").css("width", progress*5 + "%");
+                                    }
+                                 },
+                             100);
+                            }
+                        });
+                        $("#invoice" + invoiceId).remove();
+                    },
+                    error: function() {
+                        Swal.fire({
+                            type: 'error',
+                            text: 'Something went wrong.... invoice could not be marked as paid. Does it still exist? Reload the page and try again.'
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>

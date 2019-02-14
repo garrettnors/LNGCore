@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LNGCore.Domain.Abstract.Class;
+using LNGCore.Domain.Abstract.Context;
 using LNGCore.Domain.Abstract.Repository;
 using LNGCore.Domain.Concrete.Class;
 using LNGCore.Domain.Concrete.Context;

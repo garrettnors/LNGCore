@@ -1,0 +1,77 @@
+﻿@model LNGCore.UI.Models.Admin.InvoiceViewModel
+@{
+    ViewData["Title"] = "Invoice Master";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+}
+<script>
+    $(document).ready(function() {
+        $('#invoicesTab a').on('click',
+            function(e) {
+                e.preventDefault();
+                getTabBody($(this).data("invoice-type"));
+                $(this).tab('show');
+            });
+    });
+
+    function getTabBody(tabId, page) {
+
+        var url = "@Html.Raw(Url.Action("GetInvoicePartial", "Admin", new { invoiceType = "__TYPE__", page = "__PAGE__", searchTerm = Model.SearchTerm }))".replace("__PAGE__", page);
+        url = url.replace("__TYPE__", tabId);
+        debugger;
+        $.ajax({
+            url: url,
+            success: function(data) {
+                $("#tabBody").html(data);
+            },
+            error: function(e, ev) {
+                console.log(e, ev);
+            }
+        });
+    }
+    function clearSearch() {
+        $("#searchTerm").val("");
+        $("#formSearch").submit();
+    }
+</script>
+<div class="row justify-content-end pb-3">
+    <div class="col-sm-5">
+        @using (Html.BeginForm("Invoices", "Admin", FormMethod.Get, new { id = "formSearch" }))
+        {
+            <div class="input-group">
+                <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
+                <span class="input-group-append">
+                    <button class="btn btn-info" type="submit">Search</button>
+                </span>
+                <span class="input-group-append">
+                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+                </span>
+            </div>
+        }
+    </div>
+</div>
+<ul class="nav nav-tabs" id="invoicesTab">
+    <li class="nav-item">
+        <a class="nav-link" data-invoice-type="0" href="#">Open Invoices</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-invoice-type="4" href="#">Open Quotes</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-invoice-type="1" href="#">Paid Invoices</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-invoice-type="3" href="#">Voided Items</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-invoice-type="2" href="#">Donated Items</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="tabBody">
+        <script>
+            $('[data-invoice-type="@((int)Model.InvoiceType)"]').tab("show");
+            getTabBody(@((int)Model.InvoiceType), 1);
+        </script>
+    </div>
+</div>

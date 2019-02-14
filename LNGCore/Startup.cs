@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using LNGCore.Domain.Abstract.Context;
 using LNGCore.Domain.Abstract.Repository;
 using LNGCore.Domain.Concrete.Context;
 using LNGCore.Domain.Concrete.Repository;
@@ -57,6 +58,7 @@ namespace LNGCore
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IOrnamentOrderRepository, OrnamentOrderRepository>();
             services.AddScoped<ILogRepository, LogRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IInvoiceDbContext, InvoiceDbContext>();
             services.AddSingleton(Configuration);
         }

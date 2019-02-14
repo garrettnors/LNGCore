@@ -4,7 +4,7 @@ using LNGCore.Domain.Abstract.Class;
 
 namespace LNGCore.Domain.Concrete.Class
 {
-    public partial class Invoice : IInvoice
+    public partial class Invoice
     {
         public Invoice()
         {
@@ -28,12 +28,18 @@ namespace LNGCore.Domain.Concrete.Class
         public bool? IsDonated { get; set; }
         public decimal? ShipCost { get; set; }
         public string InvoiceProofUrl { get; set; }
-
         public Customer Customer { get; set; }
-        //public string Employee { get { return "HEYO"; } set { value = "HEYO"; } }
         public ICollection<LineItem> LineItem { get; set; }
-        ICustomer IInvoice.Customer { get { return Customer; } set => throw new NotImplementedException(); }
+        ICustomer IInvoice.Customer
+        {
+            get => Customer;
+            set => throw new NotImplementedException();
+        }
 
-        IEnumerable<ILineItem> IInvoice.LineItem { get { return LineItem; } set => throw new NotImplementedException(); }
+        IEnumerable<ILineItem> IInvoice.LineItem
+        {
+            get => LineItem;
+            set => throw new NotImplementedException();
+        }
     }
 }

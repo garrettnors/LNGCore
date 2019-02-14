@@ -25,5 +25,6 @@ namespace LNGCore.Domain.Abstract.Class
         bool Voided { get; set; }
         ICustomer Customer { get; set; }
         IEnumerable<ILineItem> LineItem { get; set; }
+        decimal? InvoiceTotal { get; }
     }
 }

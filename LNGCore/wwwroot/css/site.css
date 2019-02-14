@@ -15,6 +15,18 @@ body {
     line-height: 1.4;
 }
 
+.admin-body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+a:hover {
+    cursor: pointer;
+}
+
 .header-logo a img {
     height: 90px;
     max-width: 100%;

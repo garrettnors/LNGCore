@@ -1,4 +1,5 @@
 ﻿using System;
+using LNGCore.Domain.Abstract.Context;
 using LNGCore.Domain.Abstract.Repository;
 using LNGCore.Domain.Concrete.Class;
 using LNGCore.Domain.Concrete.Context;

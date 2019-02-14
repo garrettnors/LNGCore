@@ -1,0 +1,96 @@
+﻿@model LNGCore.UI.Models.Admin.DashboardViewModel
+@{
+    ViewData["Title"] = "LNG Administration";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<h1>Dashboard</h1>
+<hr />
+<div class="row">
+    <div class="col-lg-4 pt-1 pr-lg-1">
+        <div class="card bg-dark text-white">
+            <div class="card-body">
+                <h4 class="card-title float-left">Year To Date Sales</h4>
+                <span class="float-right">
+                    <span class="pointer fas fa-question-circle fa-2x text-white-50" data-toggle="tooltip" data-placement="top"
+                          title="Total sales for @(DateTime.Now.Year), paid and pending payment, not including tax"></span>
+                </span>
+                <div class="clearfix"></div>
+                <h1 class="font-weight-bold">@($"{Model.YtdSales:c}")</h1>
+                <a href="#" class="text-white-50">View Prior Year Sales</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 pt-1 p-lg-1">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h4 class="card-title float-left">Open Invoices</h4>
+                <span class="float-right">
+                    <span class="pointer fas fa-question-circle fa-2x text-white-50" data-toggle="tooltip" data-placement="top"
+                          title="All Unpaid invoices including overdue invoices"></span>
+                </span>
+                <div class="clearfix"></div>
+                <h1 class="font-weight-bold">@($"{Model.OpenInvoiceAmount:c}")</h1>
+                <a href="#" class="text-white-50">View Open Invoices</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 pt-1 pl-lg-1">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h4 class="card-title float-left">Past Due Invoices</h4>
+                <span class="float-right">
+                    <span class="pointer fas fa-question-circle fa-2x text-white-50" data-toggle="tooltip" data-placement="top"
+                          title="All invoices that are overdue at least 30 days"></span>
+                </span>
+                <div class="clearfix"></div>
+                <h1 class="font-weight-bold">@($"{Model.PastDueAmount:c}")</h1>
+                <a href="#" class="text-white-50">View Past Due Invoices</a>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="m-0 float-left">Upcoming Events</h3>
+                <a class="float-right pointer text-dark" href="#">
+                    <span class="fas fa-plus-square fa-2x"></span>
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.Events.Any())
+                {
+                    var index = 0;
+                    foreach (var eventItem in Model.Events)
+                    {
+                        <div class="@(index > 0 ? "pt-2" : "pt-0")">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <h3>@eventItem.EventName</h3>
+                                        </div>
+                                        <div class="col-lg-7">
+                                            @eventItem.Employee.EmpName <br />
+                                            @eventItem.EventDescription
+                                        </div>
+                                        <div class="col-lg-2 text-lg-right">
+                                            <span class="fas fa-clock"></span> @($"{eventItem.EventDate:d}")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        index++;
+                    }
+                }
+                else
+                {
+                    <h3>No upcoming events available.</h3>
+                }
+            </div>
+        </div>
+    </div>
+</div>
