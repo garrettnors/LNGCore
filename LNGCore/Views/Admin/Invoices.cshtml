@@ -5,33 +5,9 @@
 
 }
 <script>
-    $(document).ready(function() {
-        $('#invoicesTab a').on('click',
-            function(e) {
-                e.preventDefault();
-                getTabBody($(this).data("invoice-type"));
-                $(this).tab('show');
-            });
-    });
-
     function getTabBody(tabId, page) {
-
-        var url = "@Html.Raw(Url.Action("GetInvoicePartial", "Admin", new { invoiceType = "__TYPE__", page = "__PAGE__", searchTerm = Model.SearchTerm }))".replace("__PAGE__", page);
-        url = url.replace("__TYPE__", tabId);
-        debugger;
-        $.ajax({
-            url: url,
-            success: function(data) {
-                $("#tabBody").html(data);
-            },
-            error: function(e, ev) {
-                console.log(e, ev);
-            }
-        });
-    }
-
-    function searchText() {
-
+        var url = "@Html.Raw(Url.Action("Invoices", "Admin", new { type = "__TYPE__", page = "__PAGE__", searchTerm = Model.SearchTerm }))";
+        window.location.href = url.replace("__PAGE__", page).replace("__TYPE__", tabId);
     }
 
     function clearSearch() {
@@ -42,40 +18,41 @@
 <div class="row justify-content-end pb-3">
     <div class="col-sm-5">
 
-        <div class="input-group">
-            <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
-            <span class="input-group-append">
-                <button class="btn btn-info" type="button" onclick="searchText()">Search</button>
-            </span>
-            <span class="input-group-append">
-                <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
-            </span>
-        </div>
+        @using (Html.BeginForm("Invoices", "Admin", FormMethod.Get, new { id = "formSearch" }))
+        {
+            @Html.Hidden("type", Model.PaginationParameters.InvoiceType)
+            <div class="input-group">
+                <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
+                <span class="input-group-append">
+                    <button class="btn btn-info" type="submit">Search</button>
+                </span>
+                <span class="input-group-append">
+                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+                </span>
+            </div>
+        }
 
     </div>
 </div>
 <ul class="nav nav-tabs" id="invoicesTab">
     <li class="nav-item">
-        <a class="nav-link" data-invoice-type="0" href="#">Open Invoices</a>
+        <a class="nav-link @((int) Model.InvoiceType == 0 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 0, page = 1, searchTerm = Model.SearchTerm})">Open Invoices</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-invoice-type="4" href="#">Open Quotes</a>
+        <a class="nav-link @((int) Model.InvoiceType == 4 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 4, page = 1, searchTerm = Model.SearchTerm})">Open Quotes</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-invoice-type="1" href="#">Paid Invoices</a>
+        <a class="nav-link @((int) Model.InvoiceType == 1 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 1, page = 1, searchTerm = Model.SearchTerm})">Paid Invoices</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-invoice-type="3" href="#">Voided Items</a>
+        <a class="nav-link @((int) Model.InvoiceType == 3 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 3, page = 1, searchTerm = Model.SearchTerm})">Voided Items</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-invoice-type="2" href="#">Donated Items</a>
+        <a class="nav-link @((int) Model.InvoiceType == 2 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 2, page = 1, searchTerm = Model.SearchTerm})">Donated Items</a>
     </li>
 </ul>
 <div class="tab-content">
     <div class="tab-pane active" id="tabBody">
-        <script>
-            $('[data-invoice-type="@((int)Model.InvoiceType)"]').tab("show");
-            getTabBody(@((int)Model.InvoiceType), 1);
-        </script>
+        <partial name="_InvoiceItems" model="Model" />
     </div>
 </div>

@@ -34,42 +34,21 @@ namespace LNGCore.UI.Controllers
             return View(vm);
         }
 
-        public IActionResult Invoices(InvoiceTypeEnum type = InvoiceTypeEnum.Open, string searchTerm = "")
+        public IActionResult Invoices(InvoiceTypeEnum type = InvoiceTypeEnum.Open, int page = 1, int take = 20, string searchTerm = "")
         {
             ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
 
+
+            var skip = take * (page - 1);
             var vm = new InvoiceViewModel
             {
                 InvoiceType = type,
                 SearchTerm = searchTerm
             };
-            return View(vm);
-        }
-
-        public IActionResult Customers()
-        {
-            ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
-            return View();
-        }
-
-        public IActionResult MarkInvoicePaid(int invoiceId = 0)
-        {
-            var success = _invoiceRepository.MarkInvoicePaid(invoiceId);
-            return StatusCode((int)(success ? HttpStatusCode.OK : HttpStatusCode.Conflict));
-        }
-
-        public PartialViewResult GetInvoicePartial(InvoiceTypeEnum invoiceType = InvoiceTypeEnum.Open, int take = 20, int page = 1, string searchTerm = "")
-        {
-            var skip = take * (page - 1);
-            var vm = new InvoiceViewModel
-            {
-                InvoiceType = invoiceType,
-                SearchTerm = searchTerm
-            };
 
             var pagination = new PaginationViewModel
             {
-                InvoiceType = invoiceType,
+                InvoiceType = type,
                 Take = take,
                 CurrentPage = skip == 0 ? 1 : skip / take + 1
             };
@@ -77,7 +56,7 @@ namespace LNGCore.UI.Controllers
             List<IInvoice> items;
             string viewTitle;
 
-            switch (invoiceType)
+            switch (type)
             {
 
                 case InvoiceTypeEnum.Open:
@@ -111,8 +90,30 @@ namespace LNGCore.UI.Controllers
 
             pagination.NumberOfPages = items.Count <= take ? 1 : (int)Math.Ceiling(items.Count / (decimal)take);
             vm.Invoices = items.Skip(skip).Take(take).ToList();
+            vm.ViewTitle = viewTitle;
             vm.PaginationParameters = pagination;
-            return PartialView("_InvoiceItems", vm);
+
+            return View(vm);
         }
+
+        public IActionResult Customers()
+        {
+            ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
+            return View();
+        }
+
+        public IActionResult MarkInvoicePaid(int invoiceId = 0)
+        {
+            var success = _invoiceRepository.MarkInvoicePaid(invoiceId);
+            return StatusCode((int)(success ? HttpStatusCode.OK : HttpStatusCode.Conflict));
+        }
+
+        //public PartialViewResult GetInvoicePartial(InvoiceTypeEnum invoiceType = InvoiceTypeEnum.Open, int take = 20, int page = 1, string searchTerm = "")
+        //{
+
+        //    return PartialView("_InvoiceItems", vm);
+        //}
+
+
     }
 }
