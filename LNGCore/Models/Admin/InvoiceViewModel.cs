@@ -18,5 +18,6 @@ namespace LNGCore.UI.Models.Admin
         public List<IInvoice> Invoices { get; set; }
         public PaginationViewModel PaginationParameters { get; set; }
         public string SearchTerm { get; set; }
+        public string ViewTitle { get; set; }
     }
 }

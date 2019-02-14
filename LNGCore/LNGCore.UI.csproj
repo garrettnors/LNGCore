@@ -28,16 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Admin\_VoidedItems.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Admin\_PaidInvoices.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Admin\_DonatedItems.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Admin\_OpenQuotes.cshtml">
+    <Content Update="Views\Admin\_InvoiceItems.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>

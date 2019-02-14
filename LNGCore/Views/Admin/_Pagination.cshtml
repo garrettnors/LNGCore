@@ -1,51 +1,54 @@
 ﻿@model LNGCore.UI.Models.Admin.PaginationViewModel
 
-<nav aria-label="Page navigation example">
-    <ul class="pagination pagination-sm">
-        @{
-            var limit = 10;
+<div class="float-right">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination pagination-sm">
+            @{
+                var limit = 10;
 
-            if (Model.NumberOfPages <= limit)
-            {
-                for (var i = 1; i <= Model.NumberOfPages; i++)
+                if (Model.NumberOfPages <= limit)
                 {
-                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
-                        <span class="page-link" onclick="getTabBody(@((int)Model.InvoiceType), @(i))">@(i)</span>
-                    </li>
+                    for (var i = 1; i <= Model.NumberOfPages; i++)
+                    {
+                        <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                            <span class="page-link" onclick="getTabBody(@((int)Model.InvoiceType), @(i))">@(i)</span>
+                        </li>
+                    }
                 }
-            }
-            else
-            {
-                for (var i = 1; i <= limit; i++)
+                else
                 {
-                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
-                        <span class="page-link" onclick="getTabBody(@((int)Model.InvoiceType), @(i))">@(i)</span>
-                    </li>
-                }
-                if (Model.NumberOfPages > limit)
-                {
-                    <li class="page-item">
-                        <div class="dropdown">
-                            <a class="btn rounded-0 page-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                More
-                            </a>
+                    for (var i = 1; i <= limit; i++)
+                    {
+                        <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                            <span class="page-link" onclick="getTabBody(@((int)Model.InvoiceType), @(i))">@(i)</span>
+                        </li>
+                    }
+                    if (Model.NumberOfPages > limit)
+                    {
+                        <li class="page-item">
+                            <div class="dropdown">
+                                <a class="btn rounded-0 page-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    More
+                                </a>
 
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                @for (var j = limit + 1; j <= Model.NumberOfPages - 1; j++)
-                                {
-                                    <span class="dropdown-item @(Model.CurrentPage == j ? "active" : "")" onclick="getTabBody(@((int)Model.InvoiceType), @(j))">@(j)</span>
-                                }
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    @for (var j = limit + 1; j <= Model.NumberOfPages - 1; j++)
+                                    {
+                                        <span class="dropdown-item @(Model.CurrentPage == j ? "active" : "")" onclick="getTabBody(@((int)Model.InvoiceType), @(j))">@(j)</span>
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    <li class="page-item @(Model.CurrentPage == Model.NumberOfPages ? "active" : "")">
-                        <span class="page-link" onclick="getTabBody(@((int)Model.InvoiceType), @(Model.NumberOfPages))">@(Model.NumberOfPages)</span>
-                    </li>
+                        </li>
+                        <li class="page-item @(Model.CurrentPage == Model.NumberOfPages ? "active" : "")">
+                            <span class="page-link" onclick="getTabBody(@((int)Model.InvoiceType), @(Model.NumberOfPages))">@(Model.NumberOfPages)</span>
+                        </li>
+                    }
                 }
+
+
+
             }
-
-
-
-        }
-    </ul>
-</nav>
+        </ul>
+    </nav>
+</div>
+<div class="clearfix"></div>

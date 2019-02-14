@@ -3,11 +3,15 @@
 
 <div class="card border-top-0">
     <div class="card-header">
-        <h2 class="m-0">Voided Items</h2>
+        <h2 class="m-0">@Model.ViewTitle</h2>
     </div>
     <div class="card-body">
         @if (Model.Invoices.Any())
         {
+            if (Model.Invoices.Count > 1)
+            {
+                <partial name="_Pagination" model="Model.PaginationParameters" />
+            }
 
             foreach (var invoice in Model.Invoices)
             {
@@ -54,7 +58,11 @@
                     </div>
                 </div>
             }
-            <partial name="_Pagination" model="Model.PaginationParameters" />
+            if (Model.Invoices.Count > 1)
+            {
+                <partial name="_Pagination" model="Model.PaginationParameters" />
+            }
+
         }
         else
         {

@@ -75,34 +75,34 @@ namespace LNGCore.UI.Controllers
             };
 
             List<IInvoice> items;
-            string viewName;
+            string viewTitle;
 
             switch (invoiceType)
             {
 
                 case InvoiceTypeEnum.Open:
                     items = _invoiceRepository.GetOpenInvoices(searchTerm).ToList();
-                    viewName = "_OpenInvoices";
+                    viewTitle = "Open Invoices";
                     break;
 
                 case InvoiceTypeEnum.Paid:
                     items = _invoiceRepository.GetPaidInvoices(searchTerm).ToList();
-                    viewName = "_PaidInvoices";
+                    viewTitle = "Paid Invoices";
                     break;
 
                 case InvoiceTypeEnum.Donated:
                     items = _invoiceRepository.GetDonatedItems(searchTerm).ToList();
-                    viewName = "_DonatedItems";
+                    viewTitle = "Donated Items";
                     break;
 
                 case InvoiceTypeEnum.Voided:
                     items = _invoiceRepository.GetVoidedItems(searchTerm).ToList();
-                    viewName = "_VoidedItems";
+                    viewTitle = "Voided Items";
                     break;
 
                 case InvoiceTypeEnum.Quote:
                     items = _invoiceRepository.GetOpenQuotes(searchTerm).ToList();
-                    viewName = "_OpenQuotes";
+                    viewTitle = "Open Quotes";
                     break;
 
                 default:
@@ -112,7 +112,7 @@ namespace LNGCore.UI.Controllers
             pagination.NumberOfPages = items.Count <= take ? 1 : (int)Math.Ceiling(items.Count / (decimal)take);
             vm.Invoices = items.Skip(skip).Take(take).ToList();
             vm.PaginationParameters = pagination;
-            return PartialView(viewName, vm);
+            return PartialView("_InvoiceItems", vm);
         }
     }
 }

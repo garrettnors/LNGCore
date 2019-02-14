@@ -29,6 +29,11 @@
             }
         });
     }
+
+    function searchText() {
+
+    }
+
     function clearSearch() {
         $("#searchTerm").val("");
         $("#formSearch").submit();
@@ -36,18 +41,17 @@
 </script>
 <div class="row justify-content-end pb-3">
     <div class="col-sm-5">
-        @using (Html.BeginForm("Invoices", "Admin", FormMethod.Get, new { id = "formSearch" }))
-        {
-            <div class="input-group">
-                <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
-                <span class="input-group-append">
-                    <button class="btn btn-info" type="submit">Search</button>
-                </span>
-                <span class="input-group-append">
-                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
-                </span>
-            </div>
-        }
+
+        <div class="input-group">
+            <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
+            <span class="input-group-append">
+                <button class="btn btn-info" type="button" onclick="searchText()">Search</button>
+            </span>
+            <span class="input-group-append">
+                <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+            </span>
+        </div>
+
     </div>
 </div>
 <ul class="nav nav-tabs" id="invoicesTab">
