@@ -15,10 +15,14 @@ namespace LNGCore.UI.Controllers
     {
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IEventRepository _eventRepository;
-        public AdminController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository)
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        public AdminController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository, ICustomerRepository customerRepository, IEmployeeRepository employeeRepository)
         {
             _invoiceRepository = invoiceRepository;
             _eventRepository = eventRepository;
+            _customerRepository = customerRepository;
+            _employeeRepository = employeeRepository;
         }
         public IActionResult Index()
         {
@@ -94,6 +98,89 @@ namespace LNGCore.UI.Controllers
             vm.PaginationParameters = pagination;
 
             return View(vm);
+        }
+
+        public IActionResult EditInvoice(int invoiceId = 0)
+
+        {
+            var invoice = _invoiceRepository.GetInvoice(invoiceId);
+
+            var invoiceItem = new InvoiceItem
+            {
+                Id = invoice.Id,
+                CompletedBy = invoice.CompletedBy,
+                Customer = invoice.Customer,
+                CustomerId = invoice.CustomerId,
+                OrderDate = invoice.OrderDate,
+                LineItem = invoice.LineItem,
+                IsDonated = invoice.IsDonated,
+                IsPaid = invoice.IsPaid,
+                EmployeeId = invoice.EmployeeId,
+                Deadline = invoice.Deadline,
+                IsQuote = invoice.IsQuote,
+                PaidDate = invoice.PaidDate,
+                Voided = invoice.Voided,
+                Pofield = invoice.Pofield,
+                ShipCost = invoice.ShipCost,
+                Notes = invoice.Notes,
+                InvoiceProofUrl = invoice.InvoiceProofUrl,
+                ShippingMethod = invoice.ShippingMethod,
+                TaxPercent = invoice.TaxPercent
+            };
+
+            var vm = new EditInvoiceViewModel
+            {
+                Invoice = invoiceItem,
+                Customers = _customerRepository.GetAllCustomers().ToList(),
+                Employees = _employeeRepository.GetEmployees().ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult EditInvoice(EditInvoiceViewModel model)
+        {
+            var invoice = _invoiceRepository.GetInvoice(model.Invoice.Id);
+            invoice.CustomerId = model.Invoice.CustomerId;
+            invoice.OrderDate = model.Invoice.OrderDate;
+            invoice.CompletedBy = model.Invoice.CompletedBy;
+            invoice.Deadline = model.Invoice.Deadline;
+            invoice.EmployeeId = model.Invoice.EmployeeId;
+            invoice.InvoiceProofUrl = model.Invoice.InvoiceProofUrl;
+            invoice.IsDonated = model.Invoice.IsDonated;
+            invoice.IsPaid = model.Invoice.IsPaid;
+            invoice.PaidDate = model.Invoice.PaidDate;
+            invoice.IsQuote = model.Invoice.IsQuote;
+            invoice.Notes = model.Invoice.Notes;
+            invoice.Pofield = model.Invoice.Pofield;
+            invoice.Voided = model.Invoice.Voided;
+            invoice.ShippingMethod = model.Invoice.ShippingMethod;
+            invoice.ShipCost = model.Invoice.ShipCost;
+            var invoiceId = _invoiceRepository.SaveInvoice(invoice);
+
+            var saveLines = new List<ILineItem>();
+            var lineItems = model.LineItems.Where(w => w.Quantity > 0);
+
+
+
+            _invoiceRepository.SaveLineItems(saveLines, invoiceId);
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult GetInvoiceLines(int invoiceId, int startingIndex)
+        {
+            var linesPerGet = 5;
+            var vm = new LineItemViewModel
+            {
+                LineItems = _invoiceRepository.GetLineItems(invoiceId, startingIndex, 5).ToList(),
+                LineIndex = startingIndex,
+                InvoiceId = invoiceId,
+                ItemTypes = _invoiceRepository.GetItemTypes().ToList()
+            };
+
+            return PartialView("_InvoiceLineItem", vm);
         }
 
         public IActionResult Customers()

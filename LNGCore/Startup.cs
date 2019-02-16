@@ -59,6 +59,7 @@ namespace LNGCore
             services.AddScoped<IOrnamentOrderRepository, OrnamentOrderRepository>();
             services.AddScoped<ILogRepository, LogRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IInvoiceDbContext, InvoiceDbContext>();
             services.AddSingleton(Configuration);
         }

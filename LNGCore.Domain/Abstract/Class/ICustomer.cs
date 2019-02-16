@@ -21,5 +21,6 @@ namespace LNGCore.Domain.Abstract.Class
         string TaxId { get; set; }
         string ZipCode { get; set; }
         IEnumerable<IInvoice> Invoice { get; set; }
+        string DisplayName { get; }
     }
 }

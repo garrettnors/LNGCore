@@ -15,7 +15,11 @@ namespace LNGCore.Domain.Abstract.Repository
         IEnumerable<IInvoice> GetVoidedItems(string searchTerm = "");
         IEnumerable<IInvoice> GetYearToDateSales();
         IEnumerable<IInvoice> GetInvoicesByCustomer(int customerId);
+        IEnumerable<ILineItem> GetLineItems(int invoiceId, int startingIndex, int roundToNearest);
+        IEnumerable<IItem> GetItemTypes();
+        void SaveLineItems(List<ILineItem> lines, int invoiceId);
         IInvoice GetInvoice(int invoiceId);
+        int SaveInvoice(IInvoice invoice);
         bool MarkInvoicePaid(int invoiceId);
     }
 }

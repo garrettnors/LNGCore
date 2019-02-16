@@ -27,6 +27,7 @@ namespace LNGCore.Domain.Concrete.Class
         public string Balance { get; set; }
         public DateTime? LastContact { get; set; }
         public IEnumerable<Invoice> Invoice { get; set; }
+        public string DisplayName => BusinessName ?? Name;
         IEnumerable<IInvoice> ICustomer.Invoice { get { return Invoice; } set => throw new NotImplementedException(); }
     }
 }

@@ -11,6 +11,7 @@ namespace LNGCore.Domain.Abstract.Context
         DbSet<Invoice> Invoice { get; set; }
         DbSet<Event> Event { get; set; }
         DbSet<Item> Item { get; set; }
+        DbSet<Employee> Employee { get; set; }
         DbSet<LineItem> LineItem { get; set; }
         DbSet<OrnamentOrders> OrnamentOrders { get; set; }
         DbSet<Logs> Logs { get; set; }

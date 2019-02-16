@@ -20,6 +20,7 @@ namespace LNGCore.Domain.Concrete.Context
         public DbSet<Customer> Customer { get; set; }
         public DbSet<Invoice> Invoice { get; set; }
         public DbSet<Event> Event { get; set; }
+        public DbSet<Employee> Employee { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<LineItem> LineItem { get; set; }
         public DbSet<Logs> Logs { get; set; }
@@ -201,6 +202,7 @@ namespace LNGCore.Domain.Concrete.Context
                     .IsRequired()
                     .HasMaxLength(50);
             });
+            modelBuilder.Entity<Employee>(entity => { });
 
             modelBuilder.Entity<LineItem>(entity =>
             {

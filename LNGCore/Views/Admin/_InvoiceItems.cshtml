@@ -8,7 +8,7 @@
     <div class="card-body">
         @if (Model.Invoices.Any())
         {
-            if (Model.Invoices.Count > 1)
+            if (Model.PaginationParameters.NumberOfPages > 1)
             {
                 <partial name="_Pagination" model="Model.PaginationParameters" />
             }
@@ -38,27 +38,29 @@
                                     @invoice.Notes
                                 </div>
                                 <div class="col-lg-2">
-                                    <div class="d-none d-lg-block">
-                                        <button class="btn btn-sm btn-block btn-success" onclick="markPaid(@invoice.Id);">Mark Paid</button>
-                                        <div class="pt-1">
-                                            <a class="btn btn-sm btn-block btn-secondary" target="_self" href="#">Edit Invoice</a>
-                                        </div>
-                                        <div class="pt-1">
-                                            <a class="btn btn-sm btn-block btn-info" target="_self" href="#">Print Invoice</a>
+                                    <div class="dropdown text-right">
+                                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            I Want To...
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right text-right" aria-labelledby="dropdownMenuButton">
+                                            <span class="pointer dropdown-item" onclick="markPaid();">Mark Invoice Paid</span>
+                                            <a class="pointer dropdown-item" href="@Url.Action("EditInvoice","Admin", new {invoiceId = invoice.Id})">Edit Invoice</a>
+                                            <span class="pointer dropdown-item" onclick="markPaid();">Email Invoice</span>
+                                            <span class="pointer dropdown-item" onclick="markPaid();">Print Invoice</span>
                                         </div>
                                     </div>
-                                    <div class="d-lg-none d-xl-none text-center pt-2">
-                                        <button class="btn btn-sm btn-success" onclick="markPaid();">Mark Paid</button>
-                                        <button class="btn btn-sm btn-secondary" onclick="markPaid();">Edit Invoice</button>
-                                        <button class="btn btn-sm btn-info" onclick="markPaid();">Print Invoice</button>
-                                    </div>
+                                    @*<div class="d-lg-none d-xl-none text-center pt-2">
+                                            <button class="btn btn-sm btn-success" onclick="markPaid();">Mark Paid</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="markPaid();">Edit Invoice</button>
+                                            <button class="btn btn-sm btn-info" onclick="markPaid();">Print Invoice</button>
+                                        </div>*@
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             }
-            if (Model.Invoices.Count > 1)
+            if (Model.PaginationParameters.NumberOfPages > 1)
             {
                 <partial name="_Pagination" model="Model.PaginationParameters" />
             }

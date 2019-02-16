@@ -28,10 +28,76 @@ namespace LNGCore.Domain.Concrete.Repository
             _db = new SqlConnection(_configuration.GetSection("SiteConfiguration")["DbContext"]);
         }
 
+        public IEnumerable<ILineItem> GetLineItems(int invoiceId, int startingIndex, int roundToNearest)
+        {
+            var existingLines = _dbContext.LineItem.Where(w => w.InvoiceId == invoiceId).ToList();
+
+            if (existingLines.Count == 0)
+                existingLines.Add(new LineItem());
+
+            while (existingLines.Count % roundToNearest != 0)
+                existingLines.Add(new LineItem());
+
+            return existingLines;
+        }
+
+        public IEnumerable<IItem> GetItemTypes()
+        {
+            return _dbContext.Item.OrderBy(o => o.ItemName);
+        }
+
         public IInvoice GetInvoice(int invoiceId)
         {
             return _dbContext.Invoice.FirstOrDefault(f => f.Id == invoiceId) ?? new Invoice();
             //return _db.Query<Invoice>("select * from invoice where id = @invoiceId", new { invoiceId }).SingleOrDefault();
+        }
+
+        public int SaveInvoice(IInvoice invoice)
+        {
+            var saveItem = _dbContext.Invoice.FirstOrDefault(f => f.Id == invoice.Id) ?? new Invoice();
+
+            saveItem.CustomerId = invoice.CustomerId;
+            saveItem.OrderDate = invoice.OrderDate;
+            saveItem.CompletedBy = invoice.CompletedBy;
+            saveItem.Deadline = invoice.Deadline;
+            saveItem.EmployeeId = invoice.EmployeeId;
+            saveItem.InvoiceProofUrl = invoice.InvoiceProofUrl;
+            saveItem.IsDonated = invoice.IsDonated;
+            saveItem.IsPaid = invoice.IsPaid;
+            saveItem.PaidDate = invoice.PaidDate;
+            saveItem.IsQuote = invoice.IsQuote;
+            saveItem.Notes = invoice.Notes;
+            saveItem.Pofield = invoice.Pofield;
+            saveItem.Voided = invoice.Voided;
+            saveItem.ShippingMethod = invoice.ShippingMethod;
+            saveItem.ShipCost = invoice.ShipCost;
+            saveItem.TaxPercent = (decimal)8.2500;
+
+            if (saveItem.Id == 0)
+                _dbContext.Invoice.Add(saveItem);
+
+            _dbContext.Commit();
+
+            return saveItem.Id;
+        }
+
+        public void SaveLineItems(List<ILineItem> lines, int invoiceId)
+        {
+            foreach (var lineItem in lines)
+            {
+                var line = _dbContext.LineItem.FirstOrDefault(f => f.LineItemId == lineItem.LineItemId) ??
+                           new LineItem();
+                line.InvoiceId = lineItem.InvoiceId;
+                line.ItemDesc = lineItem.ItemDesc;
+                line.ItemId = lineItem.ItemId;
+                line.ItemPrice = lineItem.ItemPrice;
+                line.Quantity = lineItem.Quantity;
+                line.Price = lineItem.Price;
+
+                if (line.LineItemId == 0)
+                    _dbContext.LineItem.Add(line);
+            }
+            _dbContext.Commit();
         }
 
         public bool MarkInvoicePaid(int invoiceId)
