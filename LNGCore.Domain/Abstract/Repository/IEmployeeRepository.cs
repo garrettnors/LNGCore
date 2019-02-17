@@ -8,5 +8,6 @@ namespace LNGCore.Domain.Abstract.Repository
     public interface IEmployeeRepository
     {
         IEnumerable<IEmployee> GetEmployees();
+        IEmployee GetEmployee(int employeeId);
     }
 }

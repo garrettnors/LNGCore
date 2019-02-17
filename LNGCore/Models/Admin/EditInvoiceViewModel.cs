@@ -18,7 +18,7 @@ namespace LNGCore.UI.Models.Admin
         }
         public InvoiceItem Invoice { get; set; }
         [Required]
-        public string InvoiceType { get; set; }
+        public InvoiceTypeEnum InvoiceType { get; set; }
         [Required]
         public string ShippingMethod { get; set; }
         public List<ICustomer> Customers { get; set; }

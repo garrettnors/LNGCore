@@ -7,7 +7,7 @@ namespace LNGCore.UI.Enums
 {
     public enum InvoiceTypeEnum
     {
-        Open,
+        Invoice,
         Paid,
         Donated,
         Voided,

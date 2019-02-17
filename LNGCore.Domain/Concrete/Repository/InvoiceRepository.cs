@@ -87,7 +87,7 @@ namespace LNGCore.Domain.Concrete.Repository
             {
                 var line = _dbContext.LineItem.FirstOrDefault(f => f.LineItemId == lineItem.LineItemId) ??
                            new LineItem();
-                line.InvoiceId = lineItem.InvoiceId;
+                line.InvoiceId = invoiceId;
                 line.ItemDesc = lineItem.ItemDesc;
                 line.ItemId = lineItem.ItemId;
                 line.ItemPrice = lineItem.ItemPrice;

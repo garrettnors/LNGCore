@@ -5,6 +5,7 @@ using System.Text;
 using LNGCore.Domain.Abstract.Class;
 using LNGCore.Domain.Abstract.Context;
 using LNGCore.Domain.Abstract.Repository;
+using LNGCore.Domain.Concrete.Class;
 
 namespace LNGCore.Domain.Concrete.Repository
 {
@@ -19,6 +20,11 @@ namespace LNGCore.Domain.Concrete.Repository
         public IEnumerable<IEmployee> GetEmployees()
         {
             return _db.Employee;
+        }
+
+        public IEmployee GetEmployee(int employeeId)
+        {
+            return _db.Employee.FirstOrDefault(f => f.EmployeeID == employeeId) ?? new Employee();
         }
     }
 }

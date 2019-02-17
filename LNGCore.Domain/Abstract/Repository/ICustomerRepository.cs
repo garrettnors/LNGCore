@@ -7,7 +7,8 @@ namespace LNGCore.Domain.Abstract.Repository
 {
     public interface ICustomerRepository
     {
-        IEnumerable<ICustomer> GetAllCustomers();
+        IEnumerable<ICustomer> GetAllCustomers(string searchTerm = "");
         ICustomer GetCustomer(int Id);
+        int SaveCustomer(ICustomer customer);
     }
 }

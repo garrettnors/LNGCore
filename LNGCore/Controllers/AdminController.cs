@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using LNGCore.Domain.Abstract.Class;
 using LNGCore.Domain.Abstract.Repository;
 using LNGCore.UI.Enums;
@@ -17,12 +18,14 @@ namespace LNGCore.UI.Controllers
         private readonly IEventRepository _eventRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IEmployeeRepository _employeeRepository;
-        public AdminController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository, ICustomerRepository customerRepository, IEmployeeRepository employeeRepository)
+        private readonly IMapper _mapper;
+        public AdminController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository, ICustomerRepository customerRepository, IEmployeeRepository employeeRepository, IMapper mapper)
         {
             _invoiceRepository = invoiceRepository;
             _eventRepository = eventRepository;
             _customerRepository = customerRepository;
             _employeeRepository = employeeRepository;
+            _mapper = mapper;
         }
         public IActionResult Index()
         {
@@ -38,7 +41,7 @@ namespace LNGCore.UI.Controllers
             return View(vm);
         }
 
-        public IActionResult Invoices(InvoiceTypeEnum type = InvoiceTypeEnum.Open, int page = 1, int take = 20, string searchTerm = "")
+        public IActionResult Invoices(InvoiceTypeEnum type = InvoiceTypeEnum.Invoice, int page = 1, int take = 20, string searchTerm = "")
         {
             ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
 
@@ -54,7 +57,7 @@ namespace LNGCore.UI.Controllers
             {
                 InvoiceType = type,
                 Take = take,
-                CurrentPage = skip == 0 ? 1 : skip / take + 1
+                CurrentPage = skip / take + 1
             };
 
             List<IInvoice> items;
@@ -63,7 +66,7 @@ namespace LNGCore.UI.Controllers
             switch (type)
             {
 
-                case InvoiceTypeEnum.Open:
+                case InvoiceTypeEnum.Invoice:
                     items = _invoiceRepository.GetOpenInvoices(searchTerm).ToList();
                     viewTitle = "Open Invoices";
                     break;
@@ -104,29 +107,7 @@ namespace LNGCore.UI.Controllers
 
         {
             var invoice = _invoiceRepository.GetInvoice(invoiceId);
-
-            var invoiceItem = new InvoiceItem
-            {
-                Id = invoice.Id,
-                CompletedBy = invoice.CompletedBy,
-                Customer = invoice.Customer,
-                CustomerId = invoice.CustomerId,
-                OrderDate = invoice.OrderDate,
-                LineItem = invoice.LineItem,
-                IsDonated = invoice.IsDonated,
-                IsPaid = invoice.IsPaid,
-                EmployeeId = invoice.EmployeeId,
-                Deadline = invoice.Deadline,
-                IsQuote = invoice.IsQuote,
-                PaidDate = invoice.PaidDate,
-                Voided = invoice.Voided,
-                Pofield = invoice.Pofield,
-                ShipCost = invoice.ShipCost,
-                Notes = invoice.Notes,
-                InvoiceProofUrl = invoice.InvoiceProofUrl,
-                ShippingMethod = invoice.ShippingMethod,
-                TaxPercent = invoice.TaxPercent
-            };
+            var invoiceItem = _mapper.Map<InvoiceItem>(invoice);
 
             var vm = new EditInvoiceViewModel
             {
@@ -135,46 +116,66 @@ namespace LNGCore.UI.Controllers
                 Employees = _employeeRepository.GetEmployees().ToList()
             };
 
+            if (invoice.Voided)
+                vm.InvoiceType = InvoiceTypeEnum.Voided;
+            else if (invoice.IsQuote)
+                vm.InvoiceType = InvoiceTypeEnum.Quote;
+            else if (invoice.IsDonated == true)
+                vm.InvoiceType = InvoiceTypeEnum.Donated;
+            else if (invoice.IsPaid == true)
+                vm.InvoiceType = InvoiceTypeEnum.Paid;
+            else
+                vm.InvoiceType = InvoiceTypeEnum.Invoice;
+
             return View(vm);
         }
 
         [HttpPost]
         public IActionResult EditInvoice(EditInvoiceViewModel model)
         {
-            var invoice = _invoiceRepository.GetInvoice(model.Invoice.Id);
-            invoice.CustomerId = model.Invoice.CustomerId;
-            invoice.OrderDate = model.Invoice.OrderDate;
-            invoice.CompletedBy = model.Invoice.CompletedBy;
-            invoice.Deadline = model.Invoice.Deadline;
-            invoice.EmployeeId = model.Invoice.EmployeeId;
-            invoice.InvoiceProofUrl = model.Invoice.InvoiceProofUrl;
-            invoice.IsDonated = model.Invoice.IsDonated;
-            invoice.IsPaid = model.Invoice.IsPaid;
-            invoice.PaidDate = model.Invoice.PaidDate;
-            invoice.IsQuote = model.Invoice.IsQuote;
-            invoice.Notes = model.Invoice.Notes;
-            invoice.Pofield = model.Invoice.Pofield;
-            invoice.Voided = model.Invoice.Voided;
-            invoice.ShippingMethod = model.Invoice.ShippingMethod;
-            invoice.ShipCost = model.Invoice.ShipCost;
-            var invoiceId = _invoiceRepository.SaveInvoice(invoice);
+            model.Invoice.Voided = false;
+            model.Invoice.IsPaid = false;
+            model.Invoice.IsDonated = false;
+            model.Invoice.IsQuote = false;
+            model.Invoice.CompletedBy = _employeeRepository.GetEmployee(model.Invoice.EmployeeId).EmpName;
 
-            var saveLines = new List<ILineItem>();
-            var lineItems = model.LineItems.Where(w => w.Quantity > 0);
+            switch (model.InvoiceType)
+            {
+                case InvoiceTypeEnum.Invoice:
+                    break;
+                case InvoiceTypeEnum.Paid:
+                    model.Invoice.IsPaid = true;
+                    model.Invoice.PaidDate = DateTime.Now;
+                    break;
+                case InvoiceTypeEnum.Donated:
+                    model.Invoice.IsDonated = true;
+                    break;
+                case InvoiceTypeEnum.Voided:
+                    model.Invoice.Voided = true;
+                    break;
+                case InvoiceTypeEnum.Quote:
+                    model.Invoice.IsQuote = true;
+                    break;
+                default:
+                    break;
+            }
 
+            var saveInvoice = _mapper.Map<IInvoice>(model.Invoice);
+            var invoiceId = _invoiceRepository.SaveInvoice(saveInvoice);
 
+            var saveLines = _mapper.Map<List<ILineItem>>(model.LineItems.Where(w => w.Quantity > 0));
 
             _invoiceRepository.SaveLineItems(saveLines, invoiceId);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Invoices", new { type = model.InvoiceType });
         }
 
         public IActionResult GetInvoiceLines(int invoiceId, int startingIndex)
         {
-            var linesPerGet = 5;
+            const int linesPerGet = 5;
             var vm = new LineItemViewModel
             {
-                LineItems = _invoiceRepository.GetLineItems(invoiceId, startingIndex, 5).ToList(),
+                LineItems = _invoiceRepository.GetLineItems(invoiceId, startingIndex, linesPerGet).ToList(),
                 LineIndex = startingIndex,
                 InvoiceId = invoiceId,
                 ItemTypes = _invoiceRepository.GetItemTypes().ToList()
@@ -183,10 +184,26 @@ namespace LNGCore.UI.Controllers
             return PartialView("_InvoiceLineItem", vm);
         }
 
-        public IActionResult Customers()
+        public IActionResult Customers(int page = 1, int take = 15, string searchTerm = "")
         {
             ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
-            return View();
+
+            var vm = new CustomerViewModel();
+
+            var skip = take * (page - 1);
+            var pagination = new PaginationViewModel
+            {
+                Take = take,
+                CurrentPage = skip / take + 1
+            };
+
+            var customers = _customerRepository.GetAllCustomers(searchTerm).ToList();
+            pagination.NumberOfPages = customers.Count <= take ? 1 : (int)Math.Ceiling(customers.Count / (decimal)take);
+
+            vm.Customers = customers.Skip(skip).Take(take).ToList();
+            vm.PaginationParameters = pagination;
+            vm.SearchTerm = searchTerm;
+            return View(vm);
         }
 
         public IActionResult MarkInvoicePaid(int invoiceId = 0)
@@ -195,12 +212,24 @@ namespace LNGCore.UI.Controllers
             return StatusCode((int)(success ? HttpStatusCode.OK : HttpStatusCode.Conflict));
         }
 
-        //public PartialViewResult GetInvoicePartial(InvoiceTypeEnum invoiceType = InvoiceTypeEnum.Open, int take = 20, int page = 1, string searchTerm = "")
-        //{
+        [HttpGet]
+        public IActionResult EditCustomer(int customerId)
+        {
+            var customer = _customerRepository.GetCustomer(customerId);
 
-        //    return PartialView("_InvoiceItems", vm);
-        //}
+            if (customer.Id == 0)
+                customer.Taxable = true;
 
+            var vm = _mapper.Map<EditCustomerViewModel>(customer);
+            return PartialView("_EditCustomer", vm);
+        }
 
+        [HttpPost]
+        public IActionResult EditCustomer(EditCustomerViewModel model)
+        {
+            var customer = _mapper.Map<ICustomer>(model);
+            _customerRepository.SaveCustomer(customer);
+            return RedirectToAction("Customers");
+        }
     }
 }

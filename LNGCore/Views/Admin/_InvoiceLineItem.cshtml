@@ -2,8 +2,10 @@
 
 @foreach (var line in Model.LineItems)
 {
+
     <tr>
-        <td class="px-1" style="width:10%">
+        <td class="px-1" style="width: 10%">
+            @Html.Hidden($"LineItems[{Model.LineIndex}].LineItemId", line.LineItemId)
             <input name="@($"LineItems[{Model.LineIndex}].Quantity")" type="text" value="@(line.Quantity == 0 ? "" : line.Quantity.ToString())" class="form-control form-control-sm" />
         </td>
         <td class="px-1" style="width: 20%; min-width:150px">

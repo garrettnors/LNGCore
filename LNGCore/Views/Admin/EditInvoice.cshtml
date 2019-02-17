@@ -1,4 +1,5 @@
-﻿@model LNGCore.UI.Models.Admin.EditInvoiceViewModel
+﻿@using LNGCore.UI.Enums
+@model LNGCore.UI.Models.Admin.EditInvoiceViewModel
 @{
     ViewData["Title"] = "EditInvoice";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -10,7 +11,7 @@
         var invoiceId = $("#invoiceId").val();
         $.ajax({
             url: "@Html.Raw(Url.Action("GetInvoiceLines", "Admin", new {invoiceId ="__INVC__", startingIndex="__STRT__"}))".replace("__INVC__", invoiceId).replace("__STRT__", index),
-            success: function(data) {
+            success: function (data) {
                 $("#tblLineItems tbody").append(data);
                 $("#lineIndex").val($("#tblLineItems tbody tr").length);
                 $("#invoiceId").val(0);
@@ -21,14 +22,22 @@
 
     $(document).ready(function() {
         addLinesToTable();
+        setUpSelect2();
     });
+
+    function setUpSelect2() {
+        $(".select2").select2({
+            width: "100%",
+            placeholder: 'Select a Name'
+        });
+    }
 </script>
 @if (Model.Invoice.Id == 0)
 {
     <script>
         $(document).ready(function () {
-            $("[name='Invoice.CustomerId']").val(-1);
-            $("[name='Invoice.EmployeeId']").val(-1);
+            $("[name='Invoice.CustomerId']").val(-1).trigger("change");
+            $("[name='Invoice.EmployeeId']").val(-1).trigger("change");
         });
     </script>
 }
@@ -40,59 +49,41 @@
     @Html.Hidden("invoiceId", Model.Invoice.Id)
     <div class="card bg-light">
         <div class="card-header">
-            <div class="row no-gutters">
-                <div class="col-8">
-                    <h2 class="m-0">Edit Invoice</h2>
-                </div>
-                <div class="col-4 text-right">
-                    <button class="btn btn-success">@(Model.Invoice.Id == 0 ? "Generate New Invoice" : "Save Changes")</button>
-                </div>
-            </div>
+            <h2 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h2>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-lg-9">
-                    <div class="row">
-                        <div class="col-md-3">
+            <div class="row no-gutters">
+                <div class="col-lg-9 px-lg-1">
+                    <div class="row no-gutters">
+                        <div class="col-md-2 px-md-1">
                             <label class="m-0 mt-2 text-muted">
                                 Type
                             </label>
-                            <select id="InvoiceType" name="InvoiceType" class="form-control form-control-sm">
-                                <option value="invoice">Invoice</option>
-                                <option value="quote">Quote</option>
-                                <option value="donation">Donation</option>
-                            </select>
+                            @Html.DropDownListFor(f => f.InvoiceType, new SelectList((InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)), Model.InvoiceType), new { @class = "form-control form-control-sm" })
                         </div>
-                        <div class="col-md">
+                        <div class="col-md-7 px-md-1">
                             <label class="m-0 mt-2 text-muted">
                                 Customer
                             </label>
                             @Html.DropDownListFor(f => f.Invoice.CustomerId, new SelectList(Model.Customers.OrderBy(o => o.DisplayName), "Id", "DisplayName", Model.Invoice.CustomerId), new { @class = "form-control form-control-sm select2" })
                         </div>
-                        <div class="col-md">
+                        <div class="col-md-3 px-md-1">
                             <label class="m-0 mt-2 text-muted">
                                 Employee
                             </label>
                             @Html.DropDownListFor(f => f.Invoice.EmployeeId, new SelectList(Model.Employees.OrderBy(o => o.EmployeeID), "EmployeeID", "EmpName", Model.Invoice.EmployeeId), new { @class = "form-control form-control-sm select2" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3">
+                    <div class="row no-gutters">
+                        <div class="col-md-2 px-md-1">
                             <label class="m-0 mt-2 text-muted">
                                 Delivery
                             </label>
-                            @Html.DropDownListFor(f => f.Invoice.ShippingMethod, new SelectList(new List<string> { "Shipment", "Delivery", "Pickup", "N/A" }, Model.Invoice.ShippingMethod), new { @class = "form-control form-control-sm select2" })
-
-                            @*<select id="Invoice_ShippingMethod" name="Invoice.ShippingMethod" class="form-control form-control-sm">
-                                    <option value="Shipment">Shipment</option>
-                                    <option value="Delivery">Delivery</option>
-                                    <option value="Pickup">Customer Pickup</option>
-                                    <option value="N/A">N/A</option>
-                                </select>*@
+                            @Html.DropDownListFor(f => f.Invoice.ShippingMethod, new SelectList(new List<string> { "Shipment", "Delivery", "Pickup", "N/A" }, Model.Invoice.ShippingMethod), new { @class = "form-control form-control-sm" })
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2 px-md-1">
                             <label class="m-0 mt-2 text-muted">
-                                Shipping Cost
+                                Shipping
                             </label>
                             <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
@@ -101,13 +92,19 @@
                                 @Html.TextBoxFor(f => f.Invoice.ShipCost, new { @class = "form-control form-control-sm", type = "number", step = "0.01" })
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2 px-md-1">
                             <label class="m-0 mt-2 text-muted">
                                 P.O. #
                             </label>
                             @Html.TextBoxFor(f => f.Invoice.Pofield, new { @class = "form-control form-control-sm" })
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 px-md-1">
+                            <label class="m-0 mt-2 text-muted">
+                                OrderDate
+                            </label>
+                            @Html.TextBox("Invoice.OrderDate", (Model.Invoice.OrderDate == DateTime.MinValue ? DateTime.Now : Model.Invoice.OrderDate).ToString("yyyy-MM-dd"), new { type = "date", @class = "form-control form-control-sm" })
+                        </div>
+                        <div class="col-md-3 px-md-1">
                             <label class="m-0 mt-2 text-muted">
                                 Due By
                             </label>
@@ -115,7 +112,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-3 px-lg-1">
                     <label class="m-0 mt-2 text-muted">
                         Notes
                     </label>
@@ -134,8 +131,13 @@
                 </thead>
                 <tbody></tbody>
             </table>
-            <div class="text-center">
-                <button class="btn btn-info" type="button" onclick="addLinesToTable()">Add 5 More Rows</button>
+            <div class="row">
+                <div class="col-6">
+                    <button class="btn btn-success" type="submit">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Save Edits")</button>
+                </div>
+                <div class="col-6 text-right">
+                    <button class="btn btn-info" type="button" onclick="addLinesToTable()">Add 5 More Rows</button>
+                </div>
             </div>
         </div>
     </div>

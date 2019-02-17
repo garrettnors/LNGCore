@@ -12,11 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.1.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="popper.js" Version="1.14.3" />
+    <PackageReference Include="Select2.js" Version="4.0.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +28,15 @@
 
   <ItemGroup>
     <Folder Include="Middleware\" />
+    <Folder Include="wwwroot\lib\kendoui\styles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\lib\select2\dist\js\i18n\en.js" />
+    <None Include="wwwroot\lib\select2\dist\js\select2.full.js" />
+    <None Include="wwwroot\lib\select2\dist\js\select2.full.min.js" />
+    <None Include="wwwroot\lib\select2\dist\js\select2.js" />
+    <None Include="wwwroot\lib\select2\dist\js\select2.min.js" />
   </ItemGroup>
 
   <ItemGroup>

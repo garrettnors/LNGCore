@@ -1,7 +1,74 @@
-﻿
+﻿@model LNGCore.UI.Models.Admin.CustomerViewModel
 @{
     ViewData["Title"] = "Customers";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+<script>
+    function getTabBody(tabId, page) {
+        var url = "@Html.Raw(Url.Action("Customers", "Admin", new { page = "__PAGE__", searchTerm = Model.SearchTerm }))";
+        window.location.href = url.replace("__PAGE__", page);
+    }
+    function clearSearch() {
+        $("#searchTerm").val("");
+        $("#formSearch").submit();
+    }
+    function editCustomer(customerId) {
+        $.ajax({
+            url: "@Url.Action("EditCustomer","Admin", new {customerId = "__CUSTID__"})".replace("__CUSTID__", customerId),
+            success: function(data) {
+                $("#customerModal .modal-content").html(data);
+                $("#customerModal").modal("show");
+            }
+        });
+    }
+</script>
+<div class="row pb-3">
+    <div class="col-6">
+        <button onclick="editCustomer(0);" class="btn btn-sm btn-success"><span class="fas fa-plus"></span> Add Contact</button>
+    </div>
+    <div class="col-4 offset-2">
+        @using (Html.BeginForm("Customers", "Admin", FormMethod.Get, new { id = "formSearch" }))
+        {
+            <div class="input-group input-group-sm">
+                <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
+                <span class="input-group-append">
+                    <button class="btn btn-info" type="submit">Search</button>
+                </span>
+                <span class="input-group-append">
+                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+                </span>
+            </div>
+        }
+    </div>
+</div>
+<table class="table table-sm table-bordered table-striped table-light">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Business Name</th>
+            <th>Customer Name</th>
+            <th>Email Address</th>
+            <th>Business Phone</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model.Customers)
+        {
+            <tr>
+                <td class="text-center"><span onclick="editCustomer(@customer.Id)" class="pointer fas fa-user-edit"></span></td>
+                <td>@customer.BusinessName</td>
+                <td>@customer.Name</td>
+                <td>@customer.Email</td>
+                <td>@customer.BusinessPhone</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<partial name="_Pagination" model="@Model.PaginationParameters" />
 
-Customers
+<div class="modal fade" data-backdrop="static" data-keyboard="false" data-focus="true" id="customerModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>

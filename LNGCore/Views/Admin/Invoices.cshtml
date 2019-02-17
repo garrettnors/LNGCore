@@ -1,4 +1,5 @@
-﻿@model LNGCore.UI.Models.Admin.InvoiceViewModel
+﻿@using LNGCore.UI.Enums
+@model LNGCore.UI.Models.Admin.InvoiceViewModel
 @{
     ViewData["Title"] = "Invoice Master";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -15,13 +16,16 @@
         $("#formSearch").submit();
     }
 </script>
-<div class="row justify-content-end pb-3">
-    <div class="col-sm-5">
+<div class="row pb-3">
+    <div class="col-6">
+        <a href="@Url.Action("EditInvoice","Admin", new {invoiceId = 0})" class="btn btn-sm btn-success" onclick=""><span class="fas fa-plus"></span> Add Invoice</a>
+    </div>
+    <div class="col-sm-4 offset-2">
 
         @using (Html.BeginForm("Invoices", "Admin", FormMethod.Get, new { id = "formSearch" }))
         {
             @Html.Hidden("type", Model.PaginationParameters.InvoiceType)
-            <div class="input-group">
+            <div class="input-group input-group-sm">
                 <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
                 <span class="input-group-append">
                     <button class="btn btn-info" type="submit">Search</button>
@@ -35,21 +39,33 @@
     </div>
 </div>
 <ul class="nav nav-tabs" id="invoicesTab">
-    <li class="nav-item">
-        <a class="nav-link @((int) Model.InvoiceType == 0 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 0, page = 1, searchTerm = Model.SearchTerm})">Open Invoices</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @((int) Model.InvoiceType == 4 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 4, page = 1, searchTerm = Model.SearchTerm})">Open Quotes</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @((int) Model.InvoiceType == 1 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 1, page = 1, searchTerm = Model.SearchTerm})">Paid Invoices</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @((int) Model.InvoiceType == 3 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 3, page = 1, searchTerm = Model.SearchTerm})">Voided Items</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @((int) Model.InvoiceType == 2 ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = 2, page = 1, searchTerm = Model.SearchTerm})">Donated Items</a>
-    </li>
+    @foreach (var type in (InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)))
+    {
+        string tabTitle;
+        switch (type)
+        {
+            case InvoiceTypeEnum.Invoice:
+                tabTitle = "Open Invoices";
+                break;
+            case InvoiceTypeEnum.Paid:
+                tabTitle = "Paid Invoices";
+                break;
+            case InvoiceTypeEnum.Donated:
+                tabTitle = "Donated Items";
+                break;
+            case InvoiceTypeEnum.Voided:
+                tabTitle = "Voided Items";
+                break;
+            case InvoiceTypeEnum.Quote:
+                tabTitle = "Open Quotes";
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        <li class="nav-item">
+            <a class="nav-link @(Model.InvoiceType == type ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = (int) type, page = 1, searchTerm = Model.SearchTerm})">@tabTitle</a>
+        </li>
+    }
 </ul>
 <div class="tab-content">
     <div class="tab-pane active" id="tabBody">

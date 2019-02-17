@@ -1,7 +1,7 @@
 ﻿@model LNGCore.UI.Models.Admin.InvoiceViewModel
 
 
-<div class="card border-top-0">
+<div class="card rounded-0 border-top-0">
     <div class="card-header">
         <h2 class="m-0">@Model.ViewTitle</h2>
     </div>
@@ -35,11 +35,11 @@
                                     <hr class="d-lg-none" />
                                 </div>
                                 <div class="col-lg-5 pr-lg-4">
-                                    @invoice.Notes
+                                    @(string.IsNullOrWhiteSpace(invoice.Notes) ? "No Notes." : invoice.Notes)
                                 </div>
                                 <div class="col-lg-2">
                                     <div class="dropdown text-right">
-                                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button class="btn btn-outline-primary dropdown-toggle" data-display="static" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             I Want To...
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right text-right" aria-labelledby="dropdownMenuButton">

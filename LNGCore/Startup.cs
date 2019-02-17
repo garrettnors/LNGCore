@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using LNGCore.Domain.Abstract.Context;
 using LNGCore.Domain.Abstract.Repository;
 using LNGCore.Domain.Concrete.Context;
 using LNGCore.Domain.Concrete.Repository;
+using LNGCore.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +45,16 @@ namespace LNGCore
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddSession();
+
+            // Auto Mapper Configurations
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            var mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
             services.AddMvc()
                 .AddJsonOptions(options =>
                 {
