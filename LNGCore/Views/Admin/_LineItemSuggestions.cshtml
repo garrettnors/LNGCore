@@ -1,0 +1,61 @@
+﻿@using System.Web
+@model LNGCore.UI.Models.Admin.LineItemSuggestionViewModel
+<div style="max-height: 150px; overflow-y: scroll;">
+    <table class="table-striped table-bordered table-responsive">
+        @{ var hasLines = false; }
+        @if (Model.CustomerLineItems.Any())
+        {
+            hasLines = true;
+            <thead>
+                <tr>
+                    <th class="text-center" colspan="4">
+                        <h4>Customer History</h4>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var line in Model.CustomerLineItems)
+                {
+                    <tr class="pointer" onclick="setSuggestedValues('@line.ItemDesc', '@line.ItemPrice', @Model.LineIndex);">
+
+                        <td colspan="2">@line.ItemDesc</td>
+                        <td>@line.ItemPrice</td>
+                        <td>@line.Invoice?.OrderDate.ToString("M/d/yy")</td>
+                    </tr>
+                }
+            </tbody>
+        }
+        @if (Model.OverallLineItems.Any())
+        {
+            hasLines = true;
+            <thead>
+                <tr>
+                    <th class="text-center" colspan="4">
+                        <h4>Overall History</h4>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var line in Model.OverallLineItems)
+                {
+                    <tr class="pointer" onclick="setSuggestedValues('@HttpUtility.JavaScriptStringEncode(line.ItemDesc)', '@line.ItemPrice', @Model.LineIndex);">
+                        <td>@line.Invoice?.Customer.Name</td>
+                        <td>@line.ItemDesc</td>
+                        <td>@line.ItemPrice</td>
+                        <td>@line.Invoice?.OrderDate.ToString("M/d/yy")</td>
+                    </tr>
+                }
+            </tbody>
+        }
+        @if (!hasLines)
+        {
+            <tbody>
+                <tr>
+                    <td class="text-center">
+                        <h4>No Suggestions</h4>
+                    </td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>

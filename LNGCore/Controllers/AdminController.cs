@@ -19,7 +19,9 @@ namespace LNGCore.UI.Controllers
         private readonly ICustomerRepository _customerRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
-        public AdminController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository, ICustomerRepository customerRepository, IEmployeeRepository employeeRepository, IMapper mapper)
+
+        public AdminController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository,
+            ICustomerRepository customerRepository, IEmployeeRepository employeeRepository, IMapper mapper)
         {
             _invoiceRepository = invoiceRepository;
             _eventRepository = eventRepository;
@@ -27,6 +29,7 @@ namespace LNGCore.UI.Controllers
             _employeeRepository = employeeRepository;
             _mapper = mapper;
         }
+
         public IActionResult Index()
         {
             ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
@@ -41,7 +44,8 @@ namespace LNGCore.UI.Controllers
             return View(vm);
         }
 
-        public IActionResult Invoices(InvoiceTypeEnum type = InvoiceTypeEnum.Invoice, int page = 1, int take = 20, string searchTerm = "")
+        public IActionResult Invoices(InvoiceTypeEnum type = InvoiceTypeEnum.Invoice, int page = 1, int take = 20,
+            string searchTerm = "")
         {
             ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
 
@@ -65,7 +69,6 @@ namespace LNGCore.UI.Controllers
 
             switch (type)
             {
-
                 case InvoiceTypeEnum.Invoice:
                     items = _invoiceRepository.GetOpenInvoices(searchTerm).ToList();
                     viewTitle = "Open Invoices";
@@ -198,12 +201,26 @@ namespace LNGCore.UI.Controllers
             };
 
             var customers = _customerRepository.GetAllCustomers(searchTerm).ToList();
-            pagination.NumberOfPages = customers.Count <= take ? 1 : (int)Math.Ceiling(customers.Count / (decimal)take);
+            pagination.NumberOfPages =
+                customers.Count <= take ? 1 : (int)Math.Ceiling(customers.Count / (decimal)take);
 
             vm.Customers = customers.Skip(skip).Take(take).ToList();
             vm.PaginationParameters = pagination;
             vm.SearchTerm = searchTerm;
             return View(vm);
+        }
+
+        public PartialViewResult GetLineItemSuggestions(LineItemSuggestionViewModel model)
+        {
+            var customer = _customerRepository.GetCustomer(model.CustomerId);
+            model.Customer = customer;
+
+            if (model.CustomerId > 0)
+                model.CustomerLineItems = _invoiceRepository.GetLineItems(model.SearchTerm, model.CustomerId).ToList();
+
+            model.OverallLineItems = _invoiceRepository.GetLineItems(model.SearchTerm, model.CustomerId).ToList();
+
+            return PartialView("_LineItemSuggestions", model);
         }
 
         public IActionResult MarkInvoicePaid(int invoiceId = 0)

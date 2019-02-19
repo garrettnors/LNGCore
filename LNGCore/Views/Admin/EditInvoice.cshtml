@@ -31,6 +31,13 @@
             placeholder: 'Select a Name'
         });
     }
+
+    function setSuggestedValues(itemDesc, itemPrice, lineNumber) {
+        debugger;
+        $("[name='LineItems[" + lineNumber + "].ItemDesc']").val(itemDesc);
+        $("[name='LineItems[" + lineNumber + "].ItemPrice']").val(itemPrice);
+        $("#popover" + lineNumber).popover("hide");
+    }
 </script>
 @if (Model.Invoice.Id == 0)
 {

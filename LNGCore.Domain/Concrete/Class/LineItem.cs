@@ -15,7 +15,17 @@ namespace LNGCore.Domain.Concrete.Class
 
         public Invoice Invoice { get; set; }
         public Item Item { get; set; }
-        IInvoice ILineItem.Invoice { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        IItem ILineItem.Item { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        IInvoice ILineItem.Invoice
+        {
+            get => Invoice;
+            set => Invoice = (Invoice)value;
+        }
+
+        IItem ILineItem.Item
+        {
+            get => Item;
+            set => Item = (Item)value;
+        }
     }
 }

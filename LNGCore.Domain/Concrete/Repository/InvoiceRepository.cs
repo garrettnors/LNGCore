@@ -41,6 +41,25 @@ namespace LNGCore.Domain.Concrete.Repository
             return existingLines;
         }
 
+        public IEnumerable<ILineItem> GetLineItems(string searchTerm, int? customerId = 0)
+        {
+            searchTerm = searchTerm?.ToLower();
+
+            if (customerId == 0)
+            {
+                return _dbContext.LineItem.Where(w =>
+                        w.ItemDesc.ToLower().Contains(searchTerm) ||
+                        w.Item.ItemName.ToLower().Contains(searchTerm))
+                    .OrderByDescending(o => o.Invoice.OrderDate).Take(10).Include(i => i.Invoice)
+                    .ThenInclude(t => t.Customer);
+            }
+
+            return _dbContext.LineItem.Where(w =>
+                    w.Invoice.CustomerId == customerId && w.ItemDesc.ToLower().Contains(searchTerm) ||
+                    w.Item.ItemName.ToLower().Contains(searchTerm)).OrderByDescending(o => o.Invoice.OrderDate).Take(10)
+                .Include(i => i.Invoice).ThenInclude(t => t.Customer).Include(i => i.Item);
+        }
+
         public IEnumerable<IItem> GetItemTypes()
         {
             return _dbContext.Item.OrderBy(o => o.ItemName);
@@ -97,6 +116,7 @@ namespace LNGCore.Domain.Concrete.Repository
                 if (line.LineItemId == 0)
                     _dbContext.LineItem.Add(line);
             }
+
             _dbContext.Commit();
         }
 
@@ -117,10 +137,10 @@ namespace LNGCore.Domain.Concrete.Repository
         public IEnumerable<IInvoice> GetYearToDateSales()
         {
             return _dbContext.Invoice.Where(
-                w => w.IsDonated == false &&
-                     !w.IsQuote &&
-                     !w.Voided &&
-                     w.OrderDate.Year == DateTime.Now.Year)
+                    w => w.IsDonated == false &&
+                         !w.IsQuote &&
+                         !w.Voided &&
+                         w.OrderDate.Year == DateTime.Now.Year)
                 .Include(i => i.LineItem)
                 .Include(i => i.Customer)
                 .OrderBy(o => o.OrderDate);
@@ -135,9 +155,9 @@ namespace LNGCore.Domain.Concrete.Repository
         public IEnumerable<IInvoice> GetOpenInvoices(string searchTerm = "")
         {
             var items = _dbContext.Invoice.Where(
-                    w => w.IsDonated == false &&
-                         !w.IsQuote && !w.Voided &&
-                         w.IsPaid == false);
+                w => w.IsDonated == false &&
+                     !w.IsQuote && !w.Voided &&
+                     w.IsPaid == false);
 
             items = SearchItems(items, searchTerm);
 
@@ -190,6 +210,7 @@ namespace LNGCore.Domain.Concrete.Repository
                 .OrderByDescending(o => o.OrderDate);
             //return _db.Query<Invoice>("select * from invoice where isPaid = 1 and voided = 0");
         }
+
         public IEnumerable<IInvoice> GetOpenQuotes(string searchTerm = "")
         {
             var items = _dbContext.Invoice.Where(w => w.IsQuote && !w.Voided);
@@ -202,6 +223,7 @@ namespace LNGCore.Domain.Concrete.Repository
                 .OrderByDescending(o => o.OrderDate);
             //return _db.Query<Invoice>("select * from invoice where isQuote = 1 and voided = 0");
         }
+
         public IEnumerable<IInvoice> GetDonatedItems(string searchTerm = "")
         {
             var items = _dbContext.Invoice.Where(w => w.IsDonated == true && !w.Voided);
@@ -214,6 +236,7 @@ namespace LNGCore.Domain.Concrete.Repository
                 .OrderByDescending(o => o.OrderDate);
             //return _db.Query<Invoice>("select * from invoice where isDonated = 1 and voided = 0");
         }
+
         public IEnumerable<IInvoice> GetVoidedItems(string searchTerm = "")
         {
             var items = _dbContext.Invoice.Where(w => w.Voided);

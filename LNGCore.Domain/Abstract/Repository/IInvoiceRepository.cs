@@ -16,6 +16,7 @@ namespace LNGCore.Domain.Abstract.Repository
         IEnumerable<IInvoice> GetYearToDateSales();
         IEnumerable<IInvoice> GetInvoicesByCustomer(int customerId);
         IEnumerable<ILineItem> GetLineItems(int invoiceId, int startingIndex, int roundToNearest);
+        IEnumerable<ILineItem> GetLineItems(string searchTerm, int? customerId = null);
         IEnumerable<IItem> GetItemTypes();
         void SaveLineItems(List<ILineItem> lines, int invoiceId);
         IInvoice GetInvoice(int invoiceId);
