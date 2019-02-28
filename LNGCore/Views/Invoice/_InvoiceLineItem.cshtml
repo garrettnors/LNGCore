@@ -30,7 +30,7 @@
                     timeout = setTimeout(function() {
                         var data = { CustomerId: customerId, SearchTerm: control.val(), LineIndex: lineIndex }
                             $.ajax({
-                                url: "@Url.Action("GetLineItemSuggestions", "Admin")",
+                                url: "@Url.Action("GetLineItemSuggestions", "Invoice")",
                                 data: data,
                                 success: function(html) {
                                     popOver.attr("data-content", html);

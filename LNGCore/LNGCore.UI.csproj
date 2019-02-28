@@ -5,9 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Middleware\**" />
     <Compile Remove="Modelss\**" />
+    <Content Remove="Middleware\**" />
     <Content Remove="Modelss\**" />
+    <EmbeddedResource Remove="Middleware\**" />
     <EmbeddedResource Remove="Modelss\**" />
+    <None Remove="Middleware\**" />
     <None Remove="Modelss\**" />
   </ItemGroup>
 
@@ -27,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Middleware\" />
     <Folder Include="wwwroot\lib\kendoui\styles\" />
   </ItemGroup>
 
@@ -40,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Admin\_InvoiceItems.cshtml">
+    <Content Update="Views\Invoice\_InvoiceItems.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>

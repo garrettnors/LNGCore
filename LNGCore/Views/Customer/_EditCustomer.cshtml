@@ -20,7 +20,7 @@
     }
 </script>
 
-@using (Html.BeginForm("EditCustomer", "Admin", FormMethod.Post, new { id = "formEditCustomer" }))
+@using (Html.BeginForm("EditCustomer", "Customer", FormMethod.Post, new { id = "formEditCustomer" }))
 {
     @Html.HiddenFor(f => f.Id)
     <div class="card m-0">

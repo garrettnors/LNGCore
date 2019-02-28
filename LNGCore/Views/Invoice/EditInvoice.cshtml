@@ -10,7 +10,7 @@
         var index = $("#lineIndex").val();
         var invoiceId = $("#invoiceId").val();
         $.ajax({
-            url: "@Html.Raw(Url.Action("GetInvoiceLines", "Admin", new {invoiceId ="__INVC__", startingIndex="__STRT__"}))".replace("__INVC__", invoiceId).replace("__STRT__", index),
+            url: "@Html.Raw(Url.Action("GetInvoiceLines", "Invoice", new {invoiceId ="__INVC__", startingIndex="__STRT__"}))".replace("__INVC__", invoiceId).replace("__STRT__", index),
             success: function (data) {
                 $("#tblLineItems tbody").append(data);
                 $("#lineIndex").val($("#tblLineItems tbody tr").length);
@@ -49,13 +49,13 @@
     </script>
 }
 
-@using (Html.BeginForm("EditInvoice", "Admin", FormMethod.Post, new { id = "formEditInvoice" }))
+@using (Html.BeginForm("EditInvoice", "Invoice", FormMethod.Post, new { id = "formEditInvoice" }))
 {
     @Html.HiddenFor(f => f.Invoice.Id)
     @Html.Hidden("lineIndex", 0)
     @Html.Hidden("invoiceId", Model.Invoice.Id)
-    <div class="card bg-light">
-        <div class="card-header">
+    <div class="card semi-transparent">
+        <div class="card-header semi-transparent">
             <h2 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h2>
         </div>
         <div class="card-body">

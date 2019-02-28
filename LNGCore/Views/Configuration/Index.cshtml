@@ -1,0 +1,22 @@
+﻿@model bool
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+<div class="form-group">
+    <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" id="switchDarkMode" checked="@Model" onchange="setDarkMode(this);">
+        <label class="custom-control-label" for="switchDarkMode">Use Dark Mode?</label>
+    </div>    
+</div>
+
+<script>
+    function setDarkMode(check) {
+        debugger;
+        var useDark = $(check).prop("checked");
+        window.location.href = "@Url.Action("SetDarkMode","Configuration", new { useDarkMode = "__DARK__" })".replace("__DARK__",useDark);
+    }
+</script>

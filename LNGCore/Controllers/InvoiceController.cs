@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LNGCore.UI.Controllers
 {
-    public class AdminController : Controller
+    public class InvoiceController : Controller
     {
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IEventRepository _eventRepository;
@@ -20,7 +20,7 @@ namespace LNGCore.UI.Controllers
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
 
-        public AdminController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository,
+        public InvoiceController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository,
             ICustomerRepository customerRepository, IEmployeeRepository employeeRepository, IMapper mapper)
         {
             _invoiceRepository = invoiceRepository;
@@ -30,24 +30,10 @@ namespace LNGCore.UI.Controllers
             _mapper = mapper;
         }
 
-        public IActionResult Index()
-        {
-            ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
-
-            var vm = new DashboardViewModel
-            {
-                Events = _eventRepository.GetUpcomingEvents().ToList(),
-                YtdSales = _invoiceRepository.GetYearToDateSales().Sum(s => s.InvoiceTotal) ?? 0,
-                OpenInvoiceAmount = _invoiceRepository.GetOpenInvoices().Sum(s => s.InvoiceTotal) ?? 0,
-                PastDueAmount = _invoiceRepository.GetPastDueInvoices().Sum(s => s.InvoiceTotal) ?? 0
-            };
-            return View(vm);
-        }
-
-        public IActionResult Invoices(InvoiceTypeEnum type = InvoiceTypeEnum.Invoice, int page = 1, int take = 20,
+        public IActionResult Index(InvoiceTypeEnum type = InvoiceTypeEnum.Invoice, int page = 1, int take = 20,
             string searchTerm = "")
         {
-            ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
+            ViewBag.ActiveAction = ControllerContext.RouteData.Values["controller"];
 
 
             var skip = take * (page - 1);
@@ -186,30 +172,7 @@ namespace LNGCore.UI.Controllers
 
             return PartialView("_InvoiceLineItem", vm);
         }
-
-        public IActionResult Customers(int page = 1, int take = 15, string searchTerm = "")
-        {
-            ViewBag.ActiveAction = ControllerContext.RouteData.Values["action"];
-
-            var vm = new CustomerViewModel();
-
-            var skip = take * (page - 1);
-            var pagination = new PaginationViewModel
-            {
-                Take = take,
-                CurrentPage = skip / take + 1
-            };
-
-            var customers = _customerRepository.GetAllCustomers(searchTerm).ToList();
-            pagination.NumberOfPages =
-                customers.Count <= take ? 1 : (int)Math.Ceiling(customers.Count / (decimal)take);
-
-            vm.Customers = customers.Skip(skip).Take(take).ToList();
-            vm.PaginationParameters = pagination;
-            vm.SearchTerm = searchTerm;
-            return View(vm);
-        }
-
+               
         public PartialViewResult GetLineItemSuggestions(LineItemSuggestionViewModel model)
         {
             var customer = _customerRepository.GetCustomer(model.CustomerId);
@@ -227,26 +190,6 @@ namespace LNGCore.UI.Controllers
         {
             var success = _invoiceRepository.MarkInvoicePaid(invoiceId);
             return StatusCode((int)(success ? HttpStatusCode.OK : HttpStatusCode.Conflict));
-        }
-
-        [HttpGet]
-        public IActionResult EditCustomer(int customerId)
-        {
-            var customer = _customerRepository.GetCustomer(customerId);
-
-            if (customer.Id == 0)
-                customer.Taxable = true;
-
-            var vm = _mapper.Map<EditCustomerViewModel>(customer);
-            return PartialView("_EditCustomer", vm);
-        }
-
-        [HttpPost]
-        public IActionResult EditCustomer(EditCustomerViewModel model)
-        {
-            var customer = _mapper.Map<ICustomer>(model);
-            _customerRepository.SaveCustomer(customer);
-            return RedirectToAction("Customers");
         }
     }
 }

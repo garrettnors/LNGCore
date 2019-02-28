@@ -54,7 +54,10 @@ namespace LNGCore
 
             var mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
-
+            services.AddAuthentication(options => 
+            {
+                options.DefaultAuthenticateScheme = "";
+            });
             services.AddMvc()
                 .AddJsonOptions(options =>
                 {

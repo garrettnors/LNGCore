@@ -7,7 +7,7 @@
 }
 <script>
     function getTabBody(tabId, page) {
-        var url = "@Html.Raw(Url.Action("Invoices", "Admin", new { type = "__TYPE__", page = "__PAGE__", searchTerm = Model.SearchTerm }))";
+        var url = "@Html.Raw(Url.Action("Index", "Invoice", new { type = "__TYPE__", page = "__PAGE__", searchTerm = Model.SearchTerm }))";
         window.location.href = url.replace("__PAGE__", page).replace("__TYPE__", tabId);
     }
 
@@ -18,22 +18,22 @@
 </script>
 <div class="row pb-3">
     <div class="col-6">
-        <a href="@Url.Action("EditInvoice","Admin", new {invoiceId = 0})" class="btn btn-sm btn-success" onclick=""><span class="fas fa-plus"></span> Add Invoice</a>
+        <a href="@Url.Action("EditInvoice", "Invoice", new {invoiceId = 0})" class="btn btn-sm btn-success" onclick=""><span class="fas fa-plus"></span> Add Invoice</a>
     </div>
     <div class="col-sm-4 offset-2">
 
-        @using (Html.BeginForm("Invoices", "Admin", FormMethod.Get, new { id = "formSearch" }))
+        @using (Html.BeginForm("Index", "Invoice", FormMethod.Get, new { id = "formSearch" }))
         {
-            @Html.Hidden("type", Model.PaginationParameters.InvoiceType)
-            <div class="input-group input-group-sm">
-                <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
-                <span class="input-group-append">
-                    <button class="btn btn-info" type="submit">Search</button>
-                </span>
-                <span class="input-group-append">
-                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
-                </span>
-            </div>
+        @Html.Hidden("type", Model.PaginationParameters.InvoiceType)
+        <div class="input-group input-group-sm">
+            <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
+            <span class="input-group-append">
+                <button class="btn btn-info" type="submit">Search</button>
+            </span>
+            <span class="input-group-append">
+                <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+            </span>
+        </div>
         }
 
     </div>
@@ -63,7 +63,7 @@
                 throw new ArgumentOutOfRangeException();
         }
         <li class="nav-item">
-            <a class="nav-link @(Model.InvoiceType == type ? "active" : "")" href="@Url.Action("Invoices", "Admin", new {type = (int) type, page = 1, searchTerm = Model.SearchTerm})">@tabTitle</a>
+            <a class="nav-link @(Model.InvoiceType == type ? "active" : "")" href="@Url.Action("Index", "Invoice", new {type = (int) type, page = 1, searchTerm = Model.SearchTerm})">@tabTitle</a>
         </li>
     }
 </ul>

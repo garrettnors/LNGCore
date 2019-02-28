@@ -5,7 +5,7 @@
 }
 <script>
     function getTabBody(tabId, page) {
-        var url = "@Html.Raw(Url.Action("Customers", "Admin", new { page = "__PAGE__", searchTerm = Model.SearchTerm }))";
+        var url = "@Html.Raw(Url.Action("Index", "Customer", new { page = "__PAGE__", searchTerm = Model.SearchTerm }))";
         window.location.href = url.replace("__PAGE__", page);
     }
     function clearSearch() {
@@ -14,7 +14,7 @@
     }
     function editCustomer(customerId) {
         $.ajax({
-            url: "@Url.Action("EditCustomer","Admin", new {customerId = "__CUSTID__"})".replace("__CUSTID__", customerId),
+            url: "@Url.Action("EditCustomer", "Customer", new {customerId = "__CUSTID__"})".replace("__CUSTID__", customerId),
             success: function(data) {
                 $("#customerModal .modal-content").html(data);
                 $("#customerModal").modal("show");
@@ -27,7 +27,7 @@
         <button onclick="editCustomer(0);" class="btn btn-sm btn-success"><span class="fas fa-plus"></span> Add Contact</button>
     </div>
     <div class="col-4 offset-2">
-        @using (Html.BeginForm("Customers", "Admin", FormMethod.Get, new { id = "formSearch" }))
+        @using (Html.BeginForm("Index", "Customer", FormMethod.Get, new { id = "formSearch" }))
         {
             <div class="input-group input-group-sm">
                 <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
@@ -41,7 +41,7 @@
         }
     </div>
 </div>
-<table class="table table-sm table-bordered table-striped table-light">
+<table class="table table-sm table-bordered table-striped semi-transparent">
     <thead>
         <tr>
             <th></th>

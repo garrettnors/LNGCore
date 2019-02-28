@@ -1,0 +1,47 @@
+﻿html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    background-image: linear-gradient(to left top, #c7d3dc, #d0dbe1, #dae3e7, #e4eaed, #eef2f3);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+.semi-transparent {
+    background-color: rgba(255,255,255,.6);
+}
+
+a {
+    color: #4c98cc;
+}
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+    background-color: rgba(255,255,255,.50);
+    border-color:transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    background-color: #edf1f5;
+    color: #11749a;
+}
+
+.card {
+    border: 0px;
+}
+.card-header:first-child {
+    border-radius: 0;
+}
+.page-item .page-link {
+    cursor: pointer;
+    background-color: #188fbc;
+}
+
+    .page-item .page-link:hover {
+        background-color: #11749a;
+    }
+
+.page-item.active .page-link {
+background-color: #11749a;
+}
