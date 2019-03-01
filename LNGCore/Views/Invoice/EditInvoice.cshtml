@@ -16,13 +16,17 @@
                 $("#lineIndex").val($("#tblLineItems tbody tr").length);
                 $("#invoiceId").val(0);
                 $(".neg-index").val(-1);
+                $(".neg-index").removeClass("neg-index");
+                $(".row-control").change(function () {
+                    setRequired(this);
+                });
             }
-        });
+        });        
     }
 
     $(document).ready(function() {
         addLinesToTable();
-        setUpSelect2();
+        setUpSelect2();        
     });
 
     function setUpSelect2() {
@@ -31,12 +35,48 @@
             placeholder: 'Select a Name'
         });
     }
-
-    function setSuggestedValues(itemDesc, itemPrice, lineNumber) {
+    function getSuggestedValues(lineIndex) { 
+        var customerId = $("[name='Invoice.CustomerId']").val();
+        var data = { CustomerId: customerId, LineIndex: lineIndex }
+                $.ajax({
+                    url: "@Url.Action("GetLineItemSuggestions", "Invoice")",
+                    data: data,
+                    success: function (html) {
+                        debugger;
+                        $("#bs-modal .modal-body").html(html);
+                        $("#bs-modal").modal("show");
+                    }
+                });
+            }
+    function setSuggestedValues(itemDesc, itemPrice, itemTypeId, lineNumber) {
         debugger;
         $("[name='LineItems[" + lineNumber + "].ItemDesc']").val(itemDesc);
         $("[name='LineItems[" + lineNumber + "].ItemPrice']").val(itemPrice);
-        $("#popover" + lineNumber).popover("hide");
+        $("[name='LineItems[" + lineNumber + "].ItemId'] option[value='"+itemTypeId+"']").attr("selected", true);
+        $("[name='LineItems[" + lineNumber + "].Quantity']").val(1);
+        $("#bs-modal").modal("hide");
+    }
+    function resetRow(lineNumber) {
+        if (confirm("Are you sure you want to clear this row?")) {
+
+            $("[name='LineItems[" + lineNumber + "].ItemDesc']").val('').removeClass("required valid input-validation-error");
+            $("[name='LineItems[" + lineNumber + "].ItemPrice']").val('').removeClass("required valid input-validation-error");
+            $("[name='LineItems[" + lineNumber + "].ItemId']").val(-1).removeClass("required valid input-validation-error");
+            $("[name='LineItems[" + lineNumber + "].Quantity']").val('').removeClass("required valid input-validation-error");
+        }
+    }
+    function setRequired(control) {
+        var rowIndex = $(control).data("lineindex");
+        var rowControls = $(".row-control[data-lineindex='" + rowIndex + "']");
+        var rowValues = rowControls.filter(function () {
+            return $(this).val() != null && $(this).val().length > 0;
+        });
+
+        if (rowValues.length > 0) {
+            rowControls.addClass("required");
+        } else {
+            rowControls.removeClass("required");
+        }
     }
 </script>
 @if (Model.Invoice.Id == 0)
@@ -44,7 +84,7 @@
     <script>
         $(document).ready(function () {
             $("[name='Invoice.CustomerId']").val(-1).trigger("change");
-            $("[name='Invoice.EmployeeId']").val(-1).trigger("change");
+            $("[name='Invoice.EmployeeId']").val(-1).trigger("change");            
         });
     </script>
 }

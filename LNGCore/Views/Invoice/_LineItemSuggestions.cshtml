@@ -1,27 +1,33 @@
 ﻿@using System.Web
 @model LNGCore.UI.Models.Admin.LineItemSuggestionViewModel
-<div style="max-height: 150px; overflow-y: scroll;">
-    <table class="table-striped table-bordered table-responsive">
+<div>
+    <table class="table-striped table-bordered w-100">
         @{ var hasLines = false; }
         @if (Model.CustomerLineItems.Any())
         {
             hasLines = true;
-            <thead>
-                <tr>
-                    <th class="text-center" colspan="4">
-                        <h4>Customer History</h4>
-                    </th>
-                </tr>
-            </thead>
+        <thead>
+            <tr>
+                <th class="text-center" colspan="5">
+                    <h4>Customer History</h4>
+                </th>
+            </tr>
+            <tr>
+                <th>Item Type</th>
+                <th colspan="2">Description</th>
+                <th>Price/ea</th>
+                <th>Date</th>
+            </tr>
+        </thead>
             <tbody>
                 @foreach (var line in Model.CustomerLineItems)
                 {
-                    <tr class="pointer" onclick="setSuggestedValues('@line.ItemDesc', '@line.ItemPrice', @Model.LineIndex);">
-
-                        <td colspan="2">@line.ItemDesc</td>
-                        <td>@line.ItemPrice</td>
-                        <td>@line.Invoice?.OrderDate.ToString("M/d/yy")</td>
-                    </tr>
+                <tr class="pointer" onclick="setSuggestedValues('@HttpUtility.JavaScriptStringEncode(line.ItemDesc)', '@line.ItemPrice', @line.ItemId, @Model.LineIndex);">
+                    <td>@line.Item.ItemName</td>
+                    <td colspan="2">@line.ItemDesc</td>
+                    <td class="text-center">@line.ItemPrice?.ToString("c")</td>
+                    <td class="text-center">@line.Invoice?.OrderDate.ToString("M/d/yy")</td>
+                </tr>
                 }
             </tbody>
         }
@@ -30,18 +36,26 @@
             hasLines = true;
             <thead>
                 <tr>
-                    <th class="text-center" colspan="4">
+                    <th class="text-center" colspan="5">
                         <h4>Overall History</h4>
                     </th>
+                </tr>
+                <tr>
+                    <th>Customer</th>
+                    <th>Item Type</th>
+                    <th>Description</th>
+                    <th>Price/ea</th>
+                    <th>Date</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var line in Model.OverallLineItems)
                 {
-                    <tr class="pointer" onclick="setSuggestedValues('@HttpUtility.JavaScriptStringEncode(line.ItemDesc)', '@line.ItemPrice', @Model.LineIndex);">
+                    <tr class="pointer" onclick="setSuggestedValues('@HttpUtility.JavaScriptStringEncode(line.ItemDesc)', '@line.ItemPrice', @line.ItemId, @Model.LineIndex);">
                         <td>@line.Invoice?.Customer.Name</td>
+                        <td>@line.Item.ItemName</td>
                         <td>@line.ItemDesc</td>
-                        <td>@line.ItemPrice</td>
+                        <td>@line.ItemPrice?.ToString("c")</td>
                         <td>@line.Invoice?.OrderDate.ToString("M/d/yy")</td>
                     </tr>
                 }

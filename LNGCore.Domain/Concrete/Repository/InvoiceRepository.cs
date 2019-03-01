@@ -44,20 +44,17 @@ namespace LNGCore.Domain.Concrete.Repository
         public IEnumerable<ILineItem> GetLineItems(string searchTerm, int? customerId = 0)
         {
             searchTerm = searchTerm?.ToLower();
+            IQueryable<ILineItem> lineItems = _dbContext.LineItem;
 
-            if (customerId == 0)
-            {
-                return _dbContext.LineItem.Where(w =>
+            if (customerId != 0)
+                lineItems = lineItems.Where(w => w.Invoice.CustomerId == customerId);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                lineItems = lineItems.Where(w =>
                         w.ItemDesc.ToLower().Contains(searchTerm) ||
-                        w.Item.ItemName.ToLower().Contains(searchTerm))
-                    .OrderByDescending(o => o.Invoice.OrderDate).Take(10).Include(i => i.Invoice)
-                    .ThenInclude(t => t.Customer);
-            }
+                        w.Item.ItemName.ToLower().Contains(searchTerm));
 
-            return _dbContext.LineItem.Where(w =>
-                    w.Invoice.CustomerId == customerId && w.ItemDesc.ToLower().Contains(searchTerm) ||
-                    w.Item.ItemName.ToLower().Contains(searchTerm)).OrderByDescending(o => o.Invoice.OrderDate).Take(10)
-                .Include(i => i.Invoice).ThenInclude(t => t.Customer).Include(i => i.Item);
+            return lineItems.OrderByDescending(o => o.Invoice.OrderDate).Take(10).Include(i => i.Invoice).ThenInclude(t => t.Customer).Include(i => i.Item);
         }
 
         public IEnumerable<IItem> GetItemTypes()

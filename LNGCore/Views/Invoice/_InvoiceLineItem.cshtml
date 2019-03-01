@@ -5,51 +5,29 @@
     <tr id="@($"row{line.LineItemId}")">
         <td class="px-1" style="width: 10%">
             @Html.Hidden($"LineItems[{Model.LineIndex}].LineItemId", line.LineItemId)
-            <input name="@($"LineItems[{Model.LineIndex}].Quantity")" type="text" value="@(line.Quantity == 0 ? "" : line.Quantity.ToString())" class="form-control form-control-sm" />
+            <input name="@($"LineItems[{Model.LineIndex}].Quantity")" type="number" step="1" data-lineindex="@Model.LineIndex" value="@(line.Quantity == 0 ? "" : line.Quantity.ToString())" class="form-control form-control-sm row-control" />
         </td>
         <td class="px-1" style="width: 20%; min-width: 150px">
             @Html.DropDownList($"LineItems[{Model.LineIndex}].ItemId",
                 new SelectList(Model.ItemTypes, "ItemId", "ItemName", line.ItemId),
-                new {@class = $"form-control form-control-sm{(line.ItemId == 0 ? " neg-index" : "")}"})
+                new { data_lineindex = $"{Model.LineIndex}", @class = $"form-control form-control-sm row-control{(line.ItemId == 0 ? " neg-index" : "")}"})
         </td>
         <td class="px-1">
-            <input name="@($"LineItems[{Model.LineIndex}].ItemDesc")" type="text" data-lineindex="@Model.LineIndex" value="@(line.ItemDesc)"
-                   onkeyup="getSuggestedValues(this);" class="form-control form-control-sm" />
-            <div id="popover@(Model.LineIndex)" data-container="body" data-toggle="popover" data-placement="top" data-display="static" data-content="" data-html="true"></div>
-            <script>
-                var timeout = null;
-
-                function getSuggestedValues(desc) {
-                    var waitForChars = 150;
-                    var control = $(desc);
-                    var lineIndex = control.attr("data-lineindex");
-                    var popOver = $("#popover" + lineIndex);
-
-                    var customerId = $("[name='Invoice.CustomerId']").val();
-                    clearTimeout(timeout);
-                    timeout = setTimeout(function() {
-                        var data = { CustomerId: customerId, SearchTerm: control.val(), LineIndex: lineIndex }
-                            $.ajax({
-                                url: "@Url.Action("GetLineItemSuggestions", "Invoice")",
-                                data: data,
-                                success: function(html) {
-                                    popOver.attr("data-content", html);
-                                    popOver.popover("show");
-                                }
-                            });
-                        },
-                        waitForChars);
-                }
-
-                $(function() {
-                    $('[data-toggle="popover"]').popover();
-                });
-            </script>
+            <input name="@($"LineItems[{Model.LineIndex}].ItemDesc")" type="text" data-lineindex="@Model.LineIndex" value="@line.ItemDesc" class="form-control form-control-sm row-control" />
         </td>
-        <td class="px-1" style="width: 20%">
-            <input name="@($"LineItems[{Model.LineIndex}].ItemPrice")" type="text" value="@(line.ItemPrice)" class="form-control form-control-sm" />
+        <td class="px-1" style="width: 10%">
+            <input name="@($"LineItems[{Model.LineIndex}].ItemPrice")" type="number" data-lineindex="@Model.LineIndex" step="0.01" value="@line.ItemPrice" class="form-control form-control-sm row-control" />
         </td>
-
+        <td class="px-1" style="width:1%">
+            <button type="button" onclick="getSuggestedValues(@Model.LineIndex)" class="btn btn-sm btn-info">
+                <span class="fas fa-search"></span>
+            </button>
+        </td>
+        <td class="px-1" style="width:1%">
+            <button type="button" onclick="resetRow(@Model.LineIndex)" class="btn btn-sm btn-danger">
+                <span class="fas fa-trash-alt"></span>
+            </button>
+        </td>
     </tr>
     Model.LineIndex++;
 }

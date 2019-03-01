@@ -1,23 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using AutoMapper;
-using LNGCore.Domain.Abstract.Class;
-using LNGCore.Domain.Abstract.Repository;
-using LNGCore.UI.Enums;
-using LNGCore.UI.Models.Admin;
-using Microsoft.AspNetCore.Mvc;
-
-namespace LNGCore.UI.Controllers
+﻿namespace LNGCore.UI.Controllers
 {
+    using AutoMapper;
+    using LNGCore.Domain.Abstract.Class;
+    using LNGCore.Domain.Abstract.Repository;
+    using LNGCore.UI.Enums;
+    using LNGCore.UI.Models.Admin;
+    using Microsoft.AspNetCore.Mvc;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+
     public class InvoiceController : Controller
     {
         private readonly IInvoiceRepository _invoiceRepository;
+
         private readonly IEventRepository _eventRepository;
+
         private readonly ICustomerRepository _customerRepository;
+
         private readonly IEmployeeRepository _employeeRepository;
+
         private readonly IMapper _mapper;
 
         public InvoiceController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository,
@@ -93,7 +96,6 @@ namespace LNGCore.UI.Controllers
         }
 
         public IActionResult EditInvoice(int invoiceId = 0)
-
         {
             var invoice = _invoiceRepository.GetInvoice(invoiceId);
             var invoiceItem = _mapper.Map<InvoiceItem>(invoice);
@@ -150,13 +152,13 @@ namespace LNGCore.UI.Controllers
             }
 
             var saveInvoice = _mapper.Map<IInvoice>(model.Invoice);
-            var invoiceId = _invoiceRepository.SaveInvoice(saveInvoice);
+            //var invoiceId = _invoiceRepository.SaveInvoice(saveInvoice);
 
             var saveLines = _mapper.Map<List<ILineItem>>(model.LineItems.Where(w => w.Quantity > 0));
 
-            _invoiceRepository.SaveLineItems(saveLines, invoiceId);
+            //_invoiceRepository.SaveLineItems(saveLines, invoiceId);
 
-            return RedirectToAction("Invoices", new { type = model.InvoiceType });
+            return RedirectToAction("Index", new { type = model.InvoiceType });
         }
 
         public IActionResult GetInvoiceLines(int invoiceId, int startingIndex)
@@ -172,12 +174,9 @@ namespace LNGCore.UI.Controllers
 
             return PartialView("_InvoiceLineItem", vm);
         }
-               
+
         public PartialViewResult GetLineItemSuggestions(LineItemSuggestionViewModel model)
         {
-            var customer = _customerRepository.GetCustomer(model.CustomerId);
-            model.Customer = customer;
-
             if (model.CustomerId > 0)
                 model.CustomerLineItems = _invoiceRepository.GetLineItems(model.SearchTerm, model.CustomerId).ToList();
 

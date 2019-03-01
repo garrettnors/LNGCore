@@ -16,9 +16,18 @@ body {
 a {
     color: #4c98cc;
 }
+
+.select2-container--default .select2-selection--single {
+    color: #7b8a8b;
+    border-color: #ced4da;
+}
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #7b8a8b;
+    }
+
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
     background-color: rgba(255,255,255,.50);
-    border-color:transparent;
+    border-color: transparent;
 }
 
 .nav-tabs .nav-link:hover {
