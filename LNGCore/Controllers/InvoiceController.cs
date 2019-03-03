@@ -7,6 +7,7 @@
     using LNGCore.UI.Models.Admin;
     using Microsoft.AspNetCore.Mvc;
     using System;
+    using System.Drawing;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -151,6 +152,9 @@
                     break;
             }
 
+            _invoiceRepository.SaveAttachmentsToInvoice(9999, model.UploadedFiles, false);
+            _invoiceRepository.SaveAttachmentsToInvoice(9999, model.UploadedProofs, true);
+
             var saveInvoice = _mapper.Map<IInvoice>(model.Invoice);
             //var invoiceId = _invoiceRepository.SaveInvoice(saveInvoice);
 
@@ -189,6 +193,17 @@
         {
             var success = _invoiceRepository.MarkInvoicePaid(invoiceId);
             return StatusCode((int)(success ? HttpStatusCode.OK : HttpStatusCode.Conflict));
+        }
+
+        public IActionResult ViewInvoice(int invoiceId)
+        {
+            var invoice = _invoiceRepository.GetInvoice(invoiceId);           
+            return View(invoice);
+        }
+
+        public IActionResult GetInvoicePdf(int invoiceId)
+        {
+            return null;
         }
     }
 }

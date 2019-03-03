@@ -1,4 +1,5 @@
 ﻿using LNGCore.Domain.Abstract.Class;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,6 +23,6 @@ namespace LNGCore.Domain.Abstract.Repository
         IInvoice GetInvoice(int invoiceId);
         int SaveInvoice(IInvoice invoice);
         bool MarkInvoicePaid(int invoiceId);
-        string SaveAttachment(int invoiceId, IFormFile file);
+        string SaveAttachmentsToInvoice(int invoiceId, List<IFormFile> files, bool customerCanSee);
     }
 }

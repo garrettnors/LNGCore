@@ -7,11 +7,13 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Linq;
-using Dapper;
 using LNGCore.Domain.Abstract.Context;
 using LNGCore.Domain.Concrete.Class;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace LNGCore.Domain.Concrete.Repository
 {
@@ -20,11 +22,13 @@ namespace LNGCore.Domain.Concrete.Repository
         private readonly IConfiguration _configuration;
         private readonly IDbConnection _db;
         private readonly IInvoiceDbContext _dbContext;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public InvoiceRepository(IConfiguration configuration, IInvoiceDbContext dbContext)
+        public InvoiceRepository(IConfiguration configuration, IInvoiceDbContext dbContext, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _dbContext = dbContext;
+            _hostingEnvironment = hostingEnvironment;
             _db = new SqlConnection(_configuration.GetSection("SiteConfiguration")["DbContext"]);
         }
 
@@ -251,6 +255,26 @@ namespace LNGCore.Domain.Concrete.Repository
             }
 
             return items;
+        }
+
+        public string SaveAttachmentsToInvoice(int invoiceId, List<IFormFile> files, bool customerCanSee)
+        {
+
+            foreach (var file in files)
+            {
+                var fileName = $"Invoice_{invoiceId}_{Guid.NewGuid().ToString().Substring(0, 6)}{Path.GetExtension(file.FileName)}";
+
+                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                var filePath = Path.Combine(uploads, fileName);
+
+                using (var fileStream = File.Create(filePath))
+                {
+                    file.CopyTo(fileStream);
+                }
+
+                //to do : Save uniqueFileName  to your db table   
+            }
+            return string.Empty;
         }
     }
 }

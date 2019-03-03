@@ -21,7 +21,15 @@ body {
 .modal-lg {
     max-width: 800px;
 }
-
+.text-info-light {
+    color: #00b7ef;
+}
+.text-warning-alt {
+    color: #c19d83;
+}
+.text-success-alt {
+    color: #84ce56;
+}
 .bg-white-50 {
     background-color: rgba(255, 255, 255, 0.50) !important;
 }
@@ -117,6 +125,15 @@ a {
 .select2-selection:focus {
         outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.hide-input {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
 }
 
 /* Hide/rearrange for smaller screens */

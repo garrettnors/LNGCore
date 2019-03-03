@@ -3,7 +3,7 @@
 
 <div class="card semi-transparent rounded-0 border-top-0">
     <div class="card-header semi-transparent">
-        <h2 class="m-0">@Model.ViewTitle</h2>
+        <h4 class="m-0">@Model.ViewTitle</h4>
     </div>
     <div class="card-body">
         @if (Model.Invoices.Any())
@@ -15,45 +15,59 @@
 
             foreach (var invoice in Model.Invoices)
             {
-                <div class=" pb-2" id="invoice@(invoice.Id)">
-                    <div class="card  semi-transparent">
-                        <div class="card-body p-3">
+                <div class="pb-2" id="invoice@(invoice.Id)">
+                    <div class="card semi-transparent">
+                        <div class="card-body slight-border p-2">
                             <div class="row no-gutters">
-                                <div class="col-lg-2">
-                                    <span class="h4 d-lg-block m-0 float-left float-lg-none" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
-                                    <span class="text-secondary float-right float-lg-none">Invoice #@invoice.Id</span>
-                                    <div class="clearfix"></div>
-                                    <span class="d-none d-lg-block text-primary">@($"{invoice.LineItem.Count()} Item{(invoice.LineItem.Count() > 1 ? "s" : "")}")</span>
+                                <div class="col-lg-2 text-center text-left-lg">
+                                    <span class="h5 d-lg-block m-0 pointer" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
                                 </div>
-                                <div class="col-lg-3 text-right text-lg-center">
-                                    <span class="text-info d-none d-lg-block mb-1">
+                                <div class="col-lg-3 text-center">
+                                    <small class="text-info d-none d-lg-block">
                                         Ordered <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
-                                    </span>
-                                    <span class="text-danger d-lg-block mb-1">
+                                    </small>
+                                    <small class="text-danger d-block">
                                         Needed <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
-                                    </span>
-                                    <hr class="d-lg-none" />
+                                    </small>
+                                    <small class="text-success d-block pointer">
+                                        Emailed 3 Times
+                                    </small>
+                                    <hr class="d-lg-none my-1" />
                                 </div>
                                 <div class="col-lg-5 pr-lg-4">
-                                    @(string.IsNullOrWhiteSpace(invoice.Notes) ? "No Notes." : invoice.Notes)
+                                    <small>
+                                        @(string.IsNullOrWhiteSpace(invoice.Notes) ? "No Notes." : invoice.Notes)
+                                    </small>
                                 </div>
-                                <div class="col-lg-2">
-                                    <div class="dropdown text-right">
-                                        <button class="btn btn-outline-primary dropdown-toggle" data-display="static" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div class="col-lg-2 text-right">
+                                    <small class="text-secondary">@($"{invoice.LineItem.Count()} Item{(invoice.LineItem.Count() > 1 ? "s" : "")} | #{@invoice.Id}")</small>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" data-display="static" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             I Want To...
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right text-right" aria-labelledby="dropdownMenuButton">
-                                            <span class="pointer dropdown-item" onclick="markPaid();">Mark Invoice Paid</span>
-                                            <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice", new {invoiceId = invoice.Id})">Edit Invoice</a>
-                                            <span class="pointer dropdown-item" onclick="markPaid();">Email Invoice</span>
-                                            <span class="pointer dropdown-item" onclick="markPaid();">Print Invoice</span>
+                                            <span class="pointer dropdown-item" onclick="markPaid(@invoice.Id);">
+                                                Mark Invoice Paid
+                                                <span class="text-success fas fa-check"></span>
+                                            </span>
+                                            <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice", new {invoiceId = invoice.Id})">
+                                                Edit Invoice
+                                                <span class="text-warning fas fa-edit"></span>
+                                            </a>
+                                            <span class="pointer dropdown-item" onclick="emailInvoice(@invoice.Id);">
+                                                Email Invoice
+                                                <span class="text-info far fa-envelope"></span>
+                                            </span>
+                                            <span class="pointer dropdown-item" onclick="printInvoice(@invoice.Id);">
+                                                Print Invoice
+                                                <span class="text-success-alt fas fa-print"></span>
+                                            </span>
+                                            <span class="pointer dropdown-item" onclick="voidInvoice(@invoice.Id);">
+                                                Void Invoice
+                                                <span class="text-danger fas fa-trash"></span>
+                                            </span>
                                         </div>
                                     </div>
-                                    @*<div class="d-lg-none d-xl-none text-center pt-2">
-                                            <button class="btn btn-sm btn-success" onclick="markPaid();">Mark Paid</button>
-                                            <button class="btn btn-sm btn-secondary" onclick="markPaid();">Edit Invoice</button>
-                                            <button class="btn btn-sm btn-info" onclick="markPaid();">Print Invoice</button>
-                                        </div>*@
                                 </div>
                             </div>
                         </div>

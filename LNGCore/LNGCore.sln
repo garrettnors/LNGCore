@@ -4,11 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LNGCore.UI", "LNGCore.UI.csproj", "{53D7ACA6-F2F3-46A4-ADE9-824F0A32AB10}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CDDB7372-65AB-40FA-9DDD-2CACD47F06FA} = {CDDB7372-65AB-40FA-9DDD-2CACD47F06FA}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LNGCore.Domain", "..\LNGCore.Domain\LNGCore.Domain.csproj", "{CDDB7372-65AB-40FA-9DDD-2CACD47F06FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,10 +15,6 @@ Global
 		{53D7ACA6-F2F3-46A4-ADE9-824F0A32AB10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53D7ACA6-F2F3-46A4-ADE9-824F0A32AB10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53D7ACA6-F2F3-46A4-ADE9-824F0A32AB10}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CDDB7372-65AB-40FA-9DDD-2CACD47F06FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CDDB7372-65AB-40FA-9DDD-2CACD47F06FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CDDB7372-65AB-40FA-9DDD-2CACD47F06FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CDDB7372-65AB-40FA-9DDD-2CACD47F06FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

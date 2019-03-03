@@ -24,6 +24,15 @@
         });        
     }
 
+    function setButtonName(button) {
+        var buttonName = "";
+        if (button.files) {
+            var s = button.files.length > 1 ? "s" : "";
+            buttonName = button.files.length + " File"+ s +" Selected";
+        }
+        $("label[for='" + $(button).attr('id') + "']").html(buttonName);
+    }
+
     $(document).ready(function() {
         addLinesToTable();
         setUpSelect2();        
@@ -42,14 +51,12 @@
                     url: "@Url.Action("GetLineItemSuggestions", "Invoice")",
                     data: data,
                     success: function (html) {
-                        debugger;
                         $("#bs-modal .modal-body").html(html);
                         $("#bs-modal").modal("show");
                     }
                 });
             }
-    function setSuggestedValues(itemDesc, itemPrice, itemTypeId, lineNumber) {
-        debugger;
+    function setSuggestedValues(itemDesc, itemPrice, itemTypeId, lineNumber) {        
         $("[name='LineItems[" + lineNumber + "].ItemDesc']").val(itemDesc);
         $("[name='LineItems[" + lineNumber + "].ItemPrice']").val(itemPrice);
         $("[name='LineItems[" + lineNumber + "].ItemId'] option[value='"+itemTypeId+"']").attr("selected", true);
@@ -89,14 +96,21 @@
     </script>
 }
 
-@using (Html.BeginForm("EditInvoice", "Invoice", FormMethod.Post, new { id = "formEditInvoice" }))
+@using (Html.BeginForm("EditInvoice", "Invoice", FormMethod.Post, new { id = "formEditInvoice", enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(f => f.Invoice.Id)
     @Html.Hidden("lineIndex", 0)
     @Html.Hidden("invoiceId", Model.Invoice.Id)
     <div class="card semi-transparent">
         <div class="card-header semi-transparent">
-            <h2 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h2>
+            <div class="row">
+                <div class="col-9">
+                    <h2 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h2>
+                </div>
+                <div class="col-3 text-right pt-1">
+                    <button class="btn btn-success" type="submit">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Save Edits")</button>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <div class="row no-gutters">
@@ -174,16 +188,23 @@
                         <th>Type</th>
                         <th>Desc.</th>
                         <th>Price/ea.</th>
+                        <th colspan="2" class="text-center">
+                            <button class="btn btn-sm btn-block py-0 btn-success" type="button" onclick="addLinesToTable()"><span class="fas fa-plus"></span> 5</button>
+                        </th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
             <div class="row">
-                <div class="col-6">
-                    <button class="btn btn-success" type="submit">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Save Edits")</button>
+                <div class="col-md-6 text-center text-md-right">
+                    <label for="UploadedProofs" class="btn btn-primary pointer">Attach Customer Proof(s)</label>
+                    <p class="small-text text-muted">These will be attached to the quote.</p>
+                    @Html.TextBox("UploadedProofs", null, new { multiple = "multiple", @class = "hide-input", accept = "application/pdf", type = "file", onchange="setButtonName(this);" })
                 </div>
-                <div class="col-6 text-right">
-                    <button class="btn btn-info" type="button" onclick="addLinesToTable()">Add 5 More Rows</button>
+                <div class="col-md-6 text-center text-md-left">
+                    <label for="UploadedFiles" class="btn btn-primary pointer">Attach Internal File(s)</label>
+                    <p class="small-text text-muted">The customer will not see these.</p>
+                    @Html.TextBox("UploadedFiles", null, new { multiple = "multiple", @class = "hide-input", accept = "application/pdf", type = "file", onchange= "setButtonName(this);" })
                 </div>
             </div>
         </div>

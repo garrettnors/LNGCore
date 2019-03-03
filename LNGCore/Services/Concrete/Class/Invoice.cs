@@ -30,7 +30,7 @@ namespace LNGCore.Domain.Concrete.Class
         public string InvoiceProofUrl { get; set; }
         public Customer Customer { get; set; }
         public ICollection<LineItem> LineItem { get; set; }
-        public ICollection<IInvoiceAttachment> InvoiceAttachments { get; set; }
+        public ICollection<InvoiceAttachment> InvoiceAttachments { get; set; }
         ICustomer IInvoice.Customer
         {
             get => Customer;

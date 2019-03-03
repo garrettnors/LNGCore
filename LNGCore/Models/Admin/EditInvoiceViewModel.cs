@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LNGCore.Domain.Abstract.Class;
 using LNGCore.UI.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace LNGCore.UI.Models.Admin
 {
@@ -15,6 +16,8 @@ namespace LNGCore.UI.Models.Admin
             LineItems = new List<LineItemRow>();
             Customers = new List<ICustomer>();
             Employees = new List<IEmployee>();
+            UploadedFiles = new List<IFormFile>();
+            UploadedProofs = new List<IFormFile>();
         }
         public InvoiceItem Invoice { get; set; }
         [Required]
@@ -24,6 +27,8 @@ namespace LNGCore.UI.Models.Admin
         public List<ICustomer> Customers { get; set; }
         public List<IEmployee> Employees { get; set; }
         public List<LineItemRow> LineItems { get; set; }
+        public List<IFormFile> UploadedFiles { get; set; }
+        public List<IFormFile> UploadedProofs { get; set; }
     }
 
     public class LineItemRow : ILineItem
@@ -65,5 +70,6 @@ namespace LNGCore.UI.Models.Admin
         public ICustomer Customer { get; set; }
         public IEnumerable<ILineItem> LineItem { get; set; }
         public decimal? InvoiceTotal { get; }
+        public IEnumerable<IInvoiceAttachment> InvoiceAttachments { get; set; }
     }
 }

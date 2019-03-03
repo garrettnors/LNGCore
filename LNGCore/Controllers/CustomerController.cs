@@ -67,7 +67,7 @@ namespace LNGCore.UI.Controllers
         {
             var customer = _mapper.Map<ICustomer>(model);
             _customerRepository.SaveCustomer(customer);
-            return RedirectToAction("Customers");
+            return RedirectToAction("Index");
         }
     }
 }

@@ -3,6 +3,7 @@
     color: rgba(255,255,255,.70);
     border: 0px;
 }
+
     .form-control:focus {
         background-color: rgba(202,240,255,.07);
         color: rgba(255,255,255,.70);
@@ -11,29 +12,39 @@
         -webkit-box-shadow: 0 0 0 0.2rem rgba(55,90,127,0.25);
         box-shadow: 0 0 0 0.2rem rgba(55,90,127,0.25);
     }
+
     .form-control option {
         background-color: #242b3d;
     }
-html{
-    height:100%;
+
+html {
+    height: 100%;
 }
+
 body {
-    height:100%;
+    height: 100%;
     background-image: linear-gradient(to right top, #000000, #140b12, #1a1521, #181e32, #002a41);
-    background-attachment:fixed;
+    background-attachment: fixed;
     background-repeat: no-repeat;
 }
 
-.semi-transparent{
+.table {
+    color: rgba(255,255,255,.70);
+}
+
+.semi-transparent {
     background-color: rgba(202,240,255,.07);
 }
+
 .btn-outline-primary {
     color: #96a0ab;
     border-color: #96a0ab;
 }
+
 .text-secondary {
     color: #808080 !important;
 }
+
 .text-primary {
     color: #96a0ab !important;
 }
@@ -43,6 +54,7 @@ body {
     color: rgba(255,255,255,.70);
     border: 0px;
 }
+
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         color: rgba(255,255,255,.70);
         height: calc(1.8125rem + 2px);
@@ -53,22 +65,25 @@ body {
     }
 
 .select2-selection:focus {
-        outline: 0;
+    outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
 }
+
 .select2-dropdown {
     background-color: rgba(47,60,78,1);
     border: 1px solid #aaa;
 }
+
 .select2-container--default .select2-results__option[aria-selected=true] {
     background-color: #5c6271;
 }
+
 .select2-container--default .select2-search--dropdown .select2-search__field {
     background-color: #2e3d4f;
     border: 1px solid #5c6271;
 }
+
 .input-group-text {
-    
     color: #181b2d;
     background-color: #2f303a;
     border: 0px;
@@ -92,6 +107,7 @@ body {
     ::-webkit-scrollbar-thumb:hover {
         background: #555;
     }
+
 .page-item .page-link {
     cursor: pointer;
     background-color: #188fbc;
@@ -104,6 +120,7 @@ body {
 .page-item.active .page-link {
     background-color: #11749a;
 }
+
 .card {
     border: 0px;
 }
@@ -111,21 +128,26 @@ body {
 .card-header:first-child {
     border-radius: 0;
 }
+
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
     background-color: rgba(202,240,255,.07);
-    border-bottom:0px;
+    border-bottom: 0px;
 }
+
 .nav-tabs {
     border-bottom: 0px;
 }
+
 .input-group-prepend {
-     margin-right: 0px; 
+    margin-right: 0px;
 }
+
 .input-group-text {
     color: #bcbbc1;
     background-color: #43434a;
     border: 0px;
 }
+
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(202,240,255,.03);
 }

@@ -11,10 +11,10 @@
 
         if (isTaxable) {
             $("#taxIdGroup").hide();
-            $("#TaxId").attr("data-val", false);
+            $("#TaxId").attr("data-val", false).removeClass("required");
         } else {
             $("#taxIdGroup").show();
-            $("#TaxId").attr("data-val", true);
+            $("#TaxId").attr("data-val", true).addClass("required");
         }
         validateForm();
     }
