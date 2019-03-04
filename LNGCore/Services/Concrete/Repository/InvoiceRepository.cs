@@ -68,7 +68,12 @@ namespace LNGCore.Domain.Concrete.Repository
 
         public IInvoice GetInvoice(int invoiceId)
         {
-            return _dbContext.Invoice.FirstOrDefault(f => f.Id == invoiceId);
+            return _dbContext.Invoice
+                .Include(i => i.Customer)
+                .Include(i => i.Employee)
+                .Include(i => i.LineItem)
+                .ThenInclude(t=> t.Item)
+                .FirstOrDefault(f => f.Id == invoiceId);
         }
 
         public int SaveInvoice(IInvoice invoice)

@@ -31,12 +31,17 @@ namespace LNGCore.Domain.Concrete.Class
         public Customer Customer { get; set; }
         public ICollection<LineItem> LineItem { get; set; }
         public ICollection<InvoiceAttachment> InvoiceAttachments { get; set; }
+        public Employee Employee { get; set; }
         ICustomer IInvoice.Customer
         {
             get => Customer;
             set => throw new NotImplementedException();
         }
-
+        IEmployee IInvoice.Employee
+        {
+            get => Employee;
+            set => throw new NotImplementedException();
+        }
         IEnumerable<ILineItem> IInvoice.LineItem
         {
             get => LineItem;

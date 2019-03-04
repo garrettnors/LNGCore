@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Rotativa.AspNetCore;
 
 namespace LNGCore
 {
@@ -29,7 +30,7 @@ namespace LNGCore
             var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("secrets.json", optional: false, reloadOnChange: true);
-
+            RotativaConfiguration.Setup(env);
             Configuration = configurationBuilder.Build();
         }
 

@@ -11,6 +11,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using Rotativa.AspNetCore;
+    using System.Net.Mail;
+    using System.IO;
 
     public class InvoiceController : Controller
     {
@@ -197,13 +200,67 @@
 
         public IActionResult ViewInvoice(int invoiceId)
         {
-            var invoice = _invoiceRepository.GetInvoice(invoiceId);           
+            var invoice = _invoiceRepository.GetInvoice(invoiceId);
             return View(invoice);
         }
 
         public IActionResult GetInvoicePdf(int invoiceId)
         {
-            return null;
+            const int itemsPerPageMax = 20;
+            const string footer = "--footer-center \"Thank you for choosing LNG Laserworks, we appreciate your business!\" " +
+                "--footer-line --footer-font-size \"12\" --footer-font-name \"calibri light\"";
+
+            var invoice = _invoiceRepository.GetInvoice(invoiceId);
+            var model = new GetInvoicePdfViewModel
+            {
+                DocTitle = invoiceId.ToString(),
+                Invoice = invoice,
+                RowsPerPage = itemsPerPageMax,
+                TotalLineItems = invoice.LineItem.Count()
+            };
+            
+            //var actionPDF = new ViewAsPdf("GetInvoicePdf", model) //some route values)
+            //{
+            //    PageSize = Rotativa.AspNetCore.Options.Size.Letter,
+            //    FileName = "TestInvoice.pdf"
+            //    //FileName = "TestView.pdf",
+            //    //PageSize = "",
+            //    //PageOrientation = Rotativa.Options.Orientation.Landscape,
+            //    // PageMargins = { Left = 1, Right = 1 }
+            //};
+            //System.Threading.Tasks.Task<byte[]> applicationPDFData = actionPDF.BuildFile(ControllerContext);
+
+            //var message = new MailMessage(new MailAddress("info@lnglaserworks.com", "LNG Laserworks"), new MailAddress("garrett.nors@gmail.com"))
+            //{
+            //    Subject = "Test Invoice Send",
+            //    Body = "test email"
+            //};
+            //message.Attachments.Add(new Attachment(new MemoryStream(applicationPDFData.Result), actionPDF.FileName));
+            //var client = new SmtpClient("smtp.gmail.com", 587)
+            //{
+            //    EnableSsl = true,
+            //    UseDefaultCredentials = false,
+            //    Credentials = new NetworkCredential("mailer@lnglaserworks.com", "pisrmvwifrjgefcp"),
+            //    DeliveryMethod = SmtpDeliveryMethod.Network
+            //};
+            //client.Send(message);
+
+            //return View(model);
+
+            return new ViewAsPdf(model)
+            {
+                PageSize = Rotativa.AspNetCore.Options.Size.Letter,
+                CustomSwitches = footer
+            };
+        }
+
+
+        public class GetInvoicePdfViewModel
+        {
+            public string DocTitle { get; set; }
+            public IInvoice Invoice { get; set; }
+            public int TotalLineItems { get; set; }
+            public int RowsPerPage { get; set; }
         }
     }
 }

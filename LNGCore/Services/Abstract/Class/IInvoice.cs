@@ -8,7 +8,6 @@ namespace LNGCore.Domain.Abstract.Class
         string CompletedBy { get; set; }
         int CustomerId { get; set; }
         DateTime Deadline { get; set; }
-        //string Employee { get; set; }
         int EmployeeId { get; set; }
         int Id { get; set; }
         string InvoiceProofUrl { get; set; }
@@ -24,6 +23,7 @@ namespace LNGCore.Domain.Abstract.Class
         decimal? TaxPercent { get; set; }
         bool Voided { get; set; }
         ICustomer Customer { get; set; }
+        IEmployee Employee { get; set; }
         IEnumerable<ILineItem> LineItem { get; set; }
         IEnumerable<IInvoiceAttachment> InvoiceAttachments { get; set; }
         decimal? InvoiceTotal { get; }

@@ -71,5 +71,6 @@ namespace LNGCore.UI.Models.Admin
         public IEnumerable<ILineItem> LineItem { get; set; }
         public decimal? InvoiceTotal { get; }
         public IEnumerable<IInvoiceAttachment> InvoiceAttachments { get; set; }
+        public IEmployee Employee { get; set; }
     }
 }

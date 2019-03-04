@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="popper.js" Version="1.14.3" />
+    <PackageReference Include="Rotativa.AspNetCore" Version="1.1.1" />
     <PackageReference Include="Select2.js" Version="4.0.5" />
   </ItemGroup>
 
@@ -37,6 +38,8 @@
     <None Include="wwwroot\lib\select2\dist\js\select2.full.min.js" />
     <None Include="wwwroot\lib\select2\dist\js\select2.js" />
     <None Include="wwwroot\lib\select2\dist\js\select2.min.js" />
+    <None Include="wwwroot\Rotativa\wkhtmltoimage.exe" />
+    <None Include="wwwroot\Rotativa\wkhtmltopdf.exe" />
   </ItemGroup>
 
   <ItemGroup>
