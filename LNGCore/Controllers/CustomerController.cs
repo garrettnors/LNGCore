@@ -47,27 +47,31 @@ namespace LNGCore.UI.Controllers
             vm.Customers = customers.Skip(skip).Take(take).ToList();
             vm.PaginationParameters = pagination;
             vm.SearchTerm = searchTerm;
+
             return View(vm);
         }
 
         [HttpGet]
-        public IActionResult EditCustomer(int customerId)
+        public IActionResult EditCustomer(int customerId, bool showSuccessMessage = false)
         {
             var customer = _customerRepository.GetCustomer(customerId);
-
+            
             if (customer.Id == 0)
                 customer.Taxable = true;
 
             var vm = _mapper.Map<EditCustomerViewModel>(customer);
+            vm.ShowSuccessMessage = showSuccessMessage;
             return PartialView("_EditCustomer", vm);
         }
 
         [HttpPost]
-        public IActionResult EditCustomer(EditCustomerViewModel model)
+        public Tuple<int, string> EditCustomer(EditCustomerViewModel model)
         {
+            if (model.ShowSuccessMessage ?? false)            
+                TempData["SuccessBannerMessage"] = "Customer successfully saved.";
+            
             var customer = _mapper.Map<ICustomer>(model);
-            _customerRepository.SaveCustomer(customer);
-            return RedirectToAction("Index");
+            return Tuple.Create(_customerRepository.SaveCustomer(customer), customer.DisplayName);
         }
     }
 }

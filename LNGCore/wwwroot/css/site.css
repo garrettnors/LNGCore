@@ -18,6 +18,12 @@ body {
     font-size: 20px;
     line-height: 1.4;
 }
+.disable-select{
+    user-select:none;
+}
+.overflow-hide{
+    overflow-x:hidden;
+}
 .modal-lg {
     max-width: 800px;
 }
@@ -135,7 +141,13 @@ a {
     position: absolute;
     z-index: -1;
 }
-
+.alert {
+    position: relative;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */

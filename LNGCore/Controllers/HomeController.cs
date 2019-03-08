@@ -147,7 +147,11 @@ namespace LNGCore.Controllers
 
             if (!string.IsNullOrWhiteSpace(errorMsg))
             {
-                _logRepository.SaveLog(errorMsg);
+                var log = _logRepository.GetLog(0);
+                log.Date = DateTime.Now;
+                log.LogType = "Error";
+                log.Summary = errorMsg;             
+                _logRepository.SaveLog(log);
                 TempData["ErrorBannerMessage"] = "Your correspondence didn't reach us, please email us directly at Info@LNGLaserworks.com for immediate assistance.";
             }
 

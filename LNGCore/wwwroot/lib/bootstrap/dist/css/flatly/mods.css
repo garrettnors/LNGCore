@@ -4,7 +4,7 @@
 
 body {
     height: 100%;
-    background-image: linear-gradient(to left top, #c7d3dc, #d0dbe1, #dae3e7, #e4eaed, #eef2f3);
+    background-image: linear-gradient(to bottom, #c2d6d6, #bed0d4, #bbc9d1, #bac3cc, #b9bcc6);
     background-attachment: fixed;
     background-repeat: no-repeat;
 }
@@ -14,7 +14,7 @@ body {
 }
 
 a {
-    color: #4c98cc;
+    color: #08558a;
 }
 
 .select2-container--default .select2-selection--single {
@@ -25,7 +25,9 @@ a {
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         color: #7b8a8b;
     }
-
+.navbar-light .navbar-nav .nav-link {
+    color: rgba(0, 65, 97, 0.90);
+}
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
     background-color: rgba(255,255,255,.50);
     border-color: transparent;

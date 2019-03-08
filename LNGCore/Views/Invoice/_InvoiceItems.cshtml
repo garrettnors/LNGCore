@@ -53,15 +53,11 @@
                                             <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice", new {invoiceId = invoice.Id})">
                                                 Edit Invoice
                                                 <span class="text-warning fas fa-edit"></span>
+                                            </a>                                            
+                                            <a class="pointer dropdown-item" href="@Url.Action("ViewInvoice","Invoice", new { invoiceId = invoice.Id })">
+                                                Print/Email Invoice
+                                                <span class="text-info far fa-file-alt"></span>
                                             </a>
-                                            <span class="pointer dropdown-item" onclick="emailInvoice(@invoice.Id);">
-                                                Email Invoice
-                                                <span class="text-info far fa-envelope"></span>
-                                            </span>
-                                            <span class="pointer dropdown-item" onclick="printInvoice(@invoice.Id);">
-                                                Print Invoice
-                                                <span class="text-success-alt fas fa-print"></span>
-                                            </span>
                                             <span class="pointer dropdown-item" onclick="voidInvoice(@invoice.Id);">
                                                 Void Invoice
                                                 <span class="text-danger fas fa-trash"></span>

@@ -14,17 +14,28 @@
     }
     function editCustomer(customerId) {
         $.ajax({
-            url: "@Url.Action("EditCustomer", "Customer", new {customerId = "__CUSTID__"})".replace("__CUSTID__", customerId),
+            url: "@Html.Raw(Url.Action("EditCustomer", "Customer", new { customerId = "__CUSTID__", showSuccessMessage = true }))".replace("__CUSTID__", customerId),
             success: function(data) {
                 $("#customerModal .modal-content").html(data);
                 $("#customerModal").modal("show");
             }
         });
     }
+    
+    function submitContactSaveForm() {
+        $.ajax({
+        url:"@Url.Action("EditCustomer", "Customer")",
+        type:'post',
+            data: $('#formEditCustomer').serialize(),
+            success: function () {                         
+            window.location.href = "@Url.Action("Index", "Customer")";
+        }
+    });
+    }
 </script>
 <div class="row pb-3">
     <div class="col-6">
-        <button onclick="editCustomer(0);" class="btn btn-sm btn-success"><span class="fas fa-plus"></span> Add Contact</button>
+        <button onclick="editCustomer(0);" class="btn btn-sm btn-success"><span class="fas fa-plus"></span> Add Customer</button>
     </div>
     <div class="col-4 offset-2">
         @using (Html.BeginForm("Index", "Customer", FormMethod.Get, new { id = "formSearch" }))
@@ -65,10 +76,3 @@
     </tbody>
 </table>
 <partial name="_Pagination" model="@Model.PaginationParameters" />
-
-<div class="modal fade" data-backdrop="static" data-keyboard="false" data-focus="true" id="customerModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        </div>
-    </div>
-</div>

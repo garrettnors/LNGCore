@@ -4,10 +4,13 @@ using System.Text;
 
 namespace LNGCore.Domain.Abstract.Class
 {
-    public interface ILogs
+    public interface ILog
     {
         int Id { get; set; }
-        string Log { get; set; }
+        string LogType { get; set; }
+        string Summary { get; set; }
         DateTime Date { get; set; }
+        int? CustomerId { get; set; }
+        int? InvoiceId { get; set; }
     }
 }

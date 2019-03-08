@@ -68,6 +68,9 @@ namespace LNGCore.Domain.Concrete.Repository
 
         public IInvoice GetInvoice(int invoiceId)
         {
+            if (invoiceId == 0)
+                return new Invoice();
+
             return _dbContext.Invoice
                 .Include(i => i.Customer)
                 .Include(i => i.Employee)

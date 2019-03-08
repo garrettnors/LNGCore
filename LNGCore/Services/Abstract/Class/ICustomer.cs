@@ -11,6 +11,7 @@ namespace LNGCore.Domain.Abstract.Class
         string BusinessPhone { get; set; }
         string City { get; set; }
         string Email { get; set; }
+        string SecondaryEmail { get; set; }
         int Id { get; set; }
         DateTime? LastContact { get; set; }
         string Name { get; set; }

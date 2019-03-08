@@ -13,7 +13,7 @@ namespace LNGCore.UI
         public MappingProfile()
         {
             // Add as many of these lines as you need to map your objects
-            CreateMap<InvoiceItem, IInvoice>();
+            CreateMap<ICustomer, EditCustomerViewModel >().ForMember(x => x.ShowSuccessMessage, opt => opt.Ignore());
         }
     }
 }

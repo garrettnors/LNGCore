@@ -23,7 +23,7 @@ namespace LNGCore.Domain.Concrete.Context
         public DbSet<Employee> Employee { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<LineItem> LineItem { get; set; }
-        public DbSet<Logs> Logs { get; set; }
+        public DbSet<Log> Log { get; set; }
         public DbSet<OrnamentOrders> OrnamentOrders { get; set; }
         public DbSet<InvoiceAttachment> InvoiceAttachments { get; set; }
 
@@ -124,11 +124,12 @@ namespace LNGCore.Domain.Concrete.Context
                 entity.HasMany(d => d.Invoice);
             });
 
-            modelBuilder.Entity<Logs>(entity =>
+            modelBuilder.Entity<Log>(entity =>
             {
                 entity.Property(e => e.Date).HasColumnType("datetime");
 
-                entity.Property(e => e.Log).IsRequired();
+                entity.Property(e => e.Summary).IsRequired();
+                entity.Property(e => e.LogType).IsRequired();
             });
 
             modelBuilder.Entity<OrnamentOrders>(entity =>

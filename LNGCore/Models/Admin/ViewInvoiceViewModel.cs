@@ -8,6 +8,8 @@ namespace LNGCore.UI.Models.Admin
 {
     public class ViewInvoiceViewModel
     {
-        public IInvoice Invoice { get; set; }        
+        public IInvoice Invoice { get; set; }      
+        public string InvoiceData { get; set; }
+        public List<ILog> Emails { get; set; }
     }
 }

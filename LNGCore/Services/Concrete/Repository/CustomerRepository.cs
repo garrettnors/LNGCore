@@ -61,6 +61,7 @@ namespace LNGCore.Domain.Concrete.Repository
             saveCustomer.Street = customer.Street;
             saveCustomer.ZipCode = customer.ZipCode;
             saveCustomer.Email = customer.Email;
+            saveCustomer.SecondaryEmail = customer.SecondaryEmail;
             saveCustomer.TaxId = customer.TaxId;
 
             if (saveCustomer.Id == 0)

@@ -48,6 +48,8 @@ namespace LNGCore.UI.Models.Admin
         [StringLength(50)]
         public string ZipCode { get; set; }
         public IEnumerable<IInvoice> Invoice { get; set; }
-        public string DisplayName { get; }
+        public string SecondaryEmail { get; set; }
+        public bool? ShowSuccessMessage { get; set; }
+        public string DisplayName => BusinessName == null ? Name : $"{BusinessName} ➤ {Name}";
     }
 }

@@ -18,11 +18,13 @@
         }
         validateForm();
     }
+
 </script>
 
 @using (Html.BeginForm("EditCustomer", "Customer", FormMethod.Post, new { id = "formEditCustomer" }))
 {
     @Html.HiddenFor(f => f.Id)
+    @Html.HiddenFor(f => f.ShowSuccessMessage)
     <div class="card m-0">
         <div class="card-header">
             <h4 class="m-0">@(Model.Id == 0 ? "Add New Contact" : $"Edit {(!string.IsNullOrWhiteSpace(Model.DisplayName) ? Model.DisplayName : "Customer")}")</h4>
@@ -46,6 +48,10 @@
                     <div class="form-group">
                         @Html.LabelFor(f => f.Email)
                         @Html.TextBoxFor(f => f.Email, new { @class = "form-control form-control-sm" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.SecondaryEmail)
+                        @Html.TextBoxFor(f => f.SecondaryEmail, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(f => f.BusinessPhone)
@@ -89,7 +95,7 @@
                 @Html.TextBoxFor(f => f.TaxId, new { @class = "form-control form-control-sm", data_val = "false", data_val_required = "The email is required" })
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-sm btn-success">Save Contact</button>
+                <button type="button" onclick="submitContactSaveForm();" class="btn btn-sm btn-success">Save Contact</button>
                 <button type="button" data-dismiss="modal" class="btn btn-sm btn-secondary">Cancel</button>
             </div>
         </div>

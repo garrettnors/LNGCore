@@ -4,7 +4,7 @@ using LNGCore.Domain.Abstract.Class;
 
 namespace LNGCore.Domain.Concrete.Class
 {
-    public partial class Customer : ICustomer
+    public class Customer : ICustomer
     {
         public Customer()
         {
@@ -15,6 +15,7 @@ namespace LNGCore.Domain.Concrete.Class
         public string BusinessName { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        public string SecondaryEmail { get; set; }
         public string BusinessPhone { get; set; }
         public string AltPhone { get; set; }
         public string Street { get; set; }

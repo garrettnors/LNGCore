@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LNGCore.Domain.Abstract.Class;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,7 @@ namespace LNGCore.Domain.Abstract.Repository
 {
     public interface ILogRepository
     {
-        void SaveLog(string logText);
+        ILog GetLog(int logId);
+        void SaveLog(ILog log);
     }
 }

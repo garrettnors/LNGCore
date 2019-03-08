@@ -15,7 +15,7 @@ namespace LNGCore.Domain.Abstract.Context
         DbSet<LineItem> LineItem { get; set; }
         DbSet<OrnamentOrders> OrnamentOrders { get; set; }
         DbSet<InvoiceAttachment> InvoiceAttachments { get; set; }
-        DbSet<Logs> Logs { get; set; }
+        DbSet<Log> Log { get; set; }
         void Commit();
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using LNGCore.Domain.Abstract.Class;
 using LNGCore.Domain.Abstract.Context;
 using LNGCore.Domain.Abstract.Repository;
 using LNGCore.Domain.Concrete.Class;
@@ -13,9 +15,14 @@ namespace LNGCore.Domain.Concrete.Repository
         {
             db = dbContext;
         }
-        public void SaveLog(string logText)
+        public ILog GetLog(int logId)
         {
-            db.Logs.Add(new Logs { Log = logText, Date = DateTime.Now });
+            return db.Log.FirstOrDefault(f => f.Id == logId);
+        }
+        public void SaveLog(ILog log)
+        {
+            var newLog = AutoMapper.Mapper.Map<Log>(log);
+            db.Log.Add(newLog);
             db.Commit();
         }
     }

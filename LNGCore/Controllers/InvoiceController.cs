@@ -102,6 +102,10 @@
         public IActionResult EditInvoice(int invoiceId = 0)
         {
             var invoice = _invoiceRepository.GetInvoice(invoiceId);
+
+            if (invoice == null)
+                return RedirectToAction("Index");
+
             var invoiceItem = _mapper.Map<InvoiceItem>(invoice);
 
             var vm = new EditInvoiceViewModel
@@ -154,16 +158,15 @@
                 default:
                     break;
             }
-
-            _invoiceRepository.SaveAttachmentsToInvoice(9999, model.UploadedFiles, false);
-            _invoiceRepository.SaveAttachmentsToInvoice(9999, model.UploadedProofs, true);
+                       
 
             var saveInvoice = _mapper.Map<IInvoice>(model.Invoice);
-            //var invoiceId = _invoiceRepository.SaveInvoice(saveInvoice);
-
+            var invoiceId = _invoiceRepository.SaveInvoice(saveInvoice);
             var saveLines = _mapper.Map<List<ILineItem>>(model.LineItems.Where(w => w.Quantity > 0));
 
-            //_invoiceRepository.SaveLineItems(saveLines, invoiceId);
+            _invoiceRepository.SaveLineItems(saveLines, invoiceId);
+            //_invoiceRepository.SaveAttachmentsToInvoice(invoiceId, model.UploadedFiles, false);
+            _invoiceRepository.SaveAttachmentsToInvoice(invoiceId, model.UploadedProofs, true);
 
             return RedirectToAction("Index", new { type = model.InvoiceType });
         }
@@ -200,25 +203,45 @@
 
         public IActionResult ViewInvoice(int invoiceId)
         {
-            var invoice = _invoiceRepository.GetInvoice(invoiceId);
-            return View(invoice);
+            var vm = new ViewInvoiceViewModel
+            {
+                Invoice = _invoiceRepository.GetInvoice(invoiceId),
+                InvoiceData = GetInvoicePdf(invoiceId)
+            };
+            return View(vm);
         }
 
-        public IActionResult GetInvoicePdf(int invoiceId)
+        public IActionResult SendInvoiceEmail(SendInvoiceViewModel vm)
+        {
+            TempData["SuccessBannerMessage"] = "An email has been sent to the recipient(s) you selected.";
+            return RedirectToAction("ViewInvoice", new { invoiceId = vm.InvoiceId });
+        }
+
+        public string GetInvoicePdf(int invoiceId)
         {
             const int itemsPerPageMax = 20;
             const string footer = "--footer-center \"Thank you for choosing LNG Laserworks, we appreciate your business!\" " +
                 "--footer-line --footer-font-size \"12\" --footer-font-name \"calibri light\"";
 
             var invoice = _invoiceRepository.GetInvoice(invoiceId);
-            var model = new GetInvoicePdfViewModel
+           var model = new ViewInvoicePdfViewModel
             {
                 DocTitle = invoiceId.ToString(),
                 Invoice = invoice,
                 RowsPerPage = itemsPerPageMax,
                 TotalLineItems = invoice.LineItem.Count()
             };
-            
+
+            var actionPdf = new ViewAsPdf("InvoicePdf", model)
+            {
+                PageSize = Rotativa.AspNetCore.Options.Size.Letter,
+                CustomSwitches = footer
+            };
+            //return actionPdf.BuildFile(ControllerContext).Result;
+
+            var byteArray = actionPdf.BuildFile(ControllerContext).Result;
+            return Convert.ToBase64String(byteArray, 0, byteArray.Length);
+
             //var actionPDF = new ViewAsPdf("GetInvoicePdf", model) //some route values)
             //{
             //    PageSize = Rotativa.AspNetCore.Options.Size.Letter,
@@ -245,22 +268,7 @@
             //};
             //client.Send(message);
 
-            //return View(model);
-
-            return new ViewAsPdf(model)
-            {
-                PageSize = Rotativa.AspNetCore.Options.Size.Letter,
-                CustomSwitches = footer
-            };
-        }
-
-
-        public class GetInvoicePdfViewModel
-        {
-            public string DocTitle { get; set; }
-            public IInvoice Invoice { get; set; }
-            public int TotalLineItems { get; set; }
-            public int RowsPerPage { get; set; }
+            //return View(model);            
         }
     }
 }

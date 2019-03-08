@@ -3,5 +3,79 @@
     ViewData["Title"] = "ViewInvoice";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+<script>
+    $(window).resize(function () {
+        resizeEmbed();
+    });
+    $(document).ready(function () {
+        resizeEmbed();
+    });
+    function resizeEmbed() {
+        var width = $("#pdfEmbed").width();
+        $("#pdfEmbed").height(width * 1.4);
+    }
+    function checkSecondary(control) {
+        var text = $(control);
+        var check = $("#SendToSecondary");
+        if (text.val() != "") {
+            check.attr("checked", "checked");
+        } else {
+            check.attr("checked", null);
+        }
 
-<object type="application/pdf" style="width:100%; height: auto;" data="" border="2"></object>
+    }
+</script>
+<div class="row">
+    <div class="col-lg-5">
+        <div class="card semi-transparent mb-3">
+            <div class="card-header semi-transparent">
+                <h4 class="m-0">
+                    Email Options
+                </h4>
+            </div>
+            <div class="card-body">                
+                @using (Html.BeginForm("SendInvoiceEmail", "Invoice", FormMethod.Post))
+                {
+                    @Html.Hidden("InvoiceId", Model.Invoice.Id)
+                    @Html.Hidden("CustomerId", Model.Invoice.CustomerId)
+                    <h5 class="m-0">Primary Email</h5>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                @Html.CheckBox("SendToPrimary", true)
+                            </div>
+                        </div>
+                        <label for="SendToPrimary" type="text" class="form-control disabled pointer disable-select overflow-hide">@Model.Invoice.Customer.Email</label>
+                        @Html.Hidden("PrimaryEmail", Model.Invoice.Customer.Email)
+                        @*<div class="input-group-append">
+                    <div class="input-group-text bg-success">
+                        <span class="fas fa-check text-white" data-toggle="tooltip" data-placement="top" title="Primary Contact"></span>
+                    </div>
+                </div>*@
+                    </div>
+                    <h5 class="m-0">Secondary Email</h5>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                @Html.CheckBox("SendToSecondary", !string.IsNullOrWhiteSpace(Model.Invoice.Customer.SecondaryEmail))
+                            </div>
+                        </div>
+                        <input id="SecondaryEmail" name="SecondaryEmail" onchange="checkSecondary(this);" type="email" class="form-control" value="@Model.Invoice.Customer.SecondaryEmail" />
+                    </div>
+                    <div class="small text-muted mb-3 text-right">Optional and Editable</div>
+                    <h5 class="m-0">Notes</h5>
+                    @Html.TextArea("Notes", null, new { rows = 3, @class = "form-control" })
+                    <div class="small text-muted text-right">Optional</div>
+                    <button type="submit" class="btn btn-sm btn-success">Send This Invoice</button>
+                    <div class="alert alert-primary mt-3">
+                        <strong>Note:</strong> <span class="">LNG is automatically CC'd on emails. Uncheck both Primary and Secondary to send a copy to only yourself.</span>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <embed id="pdfEmbed" src="data:application/pdf;base64, @Model.InvoiceData" type="application/pdf" style="height:1000px; width:100%;" />
+    </div>
+</div>
