@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LNGCore.Domain.Abstract.Class;
+using LNGCore.Services.Abstract.Class;
 
-namespace LNGCore.Domain.Concrete.Class
+namespace LNGCore.Services.Concrete.Class
 {
     public partial class Invoice : IInvoice
     {

@@ -46,7 +46,8 @@
     }
     function getSuggestedValues(lineIndex) {
         var customerId = $("[name='Invoice.CustomerId']").val();
-        var data = { CustomerId: customerId, LineIndex: lineIndex }
+        var itemId = $("[name='LineItems[" + lineIndex + "].ItemId']").val();
+        var data = { CustomerId: customerId, LineIndex: lineIndex, ItemId: itemId }
                 $.ajax({
                     url: "@Url.Action("GetLineItemSuggestions", "Invoice")",
                     data: data,
@@ -88,7 +89,7 @@
     function newCustomer() {
         $.ajax({
             url: "@Html.Raw(Url.Action("EditCustomer", "Customer", new { customerId = 0, showSuccessMessage = false }))",
-            success: function (data) {           
+            success: function (data) {
                 $("#customerModal .modal-content").html(data);
                 $("#customerModal").modal("show");
             }
@@ -152,7 +153,7 @@
                                     @Html.DropDownListFor(f => f.Invoice.CustomerId, new SelectList(Model.Customers.OrderBy(o => o.DisplayName), "Id", "DisplayName", Model.Invoice.CustomerId), new { @class = "form-control form-control-sm select2" })
                                 </div>
                                 <div class="col-2 pl-0">
-                                    <button type="button" onclick="newCustomer();" class="btn btn-sm btn-block btn-outline-success"><span class="fas fa-plus"></span> Add</button>
+                                    <button type="button" onclick="newCustomer();" class="btn btn-sm btn-block btn-outline-success"><span class="fas fa-plus"></span><span class="d-none d-xl-inline"> Add</span></button>
                                 </div>
                             </div>
                         </div>

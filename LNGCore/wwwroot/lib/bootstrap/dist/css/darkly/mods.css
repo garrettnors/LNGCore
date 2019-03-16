@@ -31,7 +31,15 @@ body {
 .table {
     color: rgba(255,255,255,.70);
 }
-
+.modal-content {
+    
+    background-image: linear-gradient(to right top, #000000, #140b12, #1a1521, #181e32, #002a41);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+.modal-body {
+    padding: 0px;
+}
 .semi-transparent {
     background-color: rgba(202,240,255,.07);
 }

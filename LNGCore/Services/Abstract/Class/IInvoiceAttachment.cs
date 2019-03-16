@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace LNGCore.Domain.Abstract.Class
+namespace LNGCore.Services.Abstract.Class
 {
     public interface IInvoiceAttachment
     {

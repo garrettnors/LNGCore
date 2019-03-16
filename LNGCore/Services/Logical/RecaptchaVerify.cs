@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using LNGCore.Domain.Abstract.Repository;
+using LNGCore.Services.Abstract.Repository;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace LNGCore.Domain.Logical
+namespace LNGCore.Services.Logical
 {
     public class RecaptchaVerify
     {

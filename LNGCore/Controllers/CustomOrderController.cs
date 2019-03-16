@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.Domain.Abstract.Class;
-using LNGCore.Domain.Abstract.Repository;
-using LNGCore.Domain.Logical;
+using LNGCore.Services.Abstract.Class;
+using LNGCore.Services.Abstract.Repository;
+using LNGCore.Services.Logical;
 using LNGCore.UI.Hubs;
 using LNGCore.UI.Models;
 using Microsoft.AspNetCore.Http;

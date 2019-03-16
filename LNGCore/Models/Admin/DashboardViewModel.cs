@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.Domain.Abstract.Class;
+using LNGCore.Services.Abstract.Class;
 
 namespace LNGCore.UI.Models.Admin
 {

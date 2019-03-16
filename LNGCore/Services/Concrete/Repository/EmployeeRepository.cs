@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LNGCore.Domain.Abstract.Class;
-using LNGCore.Domain.Abstract.Context;
-using LNGCore.Domain.Abstract.Repository;
-using LNGCore.Domain.Concrete.Class;
+using LNGCore.Services.Abstract.Class;
+using LNGCore.Services.Abstract.Context;
+using LNGCore.Services.Abstract.Repository;
+using LNGCore.Services.Concrete.Class;
 
-namespace LNGCore.Domain.Concrete.Repository
+namespace LNGCore.Services.Concrete.Repository
 {
     public class EmployeeRepository : IEmployeeRepository
     {

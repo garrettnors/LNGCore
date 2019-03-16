@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.Domain.Abstract.Class;
+using LNGCore.Services.Abstract.Class;
 
 namespace LNGCore.UI.Models.Admin
 {
@@ -48,6 +48,8 @@ namespace LNGCore.UI.Models.Admin
         [StringLength(50)]
         public string ZipCode { get; set; }
         public IEnumerable<IInvoice> Invoice { get; set; }
+        [DisplayName("Secondary Email")]
+        [StringLength(50)]
         public string SecondaryEmail { get; set; }
         public bool? ShowSuccessMessage { get; set; }
         public string DisplayName => BusinessName == null ? Name : $"{BusinessName} ➤ {Name}";

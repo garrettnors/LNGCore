@@ -1,9 +1,9 @@
-﻿using LNGCore.Domain.Abstract.Context;
-using LNGCore.Domain.Concrete.Class;
+﻿using LNGCore.Services.Abstract.Context;
+using LNGCore.Services.Concrete.Class;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace LNGCore.Domain.Concrete.Context
+namespace LNGCore.Services.Concrete.Context
 {
     public partial class InvoiceDbContext : DbContext, IInvoiceDbContext
     {

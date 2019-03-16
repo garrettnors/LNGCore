@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.Domain.Abstract.Class;
+using LNGCore.Services.Abstract.Class;
 using Microsoft.AspNetCore.Http;
 
 namespace LNGCore.UI.Models

@@ -1,8 +1,8 @@
 ﻿namespace LNGCore.UI.Controllers
 {
     using AutoMapper;
-    using LNGCore.Domain.Abstract.Class;
-    using LNGCore.Domain.Abstract.Repository;
+    using LNGCore.Services.Abstract.Class;
+    using LNGCore.Services.Abstract.Repository;
     using LNGCore.UI.Enums;
     using LNGCore.UI.Models.Admin;
     using Microsoft.AspNetCore.Mvc;
@@ -132,42 +132,45 @@
         [HttpPost]
         public IActionResult EditInvoice(EditInvoiceViewModel model)
         {
-            model.Invoice.Voided = false;
-            model.Invoice.IsPaid = false;
-            model.Invoice.IsDonated = false;
-            model.Invoice.IsQuote = false;
-            model.Invoice.CompletedBy = _employeeRepository.GetEmployee(model.Invoice.EmployeeId).EmpName;
-
-            switch (model.InvoiceType)
+            if (ModelState.IsValid)
             {
-                case InvoiceTypeEnum.Invoice:
-                    break;
-                case InvoiceTypeEnum.Paid:
-                    model.Invoice.IsPaid = true;
-                    model.Invoice.PaidDate = DateTime.Now;
-                    break;
-                case InvoiceTypeEnum.Donated:
-                    model.Invoice.IsDonated = true;
-                    break;
-                case InvoiceTypeEnum.Voided:
-                    model.Invoice.Voided = true;
-                    break;
-                case InvoiceTypeEnum.Quote:
-                    model.Invoice.IsQuote = true;
-                    break;
-                default:
-                    break;
+                model.Invoice.Voided = false;
+                model.Invoice.IsPaid = false;
+                model.Invoice.IsDonated = false;
+                model.Invoice.IsQuote = false;
+                model.Invoice.CompletedBy = _employeeRepository.GetEmployee(model.Invoice.EmployeeId).EmpName;
+
+                switch (model.InvoiceType)
+                {
+                    case InvoiceTypeEnum.Invoice:
+                        break;
+                    case InvoiceTypeEnum.Paid:
+                        model.Invoice.IsPaid = true;
+                        model.Invoice.PaidDate = DateTime.Now;
+                        break;
+                    case InvoiceTypeEnum.Donated:
+                        model.Invoice.IsDonated = true;
+                        break;
+                    case InvoiceTypeEnum.Voided:
+                        model.Invoice.Voided = true;
+                        break;
+                    case InvoiceTypeEnum.Quote:
+                        model.Invoice.IsQuote = true;
+                        break;
+                    default:
+                        break;
+                }
+
+
+                var saveInvoice = _mapper.Map<IInvoice>(model.Invoice);
+                var invoiceId = _invoiceRepository.SaveInvoice(saveInvoice);
+                var saveLines = _mapper.Map<List<ILineItem>>(model.LineItems.Where(w => w.Quantity > 0));
+
+                _invoiceRepository.SaveLineItems(saveLines, invoiceId);
+                //_invoiceRepository.SaveAttachmentsToInvoice(invoiceId, model.UploadedFiles, false);
+                _invoiceRepository.SaveAttachmentsToInvoice(invoiceId, model.UploadedProofs, true);
             }
-                       
-
-            var saveInvoice = _mapper.Map<IInvoice>(model.Invoice);
-            var invoiceId = _invoiceRepository.SaveInvoice(saveInvoice);
-            var saveLines = _mapper.Map<List<ILineItem>>(model.LineItems.Where(w => w.Quantity > 0));
-
-            _invoiceRepository.SaveLineItems(saveLines, invoiceId);
-            //_invoiceRepository.SaveAttachmentsToInvoice(invoiceId, model.UploadedFiles, false);
-            _invoiceRepository.SaveAttachmentsToInvoice(invoiceId, model.UploadedProofs, true);
-
+            TempData["ErrorBannerMessage"] = "The invoice could not be saved. Please double-check all data and try again.";
             return RedirectToAction("Index", new { type = model.InvoiceType });
         }
 
@@ -188,9 +191,9 @@
         public PartialViewResult GetLineItemSuggestions(LineItemSuggestionViewModel model)
         {
             if (model.CustomerId > 0)
-                model.CustomerLineItems = _invoiceRepository.GetLineItems(model.SearchTerm, model.CustomerId).ToList();
+                model.CustomerLineItems = _invoiceRepository.GetLineItems(model.ItemId, model.CustomerId, true).ToList();
 
-            model.OverallLineItems = _invoiceRepository.GetLineItems(model.SearchTerm, model.CustomerId).ToList();
+            model.OverallLineItems = _invoiceRepository.GetLineItems(model.ItemId, model.CustomerId, false).ToList();
 
             return PartialView("_LineItemSuggestions", model);
         }

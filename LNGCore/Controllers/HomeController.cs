@@ -8,14 +8,14 @@ using LNGCore.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using LNGCore.Infrastructure;
-using LNGCore.Domain.Concrete;
-using LNGCore.Domain.Abstract.Repository;
+using LNGCore.Services.Concrete;
+using LNGCore.Services.Abstract.Repository;
 using Newtonsoft.Json;
 using LNGCore.UI.Models;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Text;
-using LNGCore.Domain.Logical;
+using LNGCore.Services.Logical;
 using Microsoft.AspNetCore.Http;
 
 namespace LNGCore.Controllers

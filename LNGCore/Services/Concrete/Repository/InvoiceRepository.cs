@@ -1,21 +1,21 @@
-﻿using LNGCore.Domain.Abstract.Class;
-using LNGCore.Domain.Abstract.Repository;
-using LNGCore.Domain.Concrete.Context;
+﻿using LNGCore.Services.Abstract.Class;
+using LNGCore.Services.Abstract.Repository;
+using LNGCore.Services.Concrete.Context;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Linq;
-using LNGCore.Domain.Abstract.Context;
-using LNGCore.Domain.Concrete.Class;
+using LNGCore.Services.Abstract.Context;
+using LNGCore.Services.Concrete.Class;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
-namespace LNGCore.Domain.Concrete.Repository
+namespace LNGCore.Services.Concrete.Repository
 {
     public class InvoiceRepository : IInvoiceRepository
     {
@@ -45,20 +45,21 @@ namespace LNGCore.Domain.Concrete.Repository
             return existingLines;
         }
 
-        public IEnumerable<ILineItem> GetLineItems(string searchTerm, int? customerId = 0)
+        public IEnumerable<ILineItem> GetLineItems(int? itemId = null, int? customerId = null, bool includeCustomer = true)
         {
-            searchTerm = searchTerm?.ToLower();
             IQueryable<ILineItem> lineItems = _dbContext.LineItem;
 
-            if (customerId != 0)
-                lineItems = lineItems.Where(w => w.Invoice.CustomerId == customerId);
+            if (itemId != null)
+                lineItems = lineItems.Where(w => w.ItemId == itemId);
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-                lineItems = lineItems.Where(w =>
-                        w.ItemDesc.ToLower().Contains(searchTerm) ||
-                        w.Item.ItemName.ToLower().Contains(searchTerm));
+            if (customerId != null)
+            {
+                lineItems = includeCustomer
+                   ? lineItems.Where(w => w.Invoice.CustomerId == customerId)
+                   : lineItems.Where(w => w.Invoice.CustomerId != customerId);
+            }
 
-            return lineItems.OrderByDescending(o => o.Invoice.OrderDate).Take(10).Include(i => i.Invoice).ThenInclude(t => t.Customer).Include(i => i.Item);
+            return lineItems.OrderByDescending(o => o.Invoice.OrderDate).Take(40).Include(i => i.Invoice).ThenInclude(t => t.Customer).Include(i => i.Item);
         }
 
         public IEnumerable<IItem> GetItemTypes()
@@ -75,7 +76,7 @@ namespace LNGCore.Domain.Concrete.Repository
                 .Include(i => i.Customer)
                 .Include(i => i.Employee)
                 .Include(i => i.LineItem)
-                .ThenInclude(t=> t.Item)
+                .ThenInclude(t => t.Item)
                 .FirstOrDefault(f => f.Id == invoiceId);
         }
 

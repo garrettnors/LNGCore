@@ -1,4 +1,4 @@
-﻿using LNGCore.Domain.Abstract.Class;
+﻿using LNGCore.Services.Abstract.Class;
 using System;
 using System.Collections.Generic;
 using System.Linq;

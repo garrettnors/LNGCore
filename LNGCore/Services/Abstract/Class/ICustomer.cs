@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace LNGCore.Domain.Abstract.Class
+namespace LNGCore.Services.Abstract.Class
 {
     public interface ICustomer
     {

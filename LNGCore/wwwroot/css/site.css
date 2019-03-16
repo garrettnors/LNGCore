@@ -42,6 +42,8 @@ body {
 
 .checkbox-lg {
     transform: scale(1.5);
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .bg-white-10 {

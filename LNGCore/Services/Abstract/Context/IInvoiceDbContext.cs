@@ -1,8 +1,8 @@
-﻿using LNGCore.Domain.Abstract.Class;
-using LNGCore.Domain.Concrete.Class;
+﻿using LNGCore.Services.Abstract.Class;
+using LNGCore.Services.Concrete.Class;
 using Microsoft.EntityFrameworkCore;
 
-namespace LNGCore.Domain.Abstract.Context
+namespace LNGCore.Services.Abstract.Context
 {
     public interface IInvoiceDbContext
     {

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using LNGCore.Domain.Abstract.Class;
-using LNGCore.Domain.Abstract.Repository;
+using LNGCore.Services.Abstract.Class;
+using LNGCore.Services.Abstract.Repository;
 using LNGCore.UI.Models.Admin;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,7 +55,7 @@ namespace LNGCore.UI.Controllers
         public IActionResult EditCustomer(int customerId, bool showSuccessMessage = false)
         {
             var customer = _customerRepository.GetCustomer(customerId);
-            
+
             if (customer.Id == 0)
                 customer.Taxable = true;
 
@@ -67,11 +67,17 @@ namespace LNGCore.UI.Controllers
         [HttpPost]
         public Tuple<int, string> EditCustomer(EditCustomerViewModel model)
         {
-            if (model.ShowSuccessMessage ?? false)            
-                TempData["SuccessBannerMessage"] = "Customer successfully saved.";
-            
-            var customer = _mapper.Map<ICustomer>(model);
-            return Tuple.Create(_customerRepository.SaveCustomer(customer), customer.DisplayName);
+            if (ModelState.IsValid)
+            {
+                if (model.ShowSuccessMessage ?? false)
+                    TempData["SuccessBannerMessage"] = "Customer successfully saved.";
+
+                var customer = _mapper.Map<ICustomer>(model);
+                return Tuple.Create(_customerRepository.SaveCustomer(customer), customer.DisplayName);
+            }
+            TempData["ErrorBannerMessage"] = "Customer was not saved. Check to make sure your info was not too long (typically 50 characters or less).";
+            return null;
+
         }
     }
 }

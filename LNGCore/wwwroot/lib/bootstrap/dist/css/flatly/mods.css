@@ -16,7 +16,14 @@ body {
 a {
     color: #08558a;
 }
-
+.modal-content {
+    background-image: linear-gradient(to bottom, #c2d6d6, #bed0d4, #bbc9d1, #bac3cc, #b9bcc6);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+.modal-body {
+    padding: 0px;
+}
 .select2-container--default .select2-selection--single {
     color: #7b8a8b;
     border-color: #ced4da;
@@ -53,13 +60,20 @@ a {
 
 .page-item .page-link {
     cursor: pointer;
-    background-color: #188fbc;
+    background-color: #75b0c6;
 }
 
     .page-item .page-link:hover {
-        background-color: #11749a;
+        background-color: #5e98ad;
     }
 
 .page-item.active .page-link {
-    background-color: #11749a;
+    background-color: #5e98ad;
+}
+
+.page-link:focus {
+    z-index: 2;
+    outline: 0;
+     -webkit-box-shadow: none; 
+     box-shadow: none; 
 }

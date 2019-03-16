@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using LNGCore.Domain.Abstract.Class;
+using LNGCore.Services.Abstract.Class;
 
-namespace LNGCore.Domain.Abstract.Repository
+namespace LNGCore.Services.Abstract.Repository
 {
     public interface IEventRepository
     {

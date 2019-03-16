@@ -1,10 +1,10 @@
-﻿using LNGCore.Domain.Abstract.Class;
+﻿using LNGCore.Services.Abstract.Class;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LNGCore.Domain.Abstract.Repository
+namespace LNGCore.Services.Abstract.Repository
 {
     public interface IInvoiceRepository
     {
@@ -17,7 +17,7 @@ namespace LNGCore.Domain.Abstract.Repository
         IEnumerable<IInvoice> GetYearToDateSales();
         IEnumerable<IInvoice> GetInvoicesByCustomer(int customerId);
         IEnumerable<ILineItem> GetLineItems(int invoiceId, int startingIndex, int roundToNearest);
-        IEnumerable<ILineItem> GetLineItems(string searchTerm, int? customerId = null);
+        IEnumerable<ILineItem> GetLineItems(int? itemId = 0, int? customerId = null, bool includeCustomer = true);
         IEnumerable<IItem> GetItemTypes();
         void SaveLineItems(List<ILineItem> lines, int invoiceId);
         IInvoice GetInvoice(int invoiceId);

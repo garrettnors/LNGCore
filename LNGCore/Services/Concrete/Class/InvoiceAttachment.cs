@@ -1,10 +1,10 @@
-﻿using LNGCore.Domain.Abstract.Class;
+﻿using LNGCore.Services.Abstract.Class;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace LNGCore.Domain.Concrete.Class
+namespace LNGCore.Services.Concrete.Class
 {
     public class InvoiceAttachment : IInvoiceAttachment
     {

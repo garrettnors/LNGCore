@@ -5,7 +5,7 @@ using System.Net.Mail;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 
-namespace LNGCore.Domain.Logical
+namespace LNGCore.Services.Logical
 {
     public class Email
     {
