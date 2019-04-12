@@ -11,9 +11,11 @@ using System.Net.Mail;
 using System.IO;
 using LNGCore.Domain.Services.Interfaces;
 using LNGCore.Domain.Database;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LNGCore.UI.Controllers
-{ 
+{
+    [Authorize(Roles = "Administrator")]
     public class InvoiceController : Controller
     {
         private readonly IInvoiceService _invoiceService;

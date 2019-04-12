@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using LNGCore.Domain.Services.Interfaces;
 using LNGCore.UI.Models.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LNGCore.UI.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class CustomerController : Controller
     {
         private readonly IInvoiceService _invoiceService;

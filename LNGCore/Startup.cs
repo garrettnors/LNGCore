@@ -7,11 +7,17 @@ using LNGCore.Domain.Database;
 using LNGCore.Domain.Services.Implementations;
 using LNGCore.Domain.Services.Interfaces;
 using LNGCore.UI;
+using LNGCore.UI.Areas.Identity.Data;
+using LNGCore.UI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IISIntegration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -44,20 +50,31 @@ namespace LNGCore
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddSession();
-            
-            services.AddAuthentication(options => 
-            {
-                options.DefaultAuthenticateScheme = "";
-            });
+
+            //services.AddAuthentication(options => 
+            //{
+            //    options.DefaultAuthenticateScheme = "";
+            //});
+            services.AddAuthentication(IISDefaults.AuthenticationScheme);
             services.AddMvc()
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
-                    //options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddHttpsRedirection(options => { options.HttpsPort = 443; });
+
+            services.AddDbContext<IdentityContext>(options =>
+                    options.UseSqlServer(Configuration.GetSection("SiteConfiguration")["DbContext"]));
+
+            services.AddScoped<SignInManager<LNGUser>, SignInManager<LNGUser>>();
+            services.AddScoped<UserManager<LNGUser>, UserManager<LNGUser>>();
+            services.AddScoped<IUserClaimsPrincipalFactory<LNGUser>, UserClaimsPrincipalFactory<LNGUser, IdentityRole>>();
+            services.AddDefaultIdentity<LNGUser>()
+            .AddDefaultUI(UIFramework.Bootstrap4)
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<IdentityContext>();
 
             services.AddScoped<IBillSheetService, BillSheetService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
@@ -84,7 +101,7 @@ namespace LNGCore
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseCookiePolicy();
             app.UseSession();
             app.UseMvc(routes =>

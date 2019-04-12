@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LNGCore.UI.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class DashboardController : Controller
     {
         private readonly IInvoiceService _invoiceService;
