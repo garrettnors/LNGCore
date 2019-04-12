@@ -1,8 +1,8 @@
-﻿using System;
+﻿using LNGCore.Domain.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.Services.Abstract.Class;
 
 namespace LNGCore.UI.Models.Admin
 {
@@ -10,14 +10,14 @@ namespace LNGCore.UI.Models.Admin
     {
         public LineItemSuggestionViewModel()
         {
-            OverallLineItems = new List<ILineItem>();
-            CustomerLineItems = new List<ILineItem>();
+            OverallLineItems = new List<LineItem>();
+            CustomerLineItems = new List<LineItem>();
         }
         public int CustomerId { get; set; }
         public int? ItemId { get; set; }
         public int LineIndex { get; set; }
-        public ICustomer Customer { get; set; }
-        public List<ILineItem> OverallLineItems { get; set; }
-        public List<ILineItem> CustomerLineItems { get; set; }
+        public Customer Customer { get; set; }
+        public List<LineItem> OverallLineItems { get; set; }
+        public List<LineItem> CustomerLineItems { get; set; }
     }
 }

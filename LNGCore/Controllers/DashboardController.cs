@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using AutoMapper;
-using LNGCore.Services.Abstract.Class;
-using LNGCore.Services.Abstract.Repository;
+using LNGCore.Domain.Services.Interfaces;
 using LNGCore.UI.Enums;
 using LNGCore.UI.Models.Admin;
 using Microsoft.AspNetCore.Authorization;
@@ -15,20 +13,18 @@ namespace LNGCore.UI.Controllers
 {
     public class DashboardController : Controller
     {
-        private readonly IInvoiceRepository _invoiceRepository;
-        private readonly IEventRepository _eventRepository;
-        private readonly ICustomerRepository _customerRepository;
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IMapper _mapper;
+        private readonly IInvoiceService _invoiceService;
+        private readonly IEventService _eventService;
+        private readonly ICustomerService _customerService;
+        private readonly IEmployeeService _employeeService;
 
-        public DashboardController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository,
-            ICustomerRepository customerRepository, IEmployeeRepository employeeRepository, IMapper mapper)
+        public DashboardController(IInvoiceService invoiceService, IEventService eventService,
+            ICustomerService customerService, IEmployeeService employeeService)
         {
-            _invoiceRepository = invoiceRepository;
-            _eventRepository = eventRepository;
-            _customerRepository = customerRepository;
-            _employeeRepository = employeeRepository;
-            _mapper = mapper;
+            _invoiceService = invoiceService;
+            _eventService = eventService;
+            _customerService = customerService;
+            _employeeService = employeeService;            
         }
 
         public IActionResult Index()
@@ -37,10 +33,10 @@ namespace LNGCore.UI.Controllers
 
             var vm = new DashboardViewModel
             {
-                Events = _eventRepository.GetUpcomingEvents().ToList(),
-                YtdSales = _invoiceRepository.GetYearToDateSales().Sum(s => s.InvoiceTotal) ?? 0,
-                OpenInvoiceAmount = _invoiceRepository.GetOpenInvoices().Sum(s => s.InvoiceTotal) ?? 0,
-                PastDueAmount = _invoiceRepository.GetPastDueInvoices().Sum(s => s.InvoiceTotal) ?? 0
+                Events = _eventService.GetUpcomingEvents().ToList(),
+                YtdSales = _invoiceService.GetYearToDateSales().Sum(s => s.InvoiceTotal) ?? 0,
+                OpenInvoiceAmount = _invoiceService.GetOpenInvoices().Sum(s => s.InvoiceTotal) ?? 0,
+                PastDueAmount = _invoiceService.GetPastDueInvoices().Sum(s => s.InvoiceTotal) ?? 0
             };
             return View(vm);
         }

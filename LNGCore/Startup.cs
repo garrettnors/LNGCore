@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using LNGCore.Services.Abstract.Context;
-using LNGCore.Services.Abstract.Repository;
-using LNGCore.Services.Concrete.Context;
-using LNGCore.Services.Concrete.Repository;
+using LNGCore.Domain.Database;
+using LNGCore.Domain.Services.Implementations;
+using LNGCore.Domain.Services.Interfaces;
 using LNGCore.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,15 +44,7 @@ namespace LNGCore
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddSession();
-
-            // Auto Mapper Configurations
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile());
-            });
-
-            var mapper = mappingConfig.CreateMapper();
-            services.AddSingleton(mapper);
+            
             services.AddAuthentication(options => 
             {
                 options.DefaultAuthenticateScheme = "";
@@ -69,14 +59,13 @@ namespace LNGCore
 
             services.AddHttpsRedirection(options => { options.HttpsPort = 443; });
 
-            services.AddScoped<IBillSheetRepository, BillSheetRepository>();
-            services.AddScoped<IInvoiceRepository, InvoiceRepository>();
-            services.AddScoped<ICustomerRepository, CustomerRepository>();
-            services.AddScoped<IOrnamentOrderRepository, OrnamentOrderRepository>();
-            services.AddScoped<ILogRepository, LogRepository>();
-            services.AddScoped<IEventRepository, EventRepository>();
-            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-            services.AddScoped<IInvoiceDbContext, InvoiceDbContext>();
+            services.AddScoped<IBillSheetService, BillSheetService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<ILogService, LogService>();
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<LngDbContext, LngDbContext>();
             services.AddSingleton(Configuration);
         }
 

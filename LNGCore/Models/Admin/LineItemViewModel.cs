@@ -1,8 +1,8 @@
-﻿using System;
+﻿using LNGCore.Domain.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.Services.Abstract.Class;
 
 namespace LNGCore.UI.Models.Admin
 {
@@ -10,12 +10,12 @@ namespace LNGCore.UI.Models.Admin
     {
         public LineItemViewModel()
         {
-            LineItems = new List<ILineItem>();
-            ItemTypes = new List<IItem>();
+            LineItems = new List<LineItem>();
+            ItemTypes = new List<Item>();
         }
 
-        public List<ILineItem> LineItems { get; set; }
-        public List<IItem> ItemTypes { get; set; }
+        public List<LineItem> LineItems { get; set; }
+        public List<Item> ItemTypes { get; set; }
         public int InvoiceId { get; set; }
         public int LineIndex { get; set; }
     }

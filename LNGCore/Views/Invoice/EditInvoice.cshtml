@@ -161,7 +161,7 @@
                             <label class="m-0 mt-2 text-muted">
                                 Employee
                             </label>
-                            @Html.DropDownListFor(f => f.Invoice.EmployeeId, new SelectList(Model.Employees.OrderBy(o => o.EmployeeID), "EmployeeID", "EmpName", Model.Invoice.EmployeeId), new { @class = "form-control form-control-sm select2" })
+                            @Html.DropDownListFor(f => f.Invoice.EmployeeId, new SelectList(Model.Employees.OrderBy(o => o.EmployeeId), "EmployeeId", "EmpName", Model.Invoice.EmployeeId), new { @class = "form-control form-control-sm select2" })
                         </div>
                     </div>
                     <div class="row no-gutters">

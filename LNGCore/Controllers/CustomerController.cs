@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using LNGCore.Services.Abstract.Class;
-using LNGCore.Services.Abstract.Repository;
+using LNGCore.Domain.Services.Interfaces;
 using LNGCore.UI.Models.Admin;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,20 +10,18 @@ namespace LNGCore.UI.Controllers
 {
     public class CustomerController : Controller
     {
-        private readonly IInvoiceRepository _invoiceRepository;
-        private readonly IEventRepository _eventRepository;
-        private readonly ICustomerRepository _customerRepository;
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IMapper _mapper;
+        private readonly IInvoiceService _invoiceService;
+        private readonly IEventService _eventService;
+        private readonly ICustomerService _customerService;
+        private readonly IEmployeeService _employeeService;
 
-        public CustomerController(IInvoiceRepository invoiceRepository, IEventRepository eventRepository,
-            ICustomerRepository customerRepository, IEmployeeRepository employeeRepository, IMapper mapper)
+        public CustomerController(IInvoiceService invoiceService, IEventService eventService,
+            ICustomerService customerService, IEmployeeService employeeService)
         {
-            _invoiceRepository = invoiceRepository;
-            _eventRepository = eventRepository;
-            _customerRepository = customerRepository;
-            _employeeRepository = employeeRepository;
-            _mapper = mapper;
+            _invoiceService = invoiceService;
+            _eventService = eventService;
+            _customerService = customerService;
+            _employeeService = employeeService;
         }
         public IActionResult Index(int page = 1, int take = 15, string searchTerm = "")
         {
@@ -40,7 +36,7 @@ namespace LNGCore.UI.Controllers
                 CurrentPage = skip / take + 1
             };
 
-            var customers = _customerRepository.GetAllCustomers(searchTerm).ToList();
+            var customers = _customerService.GetAllCustomers(searchTerm).ToList();
             pagination.NumberOfPages =
                 customers.Count <= take ? 1 : (int)Math.Ceiling(customers.Count / (decimal)take);
 
@@ -54,12 +50,13 @@ namespace LNGCore.UI.Controllers
         [HttpGet]
         public IActionResult EditCustomer(int customerId, bool showSuccessMessage = false)
         {
-            var customer = _customerRepository.GetCustomer(customerId);
+            var customer = _customerService.GetCustomer(customerId);
 
             if (customer.Id == 0)
                 customer.Taxable = true;
 
-            var vm = _mapper.Map<EditCustomerViewModel>(customer);
+            var vm = new EditCustomerViewModel();
+            vm.Customer = customer;
             vm.ShowSuccessMessage = showSuccessMessage;
             return PartialView("_EditCustomer", vm);
         }
@@ -72,8 +69,8 @@ namespace LNGCore.UI.Controllers
                 if (model.ShowSuccessMessage ?? false)
                     TempData["SuccessBannerMessage"] = "Customer successfully saved.";
 
-                var customer = _mapper.Map<ICustomer>(model);
-                return Tuple.Create(_customerRepository.SaveCustomer(customer), customer.DisplayName);
+                
+                return Tuple.Create(_customerService.SaveCustomer(model.Customer), model.Customer.DisplayName);
             }
             TempData["ErrorBannerMessage"] = "Customer was not saved. Check to make sure your info was not too long (typically 50 characters or less).";
             return null;

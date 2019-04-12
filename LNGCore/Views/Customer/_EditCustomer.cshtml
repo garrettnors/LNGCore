@@ -26,11 +26,11 @@
 
 @using (Html.BeginForm("EditCustomer", "Customer", FormMethod.Post, new { id = "formEditCustomer" }))
 {
-    @Html.HiddenFor(f => f.Id)
+    @Html.HiddenFor(f => f.Customer.Id)
     @Html.HiddenFor(f => f.ShowSuccessMessage)
     <div class="card m-0">
         <div class="card-header">
-            <h4 class="m-0">@(Model.Id == 0 ? "Add New Contact" : $"Edit {(!string.IsNullOrWhiteSpace(Model.DisplayName) ? Model.DisplayName : "Customer")}")</h4>
+            <h4 class="m-0">@(Model.Customer.Id == 0 ? "Add New Contact" : $"Edit {(!string.IsNullOrWhiteSpace(Model.Customer.DisplayName) ? Model.Customer.DisplayName : "Customer")}")</h4>
         </div>
         <div class="card-body">
             <div class="card bg-info text-white">
@@ -41,62 +41,62 @@
             <div class="row pt-3">
                 <div class="col-md-6">
                     <div class="form-group">
-                        @Html.LabelFor(f => f.Name)
-                        @Html.TextBoxFor(f => f.Name, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.Name)
+                        @Html.TextBoxFor(f => f.Customer.Name, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.BusinessName)
-                        @Html.TextBoxFor(f => f.BusinessName, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.BusinessName)
+                        @Html.TextBoxFor(f => f.Customer.BusinessName, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.Email)
-                        @Html.TextBoxFor(f => f.Email, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.Email)
+                        @Html.TextBoxFor(f => f.Customer.Email, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.SecondaryEmail)
-                        @Html.TextBoxFor(f => f.SecondaryEmail, new { @class = "form-control form-control-sm" })
-                        @Html.ValidationMessageFor(f => f.SecondaryEmail)
+                        @Html.LabelFor(f => f.Customer.SecondaryEmail)
+                        @Html.TextBoxFor(f => f.Customer.SecondaryEmail, new { @class = "form-control form-control-sm" })
+                        @Html.ValidationMessageFor(f => f.Customer.SecondaryEmail)
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.BusinessPhone)
-                        @Html.TextBoxFor(f => f.BusinessPhone, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.BusinessPhone)
+                        @Html.TextBoxFor(f => f.Customer.BusinessPhone, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.AltPhone)
-                        @Html.TextBoxFor(f => f.AltPhone, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.AltPhone)
+                        @Html.TextBoxFor(f => f.Customer.AltPhone, new { @class = "form-control form-control-sm" })
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        @Html.LabelFor(f => f.Street)
-                        @Html.TextBoxFor(f => f.Street, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.Street)
+                        @Html.TextBoxFor(f => f.Customer.Street, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.PostBox)
-                        @Html.TextBoxFor(f => f.PostBox, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.PostBox)
+                        @Html.TextBoxFor(f => f.Customer.PostBox, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.City)
-                        @Html.TextBoxFor(f => f.City, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.City)
+                        @Html.TextBoxFor(f => f.Customer.City, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.State)
-                        @Html.TextBoxFor(f => f.State, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.State)
+                        @Html.TextBoxFor(f => f.Customer.State, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.ZipCode)
-                        @Html.TextBoxFor(f => f.ZipCode, new { @class = "form-control form-control-sm" })
+                        @Html.LabelFor(f => f.Customer.ZipCode)
+                        @Html.TextBoxFor(f => f.Customer.ZipCode, new { @class = "form-control form-control-sm" })
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(f => f.Taxable)
-                @Html.CheckBoxFor(f => f.Taxable, new { @class = "checkbox-lg", onchange = "showTaxId(this);" })
+                @Html.LabelFor(f => f.Customer.Taxable)
+                @Html.CheckBoxFor(f => f.Customer.Taxable, new { @class = "checkbox-lg", onchange = "showTaxId(this);" })
             </div>
-            <div class="form-group" id="taxIdGroup" style="@(Model.Taxable ? "display: none;" : "")">
-                @Html.LabelFor(f => f.TaxId)
-                @Html.TextBoxFor(f => f.TaxId, new { @class = "form-control form-control-sm", data_val = "false", data_val_required = "The email is required" })
+            <div class="form-group" id="taxIdGroup" style="@(Model.Customer.Taxable ? "display: none;" : "")">
+                @Html.LabelFor(f => f.Customer.TaxId)
+                @Html.TextBoxFor(f => f.Customer.TaxId, new { @class = "form-control form-control-sm", data_val = "false", data_val_required = "The email is required" })
             </div>
             <div class="text-center">
                 <button type="button" onclick="submitContactSaveForm();" class="btn btn-sm btn-success">Save Contact</button>

@@ -8,8 +8,6 @@ using LNGCore.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using LNGCore.Infrastructure;
-using LNGCore.Services.Concrete;
-using LNGCore.Services.Abstract.Repository;
 using Newtonsoft.Json;
 using LNGCore.UI.Models;
 using Microsoft.Extensions.Configuration;
@@ -17,29 +15,25 @@ using System.Net;
 using System.Text;
 using LNGCore.Services.Logical;
 using Microsoft.AspNetCore.Http;
+using LNGCore.Domain.Services.Interfaces;
 
 namespace LNGCore.Controllers
 {
 
     public class HomeController : Controller
     {
-        private readonly IBillSheetRepository _billSheetRepository;
-        private readonly ICustomerRepository _customerRepository;
-        private readonly ILogRepository _logRepository;
+        private readonly ILogService _logService;
         private readonly IConfiguration _config;
-        public HomeController(IBillSheetRepository billSheetRepositoryParam, ICustomerRepository customerRepositoryParam, ILogRepository logRepositoryParam, IConfiguration configParam)
+        public HomeController(ILogService logServiceParam, IConfiguration configParam)
         {
-            _billSheetRepository = billSheetRepositoryParam;
-            _customerRepository = customerRepositoryParam;
-            _logRepository = logRepositoryParam;
+            _logService = logServiceParam;
             _config = configParam;
         }
         public async Task<IActionResult> Index()
         {
             var vm = new IndexViewModel
             {
-                EtsyListing = await GetEtsyListings(),
-                Customers = _customerRepository.GetAllCustomers()
+                EtsyListing = await GetEtsyListings()
             };
             return View(vm);
         }
@@ -57,17 +51,9 @@ namespace LNGCore.Controllers
             return View(vm);
         }
 
-        public string GetBills()
-        {
-            return JsonConvert.SerializeObject(_billSheetRepository.GetAllBills());
-        }
         public string GetCustomers()
         {
-            return string.Empty;// JsonConvert.SerializeObject(customerRepository.GetAllCustomers());
-        }
-        public string GetCustomerFromInvoice()
-        {
-            return JsonConvert.SerializeObject(_customerRepository.GetCustomer(2));
+            return string.Empty;// JsonConvert.SerializeObject(customerService.GetAllCustomers());
         }
         public async Task<EtsyListings> GetEtsyListings(string searchTerm = null)
         {
@@ -108,7 +94,7 @@ namespace LNGCore.Controllers
 
             if (ModelState.IsValid)
             {
-                var verify = new RecaptchaVerify(_config, _logRepository);
+                var verify = new RecaptchaVerify(_config, _logService);
                 var googleResponse = await verify.GetRecaptchaScore(model.GoogleClientToken);
                 if (googleResponse.success)
                 {
@@ -147,11 +133,11 @@ namespace LNGCore.Controllers
 
             if (!string.IsNullOrWhiteSpace(errorMsg))
             {
-                var log = _logRepository.GetLog(0);
+                var log = _logService.GetLog(0);
                 log.Date = DateTime.Now;
                 log.LogType = "Error";
                 log.Summary = errorMsg;             
-                _logRepository.SaveLog(log);
+                _logService.SaveLog(log);
                 TempData["ErrorBannerMessage"] = "Your correspondence didn't reach us, please email us directly at Info@LNGLaserworks.com for immediate assistance.";
             }
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.Services.Abstract.Class;
+using LNGCore.Domain.Database;
 using LNGCore.UI.Enums;
 
 namespace LNGCore.UI.Models.Admin
@@ -12,10 +12,10 @@ namespace LNGCore.UI.Models.Admin
         public InvoiceViewModel()
         {
             PaginationParameters = new PaginationViewModel();
-            Invoices = new List<IInvoice>();
+            Invoices = new List<Invoice>();
         }
         public InvoiceTypeEnum InvoiceType { get; set; }
-        public List<IInvoice> Invoices { get; set; }
+        public List<Invoice> Invoices { get; set; }
         public PaginationViewModel PaginationParameters { get; set; }
         public string SearchTerm { get; set; }
         public string ViewTitle { get; set; }

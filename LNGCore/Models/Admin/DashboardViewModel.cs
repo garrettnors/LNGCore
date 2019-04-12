@@ -1,8 +1,8 @@
-﻿using System;
+﻿using LNGCore.Domain.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.Services.Abstract.Class;
 
 namespace LNGCore.UI.Models.Admin
 {
@@ -10,9 +10,9 @@ namespace LNGCore.UI.Models.Admin
     {
         public DashboardViewModel()
         {
-            Events = new List<IEvent>();
+            Events = new List<Event>();
         }
-        public List<IEvent> Events { get; set; }
+        public List<Event> Events { get; set; }
         public decimal YtdSales { get; set; }
         public decimal OpenInvoiceAmount { get; set; }
         public decimal PastDueAmount { get; set; }
