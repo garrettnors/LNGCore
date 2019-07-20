@@ -10,7 +10,7 @@ namespace LNGCore.UI.Models.Admin
 {
     public class EditCustomerViewModel
     {
-        public Customer Customer { get; set; }
-        public bool? ShowSuccessMessage { get; set; }        
+        public Customer Customer { get; set; } 
+        public bool fromAjax { get; set; }
     }
 }

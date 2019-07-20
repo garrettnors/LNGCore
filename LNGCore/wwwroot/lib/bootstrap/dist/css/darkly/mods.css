@@ -1,4 +1,8 @@
-﻿.form-control {
+﻿
+/*DARKLY MODS*/
+
+
+.form-control {
     background-color: rgba(202,240,255,.07);
     color: rgba(255,255,255,.70);
     border: 0px;
@@ -31,15 +35,25 @@ body {
 .table {
     color: rgba(255,255,255,.70);
 }
+
 .modal-content {
-    
     background-image: linear-gradient(to right top, #000000, #140b12, #1a1521, #181e32, #002a41);
     background-attachment: fixed;
     background-repeat: no-repeat;
 }
+
 .modal-body {
     padding: 0px;
 }
+
+.table-bg {
+    background-color: rgba(202,240,255,.07);
+}
+
+    .table-bg tr, .table-bg th, .table-bg td {
+        border-color: #161a1d !important;
+    }
+
 .semi-transparent {
     background-color: rgba(202,240,255,.07);
 }

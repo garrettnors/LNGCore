@@ -4,10 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using LNGCore.Domain.Services.Interfaces;
-using LNGCore.UI.Enums;
 using LNGCore.UI.Models.Admin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static LNGCore.Domain.Infrastructure.Enums;
 
 namespace LNGCore.UI.Controllers
 {
@@ -36,8 +36,8 @@ namespace LNGCore.UI.Controllers
             {
                 Events = _eventService.GetUpcomingEvents().ToList(),
                 YtdSales = _invoiceService.GetYearToDateSales().Sum(s => s.InvoiceTotal) ?? 0,
-                OpenInvoiceAmount = _invoiceService.GetOpenInvoices().Sum(s => s.InvoiceTotal) ?? 0,
-                PastDueAmount = _invoiceService.GetPastDueInvoices().Sum(s => s.InvoiceTotal) ?? 0
+                OpenInvoiceAmount = _invoiceService.GetInvoices(InvoiceTypeEnum.Open).Sum(s => s.InvoiceTotal) ?? 0,
+                PastDueAmount = _invoiceService.GetInvoices(InvoiceTypeEnum.PastDue).Sum(s => s.InvoiceTotal) ?? 0
             };
             return View(vm);
         }

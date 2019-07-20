@@ -38,32 +38,37 @@ namespace LNGCore.Domain.Services.Implementations
             return customers;
         }
 
-        public virtual Customer GetCustomer(int customerId)
+        public virtual Customer Get(int customerId)
         {
             return _db.Customer.FirstOrDefault(f => f.Id == customerId) ?? new Customer();
         }
 
-        public int SaveCustomer(Customer customer)
-        {
-            var saveCustomer = _db.Customer.FirstOrDefault(f => f.Id == customer.Id) ?? new Customer();
-            saveCustomer.BusinessName = customer.BusinessName;
-            saveCustomer.Name = customer.Name;
-            saveCustomer.BusinessPhone = customer.BusinessPhone;
-            saveCustomer.AltPhone = customer.AltPhone;
-            saveCustomer.PostBox = customer.PostBox;
-            saveCustomer.City = customer.City;
-            saveCustomer.State = customer.State;
-            saveCustomer.Street = customer.Street;
-            saveCustomer.ZipCode = customer.ZipCode;
-            saveCustomer.Email = customer.Email;
-            saveCustomer.SecondaryEmail = customer.SecondaryEmail;
-            saveCustomer.TaxId = customer.TaxId;
-
-            if (saveCustomer.Id == 0)
-                _db.Customer.Add(saveCustomer);
-
+        public int Add(Customer customer)
+        {                       
+            _db.Customer.Add(customer);
             _db.SaveChanges();
-            return saveCustomer.Id;
+            return customer.Id;
+        }
+
+        public void Edit(Customer customer)
+        {
+            var item = _db.Customer.Find(customer.Id);
+            if (item == null)
+                return;
+
+            _db.Entry(item).CurrentValues.SetValues(customer);
+            _db.SaveChanges();
+        }
+
+        public void Delete(int customerId)
+        {
+            var item = _db.Customer.Find(customerId);
+
+            if (item == null)
+                return;
+
+            _db.Remove(item);
+            _db.SaveChanges();
         }
     }
 }

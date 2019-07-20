@@ -26,11 +26,11 @@ namespace LNGCore.Services.Logical
                 var secret = _config.GetSection("SiteConfiguration")["RecaptchaSiteSecret"];
                 var response = httpClient.GetAsync($"https://www.google.com/recaptcha/api/siteverify?response={googleClientToken}&secret={secret}").Result;
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var log = _logService.GetLog(0);
+                var log = _logService.Get(0);
                 log.Date = DateTime.Now;
                 log.LogType = "Error";
                 log.Summary = $"Recaptcha Response: {jsonString}";
-                _logService.SaveLog(log);
+                _logService.Add(log);
                 return JsonConvert.DeserializeObject<GoogleResponseObject>(jsonString);
             }
         }

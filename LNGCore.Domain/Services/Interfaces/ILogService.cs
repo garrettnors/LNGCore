@@ -5,10 +5,8 @@ using System.Text;
 
 namespace LNGCore.Domain.Services.Interfaces
 {
-    public interface ILogService
+    public interface ILogService : IBaseService<Log>
     {
-        Log GetLog(int logId);
-        void SaveLog(Log log);
     }
 
 }

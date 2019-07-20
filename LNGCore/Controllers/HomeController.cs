@@ -19,7 +19,6 @@ using LNGCore.Domain.Services.Interfaces;
 
 namespace LNGCore.Controllers
 {
-
     public class HomeController : Controller
     {
         private readonly ILogService _logService;
@@ -133,11 +132,11 @@ namespace LNGCore.Controllers
 
             if (!string.IsNullOrWhiteSpace(errorMsg))
             {
-                var log = _logService.GetLog(0);
+                var log = _logService.Get(0);
                 log.Date = DateTime.Now;
                 log.LogType = "Error";
                 log.Summary = errorMsg;             
-                _logService.SaveLog(log);
+                _logService.Add(log);
                 TempData["ErrorBannerMessage"] = "Your correspondence didn't reach us, please email us directly at Info@LNGLaserworks.com for immediate assistance.";
             }
 

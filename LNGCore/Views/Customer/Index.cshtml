@@ -14,24 +14,14 @@
     }
     function editCustomer(customerId) {
         $.ajax({
-            url: "@Html.Raw(Url.Action("EditCustomer", "Customer", new { customerId = "__CUSTID__", showSuccessMessage = true }))".replace("__CUSTID__", customerId),
+            url: "@Html.Raw(Url.Action("EditCustomer", "Customer", new { customerId = "__CUSTID__" }))".replace("__CUSTID__", customerId),
             success: function(data) {
                 $("#customerModal .modal-content").html(data);
                 $("#customerModal").modal("show");
             }
         });
-    }
-    
-    function submitContactSaveForm() {
-        $.ajax({
-        url:"@Url.Action("EditCustomer", "Customer")",
-        type:'post',
-            data: $('#formEditCustomer').serialize(),
-            success: function () {                         
-            window.location.href = "@Url.Action("Index", "Customer")";
-        }
-    });
-    }
+    }   
+   
 </script>
 <div class="row pb-3">
     <div class="col-6">
@@ -52,7 +42,7 @@
         }
     </div>
 </div>
-<table class="table table-sm table-bordered table-striped semi-transparent">
+<table class="table table-sm table-bordered table-striped table-bg">
     <thead>
         <tr>
             <th></th>

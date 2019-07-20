@@ -20,6 +20,7 @@ namespace LNGCore.Services.Logical
         public string RecipientEmail { get; set; }
         public string RecipientDisplayName { get; set; }
         public string MailSubject { get; set; }
+        public Attachment Attachment { get; set; }
 
         public string SendEmail()
         {
@@ -38,6 +39,9 @@ namespace LNGCore.Services.Logical
                     IsBodyHtml = true
                 };
 
+                if (Attachment != null)
+                    message.Attachments.Add(Attachment);
+
                 var client = new SmtpClient("smtp.gmail.com", 587)
                 {
                     EnableSsl = true,
@@ -45,6 +49,7 @@ namespace LNGCore.Services.Logical
                     Credentials = new NetworkCredential(mailerMail, mailerPassword),
                     DeliveryMethod = SmtpDeliveryMethod.Network
                 };
+
                 client.Send(message);
                 return null;
             }

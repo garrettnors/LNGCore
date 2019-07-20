@@ -1,33 +1,51 @@
 ﻿@model LNGCore.UI.Models.Admin.EditCustomerViewModel
 <script>
-    $(document).ready(function () {
-        validateForm();
-    });
-    function validateForm() {
-        var form = $("#formEditCustomer")
-            .removeData("validator") /* added by the raw jquery.validate plugin */
-            .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin*/
-        $.validator.unobtrusive.parse(form);
-    }
     function showTaxId(checkbox) {
         var isTaxable = $(checkbox).prop("checked");
 
         if (isTaxable) {
             $("#taxIdGroup").hide();
-            $("#TaxId").attr("data-val", false).removeClass("required");
+            $("#Customer_TaxId").attr("data-val", false).removeClass("required");
         } else {
             $("#taxIdGroup").show();
-            $("#TaxId").attr("data-val", true).addClass("required");
+            $("#Customer_TaxId").attr("data-val", true).addClass("required");
         }
-        validateForm();
     }
 
+    function submitForm() {
+        var fromAjax = @(Model.fromAjax.ToString().ToLower());
+        if (isValid()) {
+            if (fromAjax) {
+                submitFromAjax();
+            } else {
+                $("#formEditCustomer").submit();
+            }
+        }
+    }
+
+    function submitFromAjax() {
+        $.ajax({
+        url:"@Url.Action("EditCustomerAjax", "Customer")",
+        type:'post',
+            data: $('#formEditCustomer').serialize(),
+            success: function (customer) {
+                $("#customerModal").modal("hide");
+                $("[name='Invoice.CustomerId']").append("<option value=" + customer.item1 + ">" + customer.item2 + "</option>")
+                $("[name='Invoice.CustomerId']").val(customer.item1).trigger("change");
+        }
+    });
+    }
+
+    function isValid() {
+        var valid = $("#formEditCustomer").valid();
+        debugger;
+        return valid;
+    }
 </script>
 
 @using (Html.BeginForm("EditCustomer", "Customer", FormMethod.Post, new { id = "formEditCustomer" }))
 {
     @Html.HiddenFor(f => f.Customer.Id)
-    @Html.HiddenFor(f => f.ShowSuccessMessage)
     <div class="card m-0">
         <div class="card-header">
             <h4 class="m-0">@(Model.Customer.Id == 0 ? "Add New Contact" : $"Edit {(!string.IsNullOrWhiteSpace(Model.Customer.DisplayName) ? Model.Customer.DisplayName : "Customer")}")</h4>
@@ -99,7 +117,7 @@
                 @Html.TextBoxFor(f => f.Customer.TaxId, new { @class = "form-control form-control-sm", data_val = "false", data_val_required = "The email is required" })
             </div>
             <div class="text-center">
-                <button type="button" onclick="submitContactSaveForm();" class="btn btn-sm btn-success">Save Contact</button>
+                <button type="button" onclick="submitForm();" class="btn btn-sm btn-success">Save Contact</button>
                 <button type="button" data-dismiss="modal" class="btn btn-sm btn-secondary">Cancel</button>
                 <div>
                     @Html.ValidationSummary()
@@ -107,4 +125,7 @@
             </div>
         </div>
     </div>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
 }

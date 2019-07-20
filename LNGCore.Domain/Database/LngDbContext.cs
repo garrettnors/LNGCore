@@ -18,6 +18,7 @@ namespace LNGCore.Domain.Database
         {
         }
 
+        public virtual DbSet<Configuration> Configuration { get; set; }
         public virtual DbSet<BillSheet> BillSheet { get; set; }
         public virtual DbSet<Customer> Customer { get; set; }
         public virtual DbSet<Employee> Employee { get; set; }
@@ -66,6 +67,15 @@ namespace LNGCore.Domain.Database
                 entity.Property(e => e.WhereToPay).HasMaxLength(500);
 
                 entity.Property(e => e.WhoWeOwe).HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<Configuration>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("Id");
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.Property(e => e.Value).HasMaxLength(500);
             });
 
             modelBuilder.Entity<Customer>(entity =>

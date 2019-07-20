@@ -5,9 +5,8 @@ using System.Text;
 
 namespace LNGCore.Domain.Services.Interfaces
 {
-    public interface IEmployeeService
+    public interface IEmployeeService : IBaseService<Employee>
     {
         IEnumerable<Employee> GetEmployees();
-        Employee GetEmployee(int employeeId);
     }
 }

@@ -12,6 +12,7 @@ namespace LNGCore.Domain.Database
         public bool Completed { get; set; }
         public int EmployeeId { get; set; }
         public int? InvoiceId { get; set; }
+        public bool Recurring { get; set; }
 
         public virtual Employee Employee { get; set; }
     }

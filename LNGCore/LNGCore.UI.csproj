@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\uploads\" />
+    <Folder Include="wwwroot\lib\Spectrum\" />
     <Folder Include="wwwroot\lib\kendoui\styles\" />
   </ItemGroup>
 

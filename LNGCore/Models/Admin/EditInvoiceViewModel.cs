@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using LNGCore.Domain.Database;
-using LNGCore.UI.Enums;
 using Microsoft.AspNetCore.Http;
+using static LNGCore.Domain.Infrastructure.Enums;
 
 namespace LNGCore.UI.Models.Admin
 {
@@ -22,8 +22,6 @@ namespace LNGCore.UI.Models.Admin
         public Invoice Invoice { get; set; }
         [Required]
         public InvoiceTypeEnum InvoiceType { get; set; }
-        [Required]
-        public string ShippingMethod { get; set; }
         public List<Customer> Customers { get; set; }
         public List<Employee> Employees { get; set; }
         public List<LineItem> LineItems { get; set; }

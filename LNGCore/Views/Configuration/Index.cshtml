@@ -1,22 +1,42 @@
-﻿@model bool
+﻿@model LNGCore.UI.Models.Admin.ConfigurationViewModel
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
+<script src="~/lib/Spectrum/spectrum.js"></script>
+<link href="~/lib/Spectrum/spectrum.css" rel="stylesheet" />
 
 
 <div class="form-group">
     <div class="custom-control custom-switch">
-        <input type="checkbox" class="custom-control-input" id="switchDarkMode" checked="@Model" onchange="setDarkMode(this);">
+        <input type="checkbox" class="custom-control-input" id="switchDarkMode" checked="@Model.UseDarkMode" onchange="setDarkMode(this);">
         <label class="custom-control-label" for="switchDarkMode">Use Dark Mode?</label>
-    </div>    
+    </div>
 </div>
+@if (!Model.UseDarkMode)
+{
+    <form asp-action="SetLightModeBgColor" asp-controller="Configuration" method="post">
+        <div class="form-group">
+            <label>Select a background color</label>
+            <div class="pb-2">
+                <input class="form-control" type="text" asp-for="BgColor" />
+            </div>
+            <button type="submit" class="btn btn-sm btn-success">Save Background Color</button>
+        </div>
+    </form>
+}
 
 <script>
     function setDarkMode(check) {
         debugger;
         var useDark = $(check).prop("checked");
         window.location.href = "@Url.Action("SetDarkMode","Configuration", new { useDarkMode = "__DARK__" })".replace("__DARK__",useDark);
-    }
+        }
+    $("#BgColor").spectrum({
+        color: "@Model.BgColor",
+        preferredFormat: "hex",
+        move: function (color) {
+            $("body").css("background-color", color.toHexString());
+        }
+});
 </script>

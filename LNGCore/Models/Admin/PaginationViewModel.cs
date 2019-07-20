@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LNGCore.UI.Enums;
+using static LNGCore.Domain.Infrastructure.Enums;
 
 namespace LNGCore.UI.Models.Admin
 {

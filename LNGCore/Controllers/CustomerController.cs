@@ -50,33 +50,53 @@ namespace LNGCore.UI.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditCustomer(int customerId, bool showSuccessMessage = false)
+        public IActionResult EditCustomer(int customerId, bool fromAjax = false)
         {
-            var customer = _customerService.GetCustomer(customerId);
+            var customer = _customerService.Get(customerId);
 
             if (customer.Id == 0)
                 customer.Taxable = true;
 
             var vm = new EditCustomerViewModel();
+            vm.fromAjax = fromAjax;
             vm.Customer = customer;
-            vm.ShowSuccessMessage = showSuccessMessage;
             return PartialView("_EditCustomer", vm);
         }
 
         [HttpPost]
-        public Tuple<int, string> EditCustomer(EditCustomerViewModel model)
+        public IActionResult EditCustomer(EditCustomerViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                if (model.ShowSuccessMessage ?? false)
-                    TempData["SuccessBannerMessage"] = "Customer successfully saved.";
-
-                
-                return Tuple.Create(_customerService.SaveCustomer(model.Customer), model.Customer.DisplayName);
+                TempData["ErrorBannerMessage"] = "Customer was not saved. Check to make sure your info was not too long (typically 50 characters or less).";
             }
-            TempData["ErrorBannerMessage"] = "Customer was not saved. Check to make sure your info was not too long (typically 50 characters or less).";
-            return null;
 
+            if (model.Customer.Id == 0)
+            {
+                model.Customer.Id = _customerService.Add(model.Customer);
+                TempData["SuccessBannerMessage"] = "Customer successfully added.";
+            }
+            else
+            {
+                _customerService.Edit(model.Customer);
+                TempData["SuccessBannerMessage"] = "Customer successfully updated.";
+            }
+
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public Tuple<int, string> EditCustomerAjax(EditCustomerViewModel model)
+        {
+            if (!ModelState.IsValid)            
+                return null;
+            
+            if (model.Customer.Id == 0)            
+                model.Customer.Id = _customerService.Add(model.Customer);            
+            else            
+                _customerService.Edit(model.Customer);                
+            
+
+            return Tuple.Create(model.Customer.Id, model.Customer.DisplayName);
         }
     }
 }

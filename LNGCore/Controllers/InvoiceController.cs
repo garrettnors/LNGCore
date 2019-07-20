@@ -1,5 +1,4 @@
-﻿using LNGCore.UI.Enums;
-using LNGCore.UI.Models.Admin;
+﻿using LNGCore.UI.Models.Admin;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Drawing;
@@ -12,6 +11,11 @@ using System.IO;
 using LNGCore.Domain.Services.Interfaces;
 using LNGCore.Domain.Database;
 using Microsoft.AspNetCore.Authorization;
+using static LNGCore.Domain.Infrastructure.Enums;
+using LNGCore.Services.Logical;
+using Microsoft.Extensions.Configuration;
+using System.Text;
+using Rotativa.AspNetCore.Options;
 
 namespace LNGCore.UI.Controllers
 {
@@ -22,21 +26,21 @@ namespace LNGCore.UI.Controllers
         private readonly IEventService _eventService;
         private readonly ICustomerService _customerService;
         private readonly IEmployeeService _employeeService;
+        private readonly IConfiguration _config;
 
         public InvoiceController(IInvoiceService invoiceService, IEventService eventService,
-            ICustomerService customerService, IEmployeeService employeeService)
+            ICustomerService customerService, IEmployeeService employeeService, IConfiguration config)
         {
             _invoiceService = invoiceService;
             _eventService = eventService;
             _customerService = customerService;
             _employeeService = employeeService;
+            _config = config;
         }
 
-        public IActionResult Index(InvoiceTypeEnum type = InvoiceTypeEnum.Invoice, int page = 1, int take = 20,
-            string searchTerm = "")
+        public IActionResult Index(InvoiceTypeEnum type = InvoiceTypeEnum.Open, int page = 1, int take = 20, string searchTerm = "")
         {
             ViewBag.ActiveAction = ControllerContext.RouteData.Values["controller"];
-
 
             var skip = take * (page - 1);
             var vm = new InvoiceViewModel
@@ -52,36 +56,36 @@ namespace LNGCore.UI.Controllers
                 CurrentPage = skip / take + 1
             };
 
-            List<Invoice> items;
+            var items = _invoiceService.GetInvoices(type, searchTerm).ToList();
             string viewTitle;
 
             switch (type)
             {
-                case InvoiceTypeEnum.Invoice:
-                    items = _invoiceService.GetOpenInvoices(searchTerm).ToList();
+                case InvoiceTypeEnum.Open:
                     viewTitle = "Open Invoices";
                     break;
 
                 case InvoiceTypeEnum.Paid:
-                    items = _invoiceService.GetPaidInvoices(searchTerm).ToList();
                     viewTitle = "Paid Invoices";
                     break;
 
                 case InvoiceTypeEnum.Donated:
-                    items = _invoiceService.GetDonatedItems(searchTerm).ToList();
                     viewTitle = "Donated Items";
                     break;
 
                 case InvoiceTypeEnum.Voided:
-                    items = _invoiceService.GetVoidedItems(searchTerm).ToList();
                     viewTitle = "Voided Items";
                     break;
 
                 case InvoiceTypeEnum.Quote:
-                    items = _invoiceService.GetOpenQuotes(searchTerm).ToList();
                     viewTitle = "Open Quotes";
                     break;
-
+                case InvoiceTypeEnum.PastDue:
+                    viewTitle = "Past Due Invoices";
+                    break;
+                case InvoiceTypeEnum.All:
+                    viewTitle = "All Invoices";
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -96,10 +100,10 @@ namespace LNGCore.UI.Controllers
 
         public IActionResult EditInvoice(int invoiceId = 0)
         {
-            var invoice = _invoiceService.GetInvoice(invoiceId);
+            var invoice = _invoiceService.Get(invoiceId);
 
             if (invoice == null)
-                return RedirectToAction("Index");            
+                return RedirectToAction("Index");
 
             var vm = new EditInvoiceViewModel
             {
@@ -117,7 +121,7 @@ namespace LNGCore.UI.Controllers
             else if (invoice.IsPaid == true)
                 vm.InvoiceType = InvoiceTypeEnum.Paid;
             else
-                vm.InvoiceType = InvoiceTypeEnum.Invoice;
+                vm.InvoiceType = InvoiceTypeEnum.Open;
 
             return View(vm);
         }
@@ -125,17 +129,23 @@ namespace LNGCore.UI.Controllers
         [HttpPost]
         public IActionResult EditInvoice(EditInvoiceViewModel model)
         {
+            var keyList = ModelState.Keys.Where(w => w.Contains("LineItems"));
+            foreach (var key in keyList)
+            {
+                ModelState.Remove(key);
+            }
+
             if (ModelState.IsValid)
             {
                 model.Invoice.Voided = false;
                 model.Invoice.IsPaid = false;
                 model.Invoice.IsDonated = false;
                 model.Invoice.IsQuote = false;
-                model.Invoice.CompletedBy = _employeeService.GetEmployee(model.Invoice.EmployeeId).EmpName;
+                model.Invoice.CompletedBy = _employeeService.Get(model.Invoice.EmployeeId).EmpName;
 
                 switch (model.InvoiceType)
                 {
-                    case InvoiceTypeEnum.Invoice:
+                    case InvoiceTypeEnum.Open:
                         break;
                     case InvoiceTypeEnum.Paid:
                         model.Invoice.IsPaid = true;
@@ -155,15 +165,28 @@ namespace LNGCore.UI.Controllers
                 }
 
 
-               
-                var invoiceId = _invoiceService.SaveInvoice(model.Invoice);
+                if (model.Invoice.Id == 0)
+                {
+                    model.Invoice.Id = _invoiceService.Add(model.Invoice);
+                }
+                else
+                {
+                    _invoiceService.Edit(model.Invoice);
+                }
+
                 var saveLines = model.LineItems.Where(w => w.Quantity > 0).ToList();
 
-                _invoiceService.SaveLineItems(saveLines, invoiceId);
+                _invoiceService.SaveLineItems(saveLines, model.Invoice.Id);
                 //_invoiceService.SaveAttachmentsToInvoice(invoiceId, model.UploadedFiles, false);
-                _invoiceService.SaveAttachmentsToInvoice(invoiceId, model.UploadedProofs, true);
+                _invoiceService.SaveAttachmentsToInvoice(model.Invoice.Id, model.UploadedProofs, true);
+                TempData["SuccessBannerMessage"] = "The invoice has been successfully saved!";
+
             }
-            TempData["ErrorBannerMessage"] = "The invoice could not be saved. Please double-check all data and try again.";
+            else
+            {
+                TempData["ErrorBannerMessage"] = "The invoice could not be saved. Please double-check all data and try again.";
+            }
+
             return RedirectToAction("Index", new { type = model.InvoiceType });
         }
 
@@ -201,7 +224,7 @@ namespace LNGCore.UI.Controllers
         {
             var vm = new ViewInvoiceViewModel
             {
-                Invoice = _invoiceService.GetInvoice(invoiceId),
+                Invoice = _invoiceService.Get(invoiceId),
                 InvoiceData = GetInvoicePdf(invoiceId)
             };
             return View(vm);
@@ -209,7 +232,48 @@ namespace LNGCore.UI.Controllers
 
         public IActionResult SendInvoiceEmail(SendInvoiceViewModel vm)
         {
-            TempData["SuccessBannerMessage"] = "An email has been sent to the recipient(s) you selected.";
+            var errorList = new List<string>();
+            var recipients = new List<string>();
+
+            if (vm.SendToPrimary && !string.IsNullOrEmpty(vm.PrimaryEmail))
+                recipients.Add(vm.PrimaryEmail);
+
+            if (vm.SendToSecondary && !string.IsNullOrEmpty(vm.SecondaryEmail))
+                recipients.Add(vm.SecondaryEmail);
+
+            var attachmentContent = new MemoryStream(Convert.FromBase64String(GetInvoicePdf(vm.InvoiceId)));
+            var attachment = new Attachment(attachmentContent, $"Invoice{vm.InvoiceId}.pdf", "application/pdf");
+            
+            foreach (var recipient in recipients)
+            {
+                var email = new Email(_config)
+                {
+                    MailSubject = $"Your order information is ready to view! (Order #{vm.InvoiceId})",
+                    Message = vm.Note.Replace(Environment.NewLine, "<br/>"),
+                    SenderEmail = _config.GetSection("SiteConfiguration")["MailerEmail"],
+                    SenderDisplayName = "LNG Mailer",
+                    RecipientEmail = recipient,
+                    RecipientDisplayName = recipient,
+                    Attachment = attachment
+                };
+
+                var error = email.SendEmail();
+                if (!string.IsNullOrWhiteSpace(error))
+                {
+                    errorList.Add($"Email not sent - {error}");
+                }
+            }
+
+
+            if (errorList.Any())
+            {
+                TempData["ErrorBannerMessage"] = string.Join(',', errorList);
+            }
+            else
+            {
+                TempData["SuccessBannerMessage"] = "An email has been sent to the recipient(s) you selected.";
+            }
+
             return RedirectToAction("ViewInvoice", new { invoiceId = vm.InvoiceId });
         }
 
@@ -218,9 +282,9 @@ namespace LNGCore.UI.Controllers
             const int itemsPerPageMax = 20;
             const string footer = "--footer-center \"Thank you for choosing LNG Laserworks, we appreciate your business!\" " +
                 "--footer-line --footer-font-size \"12\" --footer-font-name \"calibri light\"";
-
-            var invoice = _invoiceService.GetInvoice(invoiceId);
-           var model = new ViewInvoicePdfViewModel
+            const string header = "--header-right \"Page [page]\" --header-font-size \"12\" --header-font-name \"calibri light\"";
+            var invoice = _invoiceService.Get(invoiceId);
+            var model = new ViewInvoicePdfViewModel
             {
                 DocTitle = invoiceId.ToString(),
                 Invoice = invoice,
@@ -231,7 +295,7 @@ namespace LNGCore.UI.Controllers
             var actionPdf = new ViewAsPdf("InvoicePdf", model)
             {
                 PageSize = Rotativa.AspNetCore.Options.Size.Letter,
-                CustomSwitches = footer
+                CustomSwitches = $"{(model.TotalLineItems > itemsPerPageMax ? header : null)} {footer}"
             };
             //return actionPdf.BuildFile(ControllerContext).Result;
 

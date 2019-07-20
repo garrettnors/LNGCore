@@ -82,6 +82,7 @@ namespace LNGCore
             services.AddScoped<ILogService, LogService>();
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IConfigurationService, ConfigurationService>();
             services.AddScoped<LngDbContext, LngDbContext>();
             services.AddSingleton(Configuration);
         }

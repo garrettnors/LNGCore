@@ -5,10 +5,8 @@ using System.Text;
 
 namespace LNGCore.Domain.Services.Interfaces
 {
-    public interface ICustomerService
+    public interface ICustomerService : IBaseService<Customer>
     {
-        IEnumerable<Customer> GetAllCustomers(string searchTerm = "");
-        Customer GetCustomer(int Id);
-        int SaveCustomer(Customer customer);
+        IEnumerable<Customer> GetAllCustomers(string searchTerm = "");        
     }
 }

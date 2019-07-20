@@ -14,14 +14,40 @@ namespace LNGCore.Domain.Services.Implementations
         {
             _db = context;
         }
-        public Log GetLog(int logId)
+
+        public void Delete(int itemId)
         {
-            return _db.Log.FirstOrDefault(f => f.Id == logId);
+            var log = _db.Log.Find(itemId);
+
+            if (log == null)
+                return;
+
+            _db.Remove(log);
+            _db.SaveChanges();
         }
-        public void SaveLog(Log log)
+
+        public void Edit(Log item)
+        {
+            var log = _db.Log.Find(item.Id);
+
+            if (log == null)
+                return;
+
+            _db.Entry(log).CurrentValues.SetValues(item);
+            _db.SaveChanges();
+        }
+
+        public Log Get(int logId)
+        {
+            return _db.Log.FirstOrDefault(f => f.Id == logId) ?? new Log();
+        }
+        
+        public int Add(Log log)
         {
             _db.Log.Add(log);
             _db.SaveChanges();
+
+            return log.Id;
         }
     }
 }

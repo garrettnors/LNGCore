@@ -1,4 +1,4 @@
-﻿@using LNGCore.UI.Enums
+﻿@using static LNGCore.Domain.Infrastructure.Enums
 @model LNGCore.UI.Models.Admin.EditInvoiceViewModel
 @{
     ViewData["Title"] = "EditInvoice";
@@ -10,7 +10,7 @@
         var index = $("#lineIndex").val();
         var invoiceId = $("#invoiceId").val();
         $.ajax({
-            url: "@Html.Raw(Url.Action("GetInvoiceLines", "Invoice", new {invoiceId ="__INVC__", startingIndex="__STRT__"}))".replace("__INVC__", invoiceId).replace("__STRT__", index),
+            url: "@Html.Raw(Url.Action("GetInvoiceLines", "Invoice", new { invoiceId = "__INVC__", startingIndex = "__STRT__" }))".replace("__INVC__", invoiceId).replace("__STRT__", index),
             success: function (data) {
                 $("#tblLineItems tbody").append(data);
                 $("#lineIndex").val($("#tblLineItems tbody tr").length);
@@ -88,34 +88,23 @@
     }
     function newCustomer() {
         $.ajax({
-            url: "@Html.Raw(Url.Action("EditCustomer", "Customer", new { customerId = 0, showSuccessMessage = false }))",
+            url: "@Html.Raw(Url.Action("EditCustomer", "Customer", new { customerId = 0, fromAjax = true }))",
             success: function (data) {
                 $("#customerModal .modal-content").html(data);
                 $("#customerModal").modal("show");
             }
         });
-    }
-    function submitContactSaveForm() {
-        $.ajax({
-        url:"@Url.Action("EditCustomer", "Customer")",
-        type:'post',
-            data: $('#formEditCustomer').serialize(),
-            success: function (customer) {
-                $("#customerModal").modal("hide");
-                $("[name='Invoice.CustomerId']").append("<option value=" + customer.item1 + ">" + customer.item2 + "</option>")
-                $("[name='Invoice.CustomerId']").val(customer.item1).trigger("change");
-        }
-    });
-    }
+    }    
 </script>
 @if (Model.Invoice.Id == 0)
 {
-    <script>
-        $(document).ready(function () {
-            $("[name='Invoice.CustomerId']").val(-1).trigger("change");
-            $("[name='Invoice.EmployeeId']").val(-1).trigger("change");
-        });
-    </script>
+<script>
+    $(document).ready(function () {
+        $("[name='Invoice.CustomerId']").val(-1).trigger("change");
+        $("[name='Invoice.EmployeeId']").val(-1).trigger("change");
+    });
+
+/**/</script>
 }
 
 @using (Html.BeginForm("EditInvoice", "Invoice", FormMethod.Post, new { id = "formEditInvoice", enctype = "multipart/form-data" }))
@@ -123,119 +112,119 @@
     @Html.HiddenFor(f => f.Invoice.Id)
     @Html.Hidden("lineIndex", 0)
     @Html.Hidden("invoiceId", Model.Invoice.Id)
-    <div class="card semi-transparent">
-        <div class="card-header semi-transparent">
-            <div class="row">
-                <div class="col-9">
-                    <h2 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h2>
-                </div>
-                <div class="col-3 text-right pt-1">
-                    <button class="btn btn-success" type="submit">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Save Edits")</button>
-                </div>
+<div class="card semi-transparent">
+    <div class="card-header semi-transparent">
+        <div class="row">
+            <div class="col-9">
+                <h2 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h2>
             </div>
-        </div>
-        <div class="card-body">
-            <div class="row no-gutters">
-                <div class="col-lg-9 px-lg-1">
-                    <div class="row no-gutters">
-                        <div class="col-md-2 px-md-1">
-                            <label class="m-0 mt-2 text-muted">
-                                Type
-                            </label>
-                            @Html.DropDownListFor(f => f.InvoiceType, new SelectList((InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)), Model.InvoiceType), new { @class = "form-control form-control-sm" })
-                        </div>
-                        <div class="col-md-7 px-md-1">
-                            <label class="m-0 mt-2 text-muted">
-                                Customer
-                            </label>
-                            <div class="row">
-                                <div class="col-10 pr-1">
-                                    @Html.DropDownListFor(f => f.Invoice.CustomerId, new SelectList(Model.Customers.OrderBy(o => o.DisplayName), "Id", "DisplayName", Model.Invoice.CustomerId), new { @class = "form-control form-control-sm select2" })
-                                </div>
-                                <div class="col-2 pl-0">
-                                    <button type="button" onclick="newCustomer();" class="btn btn-sm btn-block btn-outline-success"><span class="fas fa-plus"></span><span class="d-none d-xl-inline"> Add</span></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 px-md-1">
-                            <label class="m-0 mt-2 text-muted">
-                                Employee
-                            </label>
-                            @Html.DropDownListFor(f => f.Invoice.EmployeeId, new SelectList(Model.Employees.OrderBy(o => o.EmployeeId), "EmployeeId", "EmpName", Model.Invoice.EmployeeId), new { @class = "form-control form-control-sm select2" })
-                        </div>
-                    </div>
-                    <div class="row no-gutters">
-                        <div class="col-md-2 px-md-1">
-                            <label class="m-0 mt-2 text-muted">
-                                Delivery
-                            </label>
-                            @Html.DropDownListFor(f => f.Invoice.ShippingMethod, new SelectList(new List<string> { "Shipment", "Delivery", "Pickup", "N/A" }, Model.Invoice.ShippingMethod), new { @class = "form-control form-control-sm" })
-                        </div>
-                        <div class="col-md-2 px-md-1">
-                            <label class="m-0 mt-2 text-muted">
-                                Shipping
-                            </label>
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">$</span>
-                                </div>
-                                @Html.TextBoxFor(f => f.Invoice.ShipCost, new { @class = "form-control form-control-sm", type = "number", step = "0.01" })
-                            </div>
-                        </div>
-                        <div class="col-md-2 px-md-1">
-                            <label class="m-0 mt-2 text-muted">
-                                P.O. #
-                            </label>
-                            @Html.TextBoxFor(f => f.Invoice.Pofield, new { @class = "form-control form-control-sm" })
-                        </div>
-                        <div class="col-md-3 px-md-1">
-                            <label class="m-0 mt-2 text-muted">
-                                OrderDate
-                            </label>
-                            @Html.TextBox("Invoice.OrderDate", (Model.Invoice.OrderDate == DateTime.MinValue ? DateTime.Now : Model.Invoice.OrderDate).ToString("yyyy-MM-dd"), new { type = "date", @class = "form-control form-control-sm" })
-                        </div>
-                        <div class="col-md-3 px-md-1">
-                            <label class="m-0 mt-2 text-muted">
-                                Due By
-                            </label>
-                            @Html.TextBox("Invoice.Deadline", Model.Invoice.Deadline == DateTime.MinValue ? "" : Model.Invoice.Deadline.ToString("yyyy-MM-dd"), new { type = "date", @class = "form-control form-control-sm" })
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 px-lg-1">
-                    <label class="m-0 mt-2 text-muted">
-                        Notes
-                    </label>
-                    @Html.TextAreaFor(f => f.Invoice.Notes, new { @class = "form-control small-text", rows = "5" })
-                </div>
-            </div>
-            <hr class="mb-2" />
-            <table class="table table-borderless table-sm table-responsive" id="tblLineItems">
-                <thead>
-                    <tr>
-                        <th>Qty.</th>
-                        <th>Type</th>
-                        <th>Desc.</th>
-                        <th>Price/ea.</th>
-                        <th colspan="2" class="text-center">
-                            <button class="btn btn-sm btn-block py-0 btn-success" type="button" onclick="addLinesToTable()"><span class="fas fa-plus"></span> 5</button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <label for="UploadedProofs" class="btn btn-primary pointer">Attach Customer Proof(s)</label>
-                    <p class="small-text text-muted">These will be attached to the quote.</p>
-                    @Html.TextBox("UploadedProofs", null, new { multiple = "multiple", @class = "hide-input", accept = "application/pdf", type = "file", onchange = "setButtonName(this);" })
-                </div>
-                @*<div class="col-md-6 text-center text-md-left">
-                        <label for="UploadedFiles" class="btn btn-primary pointer">Attach Internal File(s)</label>
-                        <p class="small-text text-muted">The customer will not see these.</p>
-                        @Html.TextBox("UploadedFiles", null, new { multiple = "multiple", @class = "hide-input", accept = "application/pdf", type = "file", onchange= "setButtonName(this);" })
-                    </div>*@
+            <div class="col-3 text-right pt-1">
+                <button class="btn btn-success" type="submit">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Save Edits")</button>
             </div>
         </div>
     </div>
+    <div class="card-body">
+        <div class="row no-gutters">
+            <div class="col-lg-9 px-lg-1">
+                <div class="row no-gutters">
+                    <div class="col-md-2 px-md-1">
+                        <label class="m-0 mt-2 text-muted">
+                            Type
+                        </label>
+                        @Html.DropDownListFor(f => f.InvoiceType, new SelectList((InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)), Model.InvoiceType), new { @class = "form-control form-control-sm" })
+                    </div>
+                    <div class="col-md-7 px-md-1">
+                        <label class="m-0 mt-2 text-muted">
+                            Customer
+                        </label>
+                        <div class="row">
+                            <div class="col-10 pr-1">
+                                @Html.DropDownListFor(f => f.Invoice.CustomerId, new SelectList(Model.Customers.OrderBy(o => o.DisplayName), "Id", "DisplayName", Model.Invoice.CustomerId), new { @class = "form-control form-control-sm select2" })
+                            </div>
+                            <div class="col-2 pl-0">
+                                <button type="button" onclick="newCustomer();" class="btn btn-sm btn-block btn-outline-success"><span class="fas fa-plus"></span><span class="d-none d-xl-inline"> Add</span></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 px-md-1">
+                        <label class="m-0 mt-2 text-muted">
+                            Employee
+                        </label>
+                        @Html.DropDownListFor(f => f.Invoice.EmployeeId, new SelectList(Model.Employees.OrderBy(o => o.EmployeeId), "EmployeeId", "EmpName", Model.Invoice.EmployeeId), new { @class = "form-control form-control-sm select2" })
+                    </div>
+                </div>
+                <div class="row no-gutters">
+                    <div class="col-md-2 px-md-1">
+                        <label class="m-0 mt-2 text-muted">
+                            Delivery
+                        </label>                       
+                        @Html.DropDownListFor(f => f.Invoice.ShippingMethod, new SelectList(new List<string> { "Shipment", "Delivery", "Pickup", "N/A" }, Model.Invoice.ShippingMethod ?? "Shipment"), new { @class = "form-control form-control-sm" })
+                    </div>
+                    <div class="col-md-2 px-md-1">
+                        <label class="m-0 mt-2 text-muted">
+                            Shipping
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            @Html.TextBoxFor(f => f.Invoice.ShipCost, new { @class = "form-control form-control-sm", type = "number", step = "0.01" })
+                        </div>
+                    </div>
+                    <div class="col-md-2 px-md-1">
+                        <label class="m-0 mt-2 text-muted">
+                            P.O. #
+                        </label>
+                        @Html.TextBoxFor(f => f.Invoice.Pofield, new { @class = "form-control form-control-sm" })
+                    </div>
+                    <div class="col-md-3 px-md-1">
+                        <label class="m-0 mt-2 text-muted">
+                            OrderDate
+                        </label>
+                        @Html.TextBox("Invoice.OrderDate", (Model.Invoice.OrderDate == DateTime.MinValue ? DateTime.Now : Model.Invoice.OrderDate).ToString("yyyy-MM-dd"), new { type = "date", @class = "form-control form-control-sm" })
+                    </div>
+                    <div class="col-md-3 px-md-1">
+                        <label class="m-0 mt-2 text-muted">
+                            Due By
+                        </label>
+                        @Html.TextBox("Invoice.Deadline", Model.Invoice.Deadline == DateTime.MinValue ? "" : Model.Invoice.Deadline.ToString("yyyy-MM-dd"), new { type = "date", @class = "form-control form-control-sm" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 px-lg-1">
+                <label class="m-0 mt-2 text-muted">
+                    Notes
+                </label>
+                @Html.TextAreaFor(f => f.Invoice.Notes, new { @class = "form-control small-text", rows = "5" })
+            </div>
+        </div>
+        <hr class="mb-2" />
+        <table class="table table-borderless table-sm table-responsive" id="tblLineItems">
+            <thead>
+                <tr>
+                    <th>Qty.</th>
+                    <th>Type</th>
+                    <th>Desc.</th>
+                    <th>Price/ea.</th>
+                    <th colspan="2" class="text-center">
+                        <button class="btn btn-sm btn-block py-0 btn-success" type="button" onclick="addLinesToTable()"><span class="fas fa-plus"></span> 5</button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <label for="UploadedProofs" class="btn btn-primary pointer">Attach Customer Proof(s)</label>
+                <p class="small-text text-muted">These will be attached to the quote.</p>
+                @Html.TextBox("UploadedProofs", null, new { multiple = "multiple", @class = "hide-input", accept = "image/*", type = "file", onchange = "setButtonName(this);" })
+            </div>
+            @*<div class="col-md-6 text-center text-md-left">
+                <label for="UploadedFiles" class="btn btn-primary pointer">Attach Internal File(s)</label>
+                <p class="small-text text-muted">The customer will not see these.</p>
+                @Html.TextBox("UploadedFiles", null, new { multiple = "multiple", @class = "hide-input", accept = "application/pdf", type = "file", onchange= "setButtonName(this);" })
+            </div>*@
+        </div>
+    </div>
+</div>
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static LNGCore.Domain.Infrastructure.Enums;
 
 namespace LNGCore.Domain.Services.Implementations
 {
@@ -20,21 +21,8 @@ namespace LNGCore.Domain.Services.Implementations
             _db = context;
             _hostingEnvironment = hostingEnvironment;
         }
-        public IEnumerable<Invoice> GetDonatedItems(string searchTerm = "")
-        {
-            var items = _db.Invoice.Where(w => w.IsDonated == true && !w.Voided);
 
-            items = SearchItems(items, searchTerm);
-
-            return items
-                .Include(i => i.Customer)
-                .Include(i => i.Employee)
-                .Include(i => i.LineItem)
-                .ThenInclude(t => t.Item)
-                .OrderByDescending(o => o.OrderDate);
-        }
-
-        public Invoice GetInvoice(int invoiceId)
+        public Invoice Get(int invoiceId)
         {
             if (invoiceId == 0)
                 return new Invoice();
@@ -47,14 +35,87 @@ namespace LNGCore.Domain.Services.Implementations
                 .FirstOrDefault(f => f.Id == invoiceId);
         }
 
-        public IEnumerable<Invoice> GetInvoicesByCustomer(int customerId)
+        public void Delete(int itemId)
         {
-            return _db.Invoice.Where(w => w.CustomerId == customerId)
+            var invoice = _db.Invoice.Find(itemId);
+
+            if (invoice == null)
+                return;
+
+            invoice.Voided = true;
+            _db.SaveChanges();
+        }
+
+        public void Edit(Invoice item)
+        {
+            var inovice = _db.Invoice.Find(item.Id);
+
+            if (inovice == null)
+                return;
+
+            _db.Entry(inovice).CurrentValues.SetValues(item);
+            _db.SaveChanges();
+        }
+
+        public int Add(Invoice invoice)
+        {
+            invoice.TaxPercent = (decimal)8.2500;
+
+            _db.Invoice.Add(invoice);
+            _db.SaveChanges();
+
+            return invoice.Id;
+        }
+
+        public IEnumerable<Invoice> GetInvoices(InvoiceTypeEnum type, string searchTerm = "")
+        {
+            IQueryable<Invoice> items = _db.Invoice;
+            switch (type)
+            {
+                case InvoiceTypeEnum.Open:
+                    items = items.Where(
+                        w => w.IsDonated == false &&
+                        !w.IsQuote && !w.Voided &&
+                        w.IsPaid == false);
+                    break;
+                case InvoiceTypeEnum.Paid:
+                    items = items.Where(w => w.IsPaid == true && !w.Voided);
+                    break;
+                case InvoiceTypeEnum.Quote:
+                    items = items.Where(w => w.IsQuote && !w.Voided);
+                    break;
+                case InvoiceTypeEnum.Voided:
+                    items = items.Where(w => w.Voided);
+                    break;
+                case InvoiceTypeEnum.Donated:
+                    items = items.Where(w => w.IsDonated == true && !w.Voided);
+                    break;
+                case InvoiceTypeEnum.PastDue:
+                    items = items.Where(
+                        w => w.IsDonated == false &&
+                        !w.IsQuote &&
+                        !w.Voided &&
+                         w.IsPaid == false &&
+                         DateTime.Now >= w.OrderDate.AddMonths(1));
+                    break;
+                case InvoiceTypeEnum.All:
+                default:
+                    break;
+            }
+
+            items = SearchItems(items, searchTerm);
+
+            return items
                 .Include(i => i.Customer)
                 .Include(i => i.Employee)
                 .Include(i => i.LineItem)
                 .ThenInclude(t => t.Item)
                 .OrderByDescending(o => o.OrderDate);
+        }
+
+        public IEnumerable<Invoice> GetInvoicesByCustomer(int customerId)
+        {
+            return GetInvoices(InvoiceTypeEnum.All).Where(w => w.CustomerId == customerId);
         }
 
         public IEnumerable<Item> GetItemTypes()
@@ -91,83 +152,7 @@ namespace LNGCore.Domain.Services.Implementations
             return lineItems.OrderByDescending(o => o.Invoice.OrderDate).Take(40).Include(i => i.Invoice).ThenInclude(t => t.Customer).Include(i => i.Item);
         }
 
-        public IEnumerable<Invoice> GetOpenInvoices(string searchTerm = "")
-        {
-            var items = _db.Invoice.Where(
-               w => w.IsDonated == false &&
-                    !w.IsQuote && !w.Voided &&
-                    w.IsPaid == false);
 
-            items = SearchItems(items, searchTerm);
-
-            return items
-                .Include(i => i.Customer)
-                .Include(i => i.Employee)
-                .Include(i => i.LineItem)
-                .ThenInclude(t => t.Item)
-                .OrderByDescending(o => o.OrderDate);
-        }
-
-        public IEnumerable<Invoice> GetOpenQuotes(string searchTerm = "")
-        {
-            var items = _db.Invoice.Where(w => w.IsQuote && !w.Voided);
-
-            items = SearchItems(items, searchTerm);
-
-            return items
-                .Include(i => i.Customer)
-                .Include(i => i.Employee)
-                .Include(i => i.LineItem)
-                .ThenInclude(t => t.Item)
-                .OrderByDescending(o => o.OrderDate);
-        }
-
-        public IEnumerable<Invoice> GetPaidInvoices(string searchTerm = "")
-        {
-            var items = _db.Invoice.Where(w => w.IsPaid == true && !w.Voided);
-
-            items = SearchItems(items, searchTerm);
-
-            return items
-                .Include(i => i.Customer)
-                .Include(i => i.Employee)
-                .Include(i => i.LineItem)
-                .ThenInclude(t => t.Item)
-                .OrderByDescending(o => o.OrderDate);
-        }
-
-        public IEnumerable<Invoice> GetPastDueInvoices(string searchTerm = "")
-        {
-            var items = _db.Invoice.Where(
-                w => w.IsDonated == false &&
-                     !w.IsQuote &&
-                     !w.Voided &&
-                     w.IsPaid == false &&
-                     DateTime.Now >= w.OrderDate.AddMonths(1));
-
-            items = SearchItems(items, searchTerm);
-
-            return items
-                .Include(i => i.Customer)
-                .Include(i => i.Employee)
-                .Include(i => i.LineItem)
-                .ThenInclude(t => t.Item)
-                .OrderByDescending(o => o.OrderDate);
-        }
-
-        public IEnumerable<Invoice> GetVoidedItems(string searchTerm = "")
-        {
-            var items = _db.Invoice.Where(w => w.Voided);
-
-            items = SearchItems(items, searchTerm);
-
-            return items
-                .Include(i => i.Customer)
-                .Include(i => i.Employee)
-                .Include(i => i.LineItem)
-                .ThenInclude(t => t.Item)
-                .OrderByDescending(o => o.OrderDate);
-        }
 
         public IEnumerable<Invoice> GetYearToDateSales()
         {
@@ -190,41 +175,11 @@ namespace LNGCore.Domain.Services.Implementations
             if (invoice == null)
                 return false;
 
-            //invoice.IsPaid = true;
-            //invoice.PaidDate = DateTime.Now;
-            //_db.SaveChanges();
-            //todo: re-enable this
-
-            return true;
-        }
-
-        public int SaveInvoice(Invoice invoice)
-        {
-            var saveItem = _db.Invoice.FirstOrDefault(f => f.Id == invoice.Id) ?? new Invoice();
-
-            saveItem.CustomerId = invoice.CustomerId;
-            saveItem.OrderDate = invoice.OrderDate;
-            saveItem.CompletedBy = invoice.CompletedBy;
-            saveItem.Deadline = invoice.Deadline;
-            saveItem.EmployeeId = invoice.EmployeeId;
-            saveItem.InvoiceProofUrl = invoice.InvoiceProofUrl;
-            saveItem.IsDonated = invoice.IsDonated;
-            saveItem.IsPaid = invoice.IsPaid;
-            saveItem.PaidDate = invoice.PaidDate;
-            saveItem.IsQuote = invoice.IsQuote;
-            saveItem.Notes = invoice.Notes;
-            saveItem.Pofield = invoice.Pofield;
-            saveItem.Voided = invoice.Voided;
-            saveItem.ShippingMethod = invoice.ShippingMethod;
-            saveItem.ShipCost = invoice.ShipCost;
-            saveItem.TaxPercent = (decimal)8.2500;
-
-            if (saveItem.Id == 0)
-                _db.Invoice.Add(saveItem);
-
+            invoice.IsPaid = true;
+            invoice.PaidDate = DateTime.Now;
             _db.SaveChanges();
 
-            return saveItem.Id;
+            return true;
         }
 
         public void SaveLineItems(List<LineItem> lines, int invoiceId)
@@ -248,20 +203,18 @@ namespace LNGCore.Domain.Services.Implementations
         }
         public string SaveAttachmentsToInvoice(int invoiceId, List<IFormFile> files, bool customerCanSee)
         {
-
             foreach (var file in files)
             {
                 var fileName = $"Invoice_{invoiceId}_{Guid.NewGuid().ToString().Substring(0, 6)}{Path.GetExtension(file.FileName)}";
 
-                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                var uploads = Path.Combine("Uploads", $"{invoiceId}");
+                Directory.CreateDirectory(uploads);
                 var filePath = Path.Combine(uploads, fileName);
 
                 using (var fileStream = File.Create(filePath))
                 {
                     file.CopyTo(fileStream);
-                }
-
-                //to do : Save uniqueFileName  to your db table   
+                } 
             }
             return string.Empty;
         }

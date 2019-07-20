@@ -1,4 +1,4 @@
-﻿@using LNGCore.UI.Enums
+﻿@using static LNGCore.Domain.Infrastructure.Enums
 @model LNGCore.UI.Models.Admin.InvoiceViewModel
 @{
     ViewData["Title"] = "Invoice Master";
@@ -41,10 +41,10 @@
 <ul class="nav nav-tabs" id="invoicesTab">
     @foreach (var type in (InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)))
     {
-        string tabTitle;
+        string tabTitle = string.Empty;
         switch (type)
         {
-            case InvoiceTypeEnum.Invoice:
+            case InvoiceTypeEnum.Open:
                 tabTitle = "Open Invoices";
                 break;
             case InvoiceTypeEnum.Paid:
@@ -60,7 +60,7 @@
                 tabTitle = "Open Quotes";
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                break;
         }
         <li class="nav-item">
             <a class="nav-link @(Model.InvoiceType == type ? "active" : "")" href="@Url.Action("Index", "Invoice", new {type = (int) type, page = 1, searchTerm = Model.SearchTerm})">@tabTitle</a>

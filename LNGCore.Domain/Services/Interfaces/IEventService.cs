@@ -5,9 +5,8 @@ using System.Text;
 
 namespace LNGCore.Domain.Services.Interfaces
 {
-    public interface IEventService
+    public interface IEventService : IBaseService<Event>
     {
-        Event GetEvent(int id);
         IEnumerable<Event> GetUpcomingEvents();
         IEnumerable<Event> GetCompletedEvents();
     }
