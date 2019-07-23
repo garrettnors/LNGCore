@@ -26,15 +26,17 @@ namespace LNGCore.UI.Controllers
         private readonly IEventService _eventService;
         private readonly ICustomerService _customerService;
         private readonly IEmployeeService _employeeService;
+        private readonly ILogService _logService;
         private readonly IConfiguration _config;
 
-        public InvoiceController(IInvoiceService invoiceService, IEventService eventService,
+        public InvoiceController(IInvoiceService invoiceService, IEventService eventService, ILogService logService,
             ICustomerService customerService, IEmployeeService employeeService, IConfiguration config)
         {
             _invoiceService = invoiceService;
             _eventService = eventService;
             _customerService = customerService;
             _employeeService = employeeService;
+            _logService = logService;
             _config = config;
         }
 
@@ -94,7 +96,7 @@ namespace LNGCore.UI.Controllers
             vm.Invoices = items.Skip(skip).Take(take).ToList();
             vm.ViewTitle = viewTitle;
             vm.PaginationParameters = pagination;
-
+            vm.InvoiceEmailCounts = _invoiceService.GetEmailCountsForInvoices(vm.Invoices.Select(s => s.Id).ToList());
             return View(vm);
         }
 
@@ -214,10 +216,25 @@ namespace LNGCore.UI.Controllers
             return PartialView("_LineItemSuggestions", model);
         }
 
-        public IActionResult MarkInvoicePaid(int invoiceId = 0)
+        public PartialViewResult GetInvoiceEmailHistory(int invoiceId)
         {
-            var success = _invoiceService.MarkInvoicePaid(invoiceId);
-            return StatusCode((int)(success ? HttpStatusCode.OK : HttpStatusCode.Conflict));
+            var history = _logService.GetLogsByInvoiceId(invoiceId).ToList();
+
+            return PartialView("_EmailHistory", history);
+        }
+
+        public IActionResult SetInvoiceStatus(int invoiceId = 0, InvoiceTypeEnum status = InvoiceTypeEnum.Open)
+        {
+            try
+            {
+                _invoiceService.SetInvoiceStatus(invoiceId, status);
+            }
+            catch (Exception)
+            {
+                return StatusCode((int)HttpStatusCode.UnprocessableEntity);
+            }
+
+            return StatusCode((int)HttpStatusCode.OK);
         }
 
         public IActionResult ViewInvoice(int invoiceId)
@@ -243,18 +260,22 @@ namespace LNGCore.UI.Controllers
 
             var attachmentContent = new MemoryStream(Convert.FromBase64String(GetInvoicePdf(vm.InvoiceId)));
             var attachment = new Attachment(attachmentContent, $"Invoice{vm.InvoiceId}.pdf", "application/pdf");
-            
+
+            var mailSubject = $"Your order information is ready to view! (Order #{vm.InvoiceId})";
+            var mailMsg = vm.Note.Replace(Environment.NewLine, "<br />");
+
             foreach (var recipient in recipients)
             {
                 var email = new Email(_config)
                 {
-                    MailSubject = $"Your order information is ready to view! (Order #{vm.InvoiceId})",
-                    Message = vm.Note.Replace(Environment.NewLine, "<br/>"),
+                    MailSubject = mailSubject,
+                    Message = mailMsg,
                     SenderEmail = _config.GetSection("SiteConfiguration")["MailerEmail"],
                     SenderDisplayName = "LNG Mailer",
                     RecipientEmail = recipient,
                     RecipientDisplayName = recipient,
-                    Attachment = attachment
+                    Attachment = attachment,
+                    CopyCompany = vm.SendToCompany
                 };
 
                 var error = email.SendEmail();
@@ -264,6 +285,18 @@ namespace LNGCore.UI.Controllers
                 }
             }
 
+            var newLog = _logService.Get(0);
+            newLog.Date = DateTime.Now;
+            newLog.InvoiceId = vm.InvoiceId;
+            newLog.LogType = LogTypeEnum.SendInvoiceToCustomer.ToString();
+            newLog.Summary = 
+                $"<strong>Subject:</strong> <br /> {mailSubject} <br /><br /> " +
+                $"<strong>Message:</strong> <br /> {mailMsg} <br /><br /> " +
+                $"<strong>Recipients:</strong> <br /> {string.Join(",", recipients)} <br /><br /> " +
+                $"<strong>LNG was copied:</strong> <br /> {vm.SendToCompany} <br /><br /> " +
+                $"<strong>Error Messages:</strong> <br /> {(errorList.Any() ? string.Join(",", errorList) : "none")} ";
+
+            _logService.Add(newLog);
 
             if (errorList.Any())
             {

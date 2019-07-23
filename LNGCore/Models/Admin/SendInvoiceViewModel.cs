@@ -12,6 +12,7 @@ namespace LNGCore.UI.Models.Admin
         public string PrimaryEmail { get; set; }
         public bool SendToPrimary { get; set; }
         public string SecondaryEmail { get; set; }
+        public bool SendToCompany { get; set; }
         public bool SendToSecondary { get; set; }
         public string Note { get; set; }
         public bool SendAttachments { get; set; }

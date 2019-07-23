@@ -1,6 +1,5 @@
 ﻿@model LNGCore.UI.Models.Admin.InvoiceViewModel
-
-
+@using static LNGCore.Domain.Infrastructure.Enums
 <div class="card semi-transparent rounded-0 border-top-0">
     <div class="card-header semi-transparent">
         <h4 class="m-0">@Model.ViewTitle</h4>
@@ -29,8 +28,8 @@
                                     <small class="text-danger d-block">
                                         Needed <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
                                     </small>
-                                    <small class="text-success d-block pointer">
-                                        Emailed 3 Times
+                                    <small class="text-success d-block pointer" onclick="openEmailHistory(@invoice.Id)">
+                                        Emailed @(Model.InvoiceEmailCounts[invoice.Id]) Time@(Model.InvoiceEmailCounts[invoice.Id] == 1 ? "" : "s")
                                     </small>
                                     <hr class="d-lg-none my-1" />
                                 </div>
@@ -46,22 +45,50 @@
                                             I Want To...
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right text-right" aria-labelledby="dropdownMenuButton">
-                                            <span class="pointer dropdown-item" onclick="markPaid(@invoice.Id);">
-                                                Mark Invoice Paid
-                                                <span class="text-success fas fa-check"></span>
-                                            </span>
-                                            <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice", new {invoiceId = invoice.Id})">
+                                            @if (invoice.IsPaid != true)
+                                            {
+                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Paid');">
+                                                    Set As Paid
+                                                    <span class="icon-width text-center text-success fas fa-dollar-sign"></span>
+                                                </span>
+                                            }
+                                            @if (invoice.Voided || invoice.IsQuote || invoice.IsPaid == true || invoice.IsDonated == true)
+                                            {
+                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Open');">
+                                                    Set As Open
+                                                    <span class="icon-width text-center text-info-light fas fa-book-open"></span>
+                                                </span>
+                                            }
+                                            @if (invoice.IsDonated != true)
+                                            {
+                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Donated');">
+                                                    Set As Donated
+                                                    <span class="icon-width text-center text-pink fas fa-gift"></span>
+                                                </span>
+                                            }
+                                            @if (!invoice.IsQuote)
+                                            {
+                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Quote');">
+                                                    Set As Quote
+                                                    <span class="icon-width text-center text-purple fas fa-quote-left"></span>
+                                                </span>
+                                            }
+                                            @if (!invoice.Voided)
+                                            {
+                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Voided');">
+                                                    Void Invoice
+                                                    <span class="icon-width text-center text-danger fas fa-trash"></span>
+                                                </span>
+                                            }
+                                            <hr class="border-secondary m-1 mx-4" />
+                                            <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice", new { invoiceId = invoice.Id })">
                                                 Edit Invoice
-                                                <span class="text-warning fas fa-edit"></span>
-                                            </a>                                            
-                                            <a class="pointer dropdown-item" href="@Url.Action("ViewInvoice","Invoice", new { invoiceId = invoice.Id })">
-                                                Print/Email Invoice
-                                                <span class="text-info far fa-file-alt"></span>
+                                                <span class="icon-width text-center text-lime fas fa-edit"></span>
                                             </a>
-                                            <span class="pointer dropdown-item" onclick="voidInvoice(@invoice.Id);">
-                                                Void Invoice
-                                                <span class="text-danger fas fa-trash"></span>
-                                            </span>
+                                            <a class="pointer dropdown-item" href="@Url.Action("ViewInvoice", "Invoice", new { invoiceId = invoice.Id })">
+                                                Print/Email Invoice
+                                                <span class="icon-width text-center text-info far fa-file-alt"></span>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -86,25 +113,56 @@
 
 
 <script>
-    function markPaid(invoiceId) {
+    function setStatus(invoiceId, status) {
+
+        var confirmText = "";
+        var confirmButtonText = "";
+        var notifyText = "";
+
+        if (status == "Paid") {
+            confirmText = "Are you sure you want to mark this invoice as paid?";
+            confirmButtonText = "Yes, Mark Paid";
+            notifyText = "The invoice has been marked paid and moved to the Paid Invoices tab."
+        }
+        if (status == "Open") {
+            confirmText = "Are you sure you want to mark this invoice as open?";
+            confirmButtonText = "Yes, Open Invoice";
+            notifyText = "The invoice has been marked open and moved to the Open Invoices tab."
+        }
+        if (status == "Voided") {
+            confirmText = "Are you sure you want to void this invoice?";
+            confirmButtonText = "Yes, Void Invoice";
+            notifyText = "The invoice has been voided and moved to the Voided Items tab."
+        }
+         if (status == "Quote") {
+            confirmText = "Are you sure you want to make this invoice a quote?";
+            confirmButtonText = "Yes, Convert to Quote";
+            notifyText = "The invoice has been converted and moved to the Open Quotes tab."
+        }
+         if (status == "Donated") {
+            confirmText = "Are you sure you want to donate this invoice?";
+            confirmButtonText = "Yes, Donate Invoice";
+            notifyText = "The invoice has been marked donated and moved to the Donated Items tab."
+        }
+
         Swal.fire({
-            text: "Are you sure you want to mark this invoice as paid?",
-            type: 'warning',
+            text: confirmText,
+            type: 'question',
             showCancelButton: true,
             confirmButtonColor: '#57c386',
             cancelButtonColor: '#888',
-            confirmButtonText: 'Yes, Mark Paid'
+            confirmButtonText: confirmButtonText
         }).then((result) => {
             if (result.value) {
                 $.ajax({
-                    url: "@Url.Action("MarkInvoicePaid", "Invoice", new {invoiceId = "__INVOICE__"})".replace("__INVOICE__", invoiceId),
+                    url: "@Html.Raw(Url.Action("SetInvoiceStatus", "Invoice", new {invoiceId = "__INVOICE__", status = InvoiceTypeEnum.Paid}))".replace("__INVOICE__", invoiceId),
                     success: function () {
                         var timerInterval;
                         Swal.fire({
                             position: 'middle',
                             type: 'success',
                             title: 'Success',
-                            html: 'The invoice has been marked paid and moved to the Paid Invoices tab.' +
+                            html: notifyText +
                                 '<br /><br />' +
                                 '<div class="progress">' +
                                 '<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" id="successProgress"' +
@@ -133,10 +191,19 @@
                     error: function() {
                         Swal.fire({
                             type: 'error',
-                            text: 'Something went wrong.... invoice could not be marked as paid. Does it still exist? Reload the page and try again.'
+                            text: 'Something went wrong.... invoice could not be modified. Does it still exist? Reload the page and try again.'
                         });
                     }
                 });
+            }
+        });
+    }
+    function openEmailHistory(invoiceId) {
+        $.ajax({
+            url: "@Url.Action("GetInvoiceEmailHistory", "Invoice", new { invoiceId = "__IID__" })".replace("__IID__", invoiceId),         
+            success: function (html) {
+                $("#bs-modal .modal-body").html(html);
+                $("#bs-modal").modal("show");
             }
         });
     }

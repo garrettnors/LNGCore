@@ -103,8 +103,7 @@
         $("[name='Invoice.CustomerId']").val(-1).trigger("change");
         $("[name='Invoice.EmployeeId']").val(-1).trigger("change");
     });
-
-/**/</script>
+</script>
 }
 
 @using (Html.BeginForm("EditInvoice", "Invoice", FormMethod.Post, new { id = "formEditInvoice", enctype = "multipart/form-data" }))
@@ -131,7 +130,7 @@
                         <label class="m-0 mt-2 text-muted">
                             Type
                         </label>
-                        @Html.DropDownListFor(f => f.InvoiceType, new SelectList((InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)), Model.InvoiceType), new { @class = "form-control form-control-sm" })
+                        @Html.DropDownListFor(f => f.InvoiceType, new SelectList(new List<string> {"Open", "Paid", "Quote", "Donated", "Voided" }, Model.InvoiceType), new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="col-md-7 px-md-1">
                         <label class="m-0 mt-2 text-muted">

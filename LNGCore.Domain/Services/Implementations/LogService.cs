@@ -41,13 +41,23 @@ namespace LNGCore.Domain.Services.Implementations
         {
             return _db.Log.FirstOrDefault(f => f.Id == logId) ?? new Log();
         }
-        
+
         public int Add(Log log)
         {
             _db.Log.Add(log);
             _db.SaveChanges();
 
             return log.Id;
+        }
+
+        public IEnumerable<Log> GetLogsByInvoiceId(int invoiceId)
+        {
+            return _db.Log.Where(w => w.InvoiceId == invoiceId);
+        }
+
+        public IEnumerable<Log> GetLogsByInvoiceId(List<int> invoiceIds)
+        {
+            return _db.Log.Where(w => invoiceIds.Contains(w.InvoiceId ?? 0));
         }
     }
 }

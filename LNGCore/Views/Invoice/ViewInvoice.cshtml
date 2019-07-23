@@ -40,13 +40,13 @@
                     @Html.Hidden("InvoiceId", Model.Invoice.Id)
                     @Html.Hidden("CustomerId", Model.Invoice.CustomerId)
                     <div class="alert alert-primary mb-3">
-                        <strong>Note:</strong> LNG is automatically CC'd on emails. Uncheck both Primary and Secondary to send a copy to only yourself.
+                        <strong>Note:</strong> Primary email is not editable. Uncheck Primary if you do not wish to send an email to the primary email on file.
                     </div>
                     <h5 class="m-0">Primary Email</h5>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <div class="input-group-text">
-                                @Html.CheckBox("SendToPrimary", true)
+                                @Html.CheckBox("SendToPrimary", true, new { @class = "scale-up-50" })
                             </div>
                         </div>
                         <label for="SendToPrimary" type="text" class="form-control disabled pointer disable-select overflow-hide">@Model.Invoice.Customer.Email</label>
@@ -56,7 +56,7 @@
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <div class="input-group-text">
-                                @Html.CheckBox("SendToSecondary", !string.IsNullOrWhiteSpace(Model.Invoice.Customer.SecondaryEmail))
+                                @Html.CheckBox("SendToSecondary", !string.IsNullOrWhiteSpace(Model.Invoice.Customer.SecondaryEmail), new { @class = "scale-up-50" })
                             </div>
                         </div>
                         <input id="SecondaryEmail" name="SecondaryEmail" onchange="checkSecondary(this);" type="email" class="form-control" value="@Model.Invoice.Customer.SecondaryEmail" />
@@ -65,7 +65,10 @@
                     <h5 class="m-0">Email Text</h5>
                     @Html.TextArea("Note", $"Hello, attached you will find information regarding your order number {Model.Invoice.Id}. \n\r If you have any questions, please do not hesitate to email us at info@lnglaserworks.com or reply to this email. ", new { rows = 6, @class = "form-control" })
                     <div class="small text-muted text-right">Optional</div>
-                    <button type="submit" class="btn btn-sm btn-success">Send This Invoice</button>
+                    <div class="ml-1 mb-2">
+                        @Html.CheckBox("SendToCompany", true, new { @class = "scale-up-50" }) <label class="pointer disable-select" for="SendToCompany"><span class="h5 m-0 ml-2">Send Copy To LNG</span></label>
+                    </div>
+                    <button type="submit" onclick="return confirm('Are you sure you want to send this invoice? Double check the recipients you are sending to!');" class="btn btn-sm btn-success">Send This Invoice</button>
                 }
             </div>
         </div>

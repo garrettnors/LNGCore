@@ -16,5 +16,9 @@ namespace LNGCore.Domain.Infrastructure
             PastDue,
             All
         }
+        public enum LogTypeEnum
+        {
+            SendInvoiceToCustomer
+        }
     }
 }

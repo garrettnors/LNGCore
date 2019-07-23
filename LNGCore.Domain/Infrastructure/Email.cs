@@ -20,6 +20,7 @@ namespace LNGCore.Services.Logical
         public string RecipientEmail { get; set; }
         public string RecipientDisplayName { get; set; }
         public string MailSubject { get; set; }
+        public bool CopyCompany { get; set; }
         public Attachment Attachment { get; set; }
 
         public string SendEmail()
@@ -38,6 +39,11 @@ namespace LNGCore.Services.Logical
                     Body = Message,
                     IsBodyHtml = true
                 };
+
+                if (CopyCompany)
+                {
+                    message.CC.Add(mailerMail);
+                }
 
                 if (Attachment != null)
                     message.Attachments.Add(Attachment);

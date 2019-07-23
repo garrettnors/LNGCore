@@ -34,11 +34,26 @@ body {
 .text-info-light {
     color: #00b7ef;
 }
+.text-purple {
+    color: purple;
+}
+.text-pink {
+    color: hotpink;
+}
+.text-lime {
+    color: yellowgreen;
+}
 .text-warning-alt {
     color: #c19d83;
 }
 .text-success-alt {
     color: #84ce56;
+}
+.icon-width{
+    width: 20px;
+}
+.scale-up-50 {
+    transform: scale(1.5);
 }
 .bg-white-50 {
     background-color: rgba(255, 255, 255, 0.50) !important;

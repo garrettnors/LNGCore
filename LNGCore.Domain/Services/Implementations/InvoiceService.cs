@@ -1,4 +1,5 @@
 ﻿using LNGCore.Domain.Database;
+using LNGCore.Domain.Infrastructure;
 using LNGCore.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,12 @@ namespace LNGCore.Domain.Services.Implementations
     public class InvoiceService : IInvoiceService
     {
         private readonly LngDbContext _db;
+        private readonly ILogService _logService;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public InvoiceService(LngDbContext context, IHostingEnvironment hostingEnvironment)
+        public InvoiceService(LngDbContext context, ILogService logService, IHostingEnvironment hostingEnvironment)
         {
             _db = context;
+            _logService = logService;
             _hostingEnvironment = hostingEnvironment;
         }
 
@@ -168,19 +171,7 @@ namespace LNGCore.Domain.Services.Implementations
                 .OrderBy(o => o.OrderDate);
         }
 
-        public bool MarkInvoicePaid(int invoiceId)
-        {
-            var invoice = _db.Invoice.FirstOrDefault(f => f.Id == invoiceId);
 
-            if (invoice == null)
-                return false;
-
-            invoice.IsPaid = true;
-            invoice.PaidDate = DateTime.Now;
-            _db.SaveChanges();
-
-            return true;
-        }
 
         public void SaveLineItems(List<LineItem> lines, int invoiceId)
         {
@@ -214,7 +205,7 @@ namespace LNGCore.Domain.Services.Implementations
                 using (var fileStream = File.Create(filePath))
                 {
                     file.CopyTo(fileStream);
-                } 
+                }
             }
             return string.Empty;
         }
@@ -238,6 +229,55 @@ namespace LNGCore.Domain.Services.Implementations
             }
 
             return items;
+        }
+
+        public void SetInvoiceStatus(int invoiceId, InvoiceTypeEnum status)
+        {
+            var invoice = Get(invoiceId);
+
+            if (invoice?.Id == 0)
+                throw new InvalidDataException();
+
+            invoice.IsPaid = false;
+            invoice.Voided = false;
+            invoice.IsQuote = false;
+            invoice.IsDonated = false;
+            invoice.PaidDate = null;
+
+            switch (status)
+            {
+                case InvoiceTypeEnum.Paid:
+                    invoice.IsPaid = true;
+                    invoice.PaidDate = DateTime.Now;
+                    break;
+                case InvoiceTypeEnum.Quote:
+                    invoice.IsQuote = true;
+                    break;
+                case InvoiceTypeEnum.Voided:
+                    invoice.Voided = true;
+                    break;
+                case InvoiceTypeEnum.Donated:
+                    invoice.IsDonated = true;
+                    break;
+                default:
+                    break;
+            }
+            _db.SaveChanges();
+        }
+
+        public Dictionary<int, int> GetEmailCountsForInvoices(List<int> invoiceIds)
+        {
+            var timer = DateTime.Now;
+            var logs = _logService.GetLogsByInvoiceId(invoiceIds).ToList();
+            var returnDict = new Dictionary<int, int>();
+
+            foreach (var item in invoiceIds)            
+                returnDict.Add(item, logs.Count(c => c.InvoiceId == item));
+
+            var timer2 = DateTime.Now;
+            var diff = timer2 - timer;
+
+            return returnDict;
         }
     }
 }
