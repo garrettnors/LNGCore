@@ -1,18 +1,20 @@
 ﻿@model List<LNGCore.Domain.Database.Log>
 
-@if (Model.Any())
-{
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex justify-content-between">
-                <h4 class="m-0">Email Summary</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <h4 class="m-0">Email Summary</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
-        <div class="card-body">
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
             <ul class="list-group">
+
                 @foreach (var log in Model.OrderByDescending(o => o.Date))
                 {
                     <li class="list-group-item">
@@ -22,10 +24,10 @@
                     </li>
                 }
             </ul>
-        </div>
+        }
+        else
+        {
+            <h4 class="text-center">No email history available for this invoice.</h4>
+        }
     </div>
-}
-else
-{
-    <h4 class="text-center">No email history available for this invoice.</h4>
-}
+</div>
