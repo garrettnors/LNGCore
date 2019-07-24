@@ -330,38 +330,9 @@ namespace LNGCore.UI.Controllers
                 PageSize = Rotativa.AspNetCore.Options.Size.Letter,
                 CustomSwitches = $"{(model.TotalLineItems > itemsPerPageMax ? header : null)} {footer}"
             };
-            //return actionPdf.BuildFile(ControllerContext).Result;
 
             var byteArray = actionPdf.BuildFile(ControllerContext).Result;
-            return Convert.ToBase64String(byteArray, 0, byteArray.Length);
-
-            //var actionPDF = new ViewAsPdf("GetInvoicePdf", model) //some route values)
-            //{
-            //    PageSize = Rotativa.AspNetCore.Options.Size.Letter,
-            //    FileName = "TestInvoice.pdf"
-            //    //FileName = "TestView.pdf",
-            //    //PageSize = "",
-            //    //PageOrientation = Rotativa.Options.Orientation.Landscape,
-            //    // PageMargins = { Left = 1, Right = 1 }
-            //};
-            //System.Threading.Tasks.Task<byte[]> applicationPDFData = actionPDF.BuildFile(ControllerContext);
-
-            //var message = new MailMessage(new MailAddress("info@lnglaserworks.com", "LNG Laserworks"), new MailAddress("garrett.nors@gmail.com"))
-            //{
-            //    Subject = "Test Invoice Send",
-            //    Body = "test email"
-            //};
-            //message.Attachments.Add(new Attachment(new MemoryStream(applicationPDFData.Result), actionPDF.FileName));
-            //var client = new SmtpClient("smtp.gmail.com", 587)
-            //{
-            //    EnableSsl = true,
-            //    UseDefaultCredentials = false,
-            //    Credentials = new NetworkCredential("mailer@lnglaserworks.com", "pisrmvwifrjgefcp"),
-            //    DeliveryMethod = SmtpDeliveryMethod.Network
-            //};
-            //client.Send(message);
-
-            //return View(model);            
+            return Convert.ToBase64String(byteArray, 0, byteArray.Length);        
         }
     }
 }

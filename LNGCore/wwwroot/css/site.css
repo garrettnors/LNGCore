@@ -176,3 +176,12 @@ a {
         display: none;
     }
 }
+.table-font-responsive {
+    font-size: .9rem;
+}
+
+@media (max-width:768px) {
+    .table-font-responsive {
+        font-size: .8rem;
+    }
+}

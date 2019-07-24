@@ -17,64 +17,117 @@
     }
 </script>
 <div class="row pb-3">
-    <div class="col-6">
+    <div class="col-4 col-lg-6">
         <a href="@Url.Action("EditInvoice", "Invoice", new {invoiceId = 0})" class="btn btn-sm btn-success" onclick=""><span class="fas fa-plus"></span> Add Invoice</a>
     </div>
-    <div class="col-sm-4 offset-2">
+    <div class="col-8 col-lg-6 col-xl-4 offset-xl-2">
 
         @using (Html.BeginForm("Index", "Invoice", FormMethod.Get, new { id = "formSearch" }))
         {
-        @Html.Hidden("type", Model.PaginationParameters.InvoiceType)
-        <div class="input-group input-group-sm">
-            <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
-            <span class="input-group-append">
-                <button class="btn btn-info" type="submit">Search</button>
-            </span>
-            <span class="input-group-append">
-                <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
-            </span>
-        </div>
+            @Html.Hidden("type", Model.PaginationParameters.InvoiceType)
+            <div class="input-group input-group-sm">
+                <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
+                <span class="input-group-append">
+                    <button class="btn btn-info" type="submit">Search</button>
+                </span>
+                <span class="input-group-append">
+                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+                </span>
+            </div>
         }
 
     </div>
 </div>
-<ul class="nav nav-tabs" id="invoicesTab">
-    @foreach (var type in (InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)))
-    {
-        string tabTitle = string.Empty;
-        string tabIcon = string.Empty;
-        switch (type)
+<div class="d-none d-xl-block">
+    <ul class="nav nav-tabs" id="invoicesTab">
+        @foreach (var type in (InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)))
         {
-            case InvoiceTypeEnum.Open:
-                tabIcon = "<span class=\"icon-width text-center text-info fas fa-book-open\"></span>";
-                tabTitle = "Open Invoices";
-                break;
-            case InvoiceTypeEnum.Paid:
-                tabIcon = "<span class=\"icon-width text-center text-success fas fa-dollar-sign\"></span>";
-                tabTitle = "Paid Invoices";
-                break;
-            case InvoiceTypeEnum.Donated:
-                tabIcon = "<span class=\"icon-width text-center text-pink fas fa-gift\"></span>";
-                tabTitle = "Donated Items";
-                break;
-            case InvoiceTypeEnum.Voided:
-                tabIcon = "<span class=\"icon-width text-center text-danger fas fa-trash\"></span>";
-                tabTitle = "Voided Items";
-                break;
-            case InvoiceTypeEnum.Quote:
-                tabIcon = "<span class=\"icon-width text-center text-purple fas fa-quote-left\"></span>";
-                tabTitle = "Open Quotes";
-                break;
-            default:
-                break;
+            string tabTitle = string.Empty;
+            string tabIcon = string.Empty;
+            switch (type)
+            {
+                case InvoiceTypeEnum.Open:
+                    tabIcon = "<span class=\"icon-width text-center text-info fas fa-book-open\"></span>";
+                    tabTitle = "Open Invoices";
+                    break;
+                case InvoiceTypeEnum.Paid:
+                    tabIcon = "<span class=\"icon-width text-center text-success fas fa-dollar-sign\"></span>";
+                    tabTitle = "Paid Invoices";
+                    break;
+                case InvoiceTypeEnum.Donated:
+                    tabIcon = "<span class=\"icon-width text-center text-pink fas fa-gift\"></span>";
+                    tabTitle = "Donated Items";
+                    break;
+                case InvoiceTypeEnum.Voided:
+                    tabIcon = "<span class=\"icon-width text-center text-danger fas fa-trash\"></span>";
+                    tabTitle = "Voided Items";
+                    break;
+                case InvoiceTypeEnum.Quote:
+                    tabIcon = "<span class=\"icon-width text-center text-purple fas fa-quote-left\"></span>";
+                    tabTitle = "Open Quotes";
+                    break;
+                default:
+                    break;
+            }
+            <li class="nav-item">
+                <a class="nav-link @(Model.InvoiceType == type ? "active" : "")" href="@Url.Action("Index", "Invoice", new {type = (int) type, page = 1, searchTerm = Model.SearchTerm})">@Html.Raw(tabIcon) @tabTitle</a>
+            </li>
         }
-        <li class="nav-item">
-            <a class="nav-link @(Model.InvoiceType == type ? "active" : "")" href="@Url.Action("Index", "Invoice", new {type = (int) type, page = 1, searchTerm = Model.SearchTerm})">@Html.Raw(tabIcon) @tabTitle</a>
-        </li>
-    }
-</ul>
+    </ul>
+</div>
+<div class="d-xl-none pb-3">
+    <div class="row">
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <select id="ddlType" class="form-control" onchange="redirectToSelectedType();">
+                @foreach (var type in (InvoiceTypeEnum[])Enum.GetValues(typeof(InvoiceTypeEnum)))
+                {
+                    string tabTitle = string.Empty;
+                    string tabIcon = string.Empty;
+                    switch (type)
+                    {
+                        case InvoiceTypeEnum.Open:
+                            tabIcon = "<span class=\"icon-width text-center text-info fas fa-book-open\"></span>";
+                            tabTitle = "Open Invoices";
+                            break;
+                        case InvoiceTypeEnum.Paid:
+                            tabIcon = "<span class=\"icon-width text-center text-success fas fa-dollar-sign\"></span>";
+                            tabTitle = "Paid Invoices";
+                            break;
+                        case InvoiceTypeEnum.Donated:
+                            tabIcon = "<span class=\"icon-width text-center text-pink fas fa-gift\"></span>";
+                            tabTitle = "Donated Items";
+                            break;
+                        case InvoiceTypeEnum.Voided:
+                            tabIcon = "<span class=\"icon-width text-center text-danger fas fa-trash\"></span>";
+                            tabTitle = "Voided Items";
+                            break;
+                        case InvoiceTypeEnum.Quote:
+                            tabIcon = "<span class=\"icon-width text-center text-purple fas fa-quote-left\"></span>";
+                            tabTitle = "Open Quotes";
+                            break;
+                        default:
+                            break;
+                    }
+                    if (!string.IsNullOrEmpty(tabTitle))
+                    {
+                        <!option @(Model.InvoiceType == type ? "selected" : "") value="@((int)type)">
+                            @Html.Raw(tabIcon) @tabTitle
+                        </!option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+</div>
 <div class="tab-content">
     <div class="tab-pane active" id="tabBody">
         <partial name="_InvoiceItems" model="Model" />
     </div>
 </div>
+<script>
+    function redirectToSelectedType() {
+        var selectedType = $("#ddlType").val();
+        var url = "@Html.Raw(Url.Action("Index", "Invoice", new {type = "__TYP__", page = 1, searchTerm = Model.SearchTerm}))".replace("__TYP__", selectedType);
+        window.location.replace(url);
+    }
+</script>

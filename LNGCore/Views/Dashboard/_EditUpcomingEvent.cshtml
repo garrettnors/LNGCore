@@ -1,0 +1,58 @@
+﻿@model LNGCore.Domain.Database.Event
+<link href="~/lib/pikaday/css/pikaday.css" rel="stylesheet" />
+<script src="~/lib/moment.js/moment.js"></script>
+<script src="~/lib/pikaday/pikaday.js"></script>
+
+<div class="card semi-transparent rounded-0 border-top-0">
+    <div class="card-header semi-transparent">
+        <h4 class="m-0">@(Model.Id == 0 ? "New Event" : $"Edit {Model.EventName}")</h4>
+    </div>
+    <div class="card-body">
+        <form id="formEditUpcomingEvent" asp-action="EditUpcomingEvent" onsubmit="return isValid();" asp-controller="Dashboard" method="post">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="EmployeeId" />
+            <input type="hidden" asp-for="Completed" />
+            <div class="form-group">
+                <label class="m-0" asp-for="EventName">Event Name</label>
+                <input asp-for="EventName" class="form-control form-control-sm required" />
+            </div>
+            <div class="form-group mt-2">
+                <label class="m-0" asp-for="EventDescription">Event Description</label>
+                <textarea asp-for="EventDescription" class="form-control form-control-sm required" rows="4"></textarea>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group mt-2">
+                        <label class="m-0" asp-for="EventDate">Event Date</label>
+                        <input asp-for="EventDate" class="form-control form-control-sm required" type="text" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mt-2">
+                        <div class="form-group pt-4">
+                            <input asp-for="Recurring" class="scale-up-50" type="checkbox" /> <label class="m-0 pl-1" asp-for="Recurring">Annual Event?</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-2">
+                <button type="submit" class="btn btn-success">Save</button>
+                <span class="mx-2"></span>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function isValid() {
+        var valid = $("#formEditUpcomingEvent").valid();        
+        return valid;
+    }
+    var picker = new Pikaday({
+        field: document.getElementById('EventDate'),
+        format: "MM/DD/YYYY"
+    });
+</script> 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

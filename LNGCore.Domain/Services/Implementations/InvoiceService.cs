@@ -267,16 +267,12 @@ namespace LNGCore.Domain.Services.Implementations
 
         public Dictionary<int, int> GetEmailCountsForInvoices(List<int> invoiceIds)
         {
-            var timer = DateTime.Now;
             var logs = _logService.GetLogsByInvoiceId(invoiceIds).ToList();
             var returnDict = new Dictionary<int, int>();
 
             foreach (var item in invoiceIds)            
                 returnDict.Add(item, logs.Count(c => c.InvoiceId == item));
-
-            var timer2 = DateTime.Now;
-            var diff = timer2 - timer;
-
+            
             return returnDict;
         }
     }

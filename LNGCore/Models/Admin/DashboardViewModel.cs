@@ -10,9 +10,9 @@ namespace LNGCore.UI.Models.Admin
     {
         public DashboardViewModel()
         {
-            Events = new List<Event>();
+            UpcomingEvents = new List<Event>();
         }
-        public List<Event> Events { get; set; }
+        public List<Event> UpcomingEvents { get; set; }
         public decimal YtdSales { get; set; }
         public decimal OpenInvoiceAmount { get; set; }
         public decimal PastDueAmount { get; set; }

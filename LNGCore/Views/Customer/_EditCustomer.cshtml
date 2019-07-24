@@ -37,8 +37,7 @@
     }
 
     function isValid() {
-        var valid = $("#formEditCustomer").valid();
-        debugger;
+        var valid = $("#formEditCustomer").valid();        
         return valid;
     }
 </script>
@@ -60,7 +59,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         @Html.LabelFor(f => f.Customer.Name)
-                        @Html.TextBoxFor(f => f.Customer.Name, new { @class = "form-control form-control-sm" })
+                        @Html.TextBoxFor(f => f.Customer.Name, new { @class = "form-control form-control-sm required"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(f => f.Customer.BusinessName)

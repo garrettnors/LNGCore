@@ -48,9 +48,25 @@ namespace LNGCore.Domain.Services.Implementations
         }
         public IEnumerable<Event> GetUpcomingEvents()
         {
-            return _db.Event.Where(w => !w.Completed).Include(e => e.Employee);
-        }
+            var daysBeforeEvent = 90;
+            //var events = _db.Event.Where(w => !w.Completed
+            //                                  && ((w.EventDate - DateTime.Now).Days <= daysBeforeEvent
+            //                                  || (w.Recurring && (new DateTime(DateTime.Now.Year, w.EventDate.Month, w.EventDate.Day) - DateTime.Now).Days <= daysBeforeEvent)));
 
+            var events = from e in _db.Event
+                          let recurringDate = new DateTime(DateTime.Now.Year, e.EventDate.Month, e.EventDate.Day)
+                          where !e.Completed &&
+                              (((e.EventDate - DateTime.Now).Days <= daysBeforeEvent && e.EventDate.Date >= DateTime.Now.Date)
+                              || (e.Recurring && (recurringDate - DateTime.Now).Days <= daysBeforeEvent && recurringDate.Date >= DateTime.Now.Date))
+                          select e;
+
+
+            return events.Include(e => e.Employee);
+        }
+        public IEnumerable<Event> GetAllEvents()
+        {
+            return _db.Event.Include(e => e.Employee);
+        }
         public IEnumerable<Event> GetCompletedEvents()
         {
             return _db.Event.Where(w => w.Completed).Include(e => e.Employee);
