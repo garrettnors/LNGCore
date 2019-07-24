@@ -76,7 +76,10 @@
             <div class="card-header semi-transparent">
                 <div class="row">
                     <div class="col-md-6">
-                        <h3 class="m-0 text-center text-md-left">Upcoming Events</h3>
+                        <h3 class="m-0 text-center text-md-left pointer disable-select" data-toggle="tooltip" data-placement="top"
+                            title="Events coming up within 90 days of current date">
+                            Upcoming Events
+                        </h3>
                     </div>
                     <div class="col-md-6">
                         <div class="text-md-right text-center pt-1">
@@ -110,9 +113,11 @@
                                             <span class="fas fa-clock"></span><span class="pl-1">@($"{eventItem.EventDate:d}")</span>
                                             @if (eventItem.Recurring)
                                             {
-                                                <h6 class="text-warning">
-                                                    <i>Recurring Event</i>
-                                                </h6>
+                                                <div class="text-warning">
+                                                    <i>Recurring Event.</i>
+                                                    <br class="d-none d-lg-block" />
+                                                    <i>@($"Original Date: {eventItem.EventDate:d}")</i>
+                                                </div>
                                             }
                                         </div>
                                         <div class="col-lg-7">

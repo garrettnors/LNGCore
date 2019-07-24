@@ -25,28 +25,24 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-lg-3">
-                                            <h3>@eventItem.EventName</h3>
+                                            <h3 class="m-0">@eventItem.EventName</h3>
+                                            <span class="fas fa-clock"></span><span class="pl-1">@($"{eventItem.EventDate:d}")</span>
                                             @if (eventItem.Recurring)
                                             {
-                                                <h6 class="text-warning">
-                                                    <i>Recurring Event</i>
-                                                </h6>
+                                                <div class="text-warning">
+                                                    <i>Recurring Event.</i>
+                                                    <br class="d-none d-lg-block" />
+                                                    <i>@($"Original Date: {eventItem.EventDate:d}")</i>
+                                                </div>
                                             }
                                         </div>
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-7">
                                             <h5 class="text-info">
-                                                @Html.Raw($"Approximately <strong>{((eventItem.Recurring ? recurringDate : eventItem.EventDate) - DateTime.Now).Days}</strong> days until event.")
+                                                @Html.Raw($"Approximately <strong>{(eventItem.EventDate - DateTime.Now).Days}</strong> days until event.")
                                             </h5>
                                             @eventItem.EventDescription
                                         </div>
-                                        <div class="col-lg-3 text-lg-right">
-                                            @if (eventItem.Recurring)
-                                            {
-                                                <div class="text-muted">
-                                                    <i>Original Date: @($"{eventItem.EventDate:d}")</i>
-                                                </div>
-                                            }
-                                            <span class="fas fa-clock"></span><span class="pl-1">@($"{(eventItem.Recurring ? recurringDate : eventItem.EventDate):d}")</span>
+                                        <div class="col-lg-2 pt-2 pt-lg-0 text-right">
                                             <div class="text-info pointer pr-1" onclick="editEvent(@eventItem.Id);">
                                                 <span class="fas fa-edit"></span> Edit
                                             </div>
