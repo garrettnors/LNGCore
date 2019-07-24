@@ -16,7 +16,7 @@
         @if (Model.CustomerLineItems.Any())
         {
             <div class="mb-4 border border-light" style="max-height:300px; overflow-y:scroll;">
-                <table class="table table-sm table-striped table-bordered table-hover semi-transparent w-100">                  
+                <table class="table table-sm table-striped table-bordered table-hover semi-transparent w-100 table-font-responsive">
                     <thead>
                         <tr>
                             <th class="text-center" colspan="5">
@@ -25,8 +25,8 @@
                         </tr>
                         <tr>
                             <th>Item Type</th>
-                            <th colspan="2">Description</th>
-                            <th>Price/ea</th>
+                            <th>Description</th>
+                            <th>$/ea</th>
                             <th>Date</th>
                         </tr>
                     </thead>
@@ -35,7 +35,7 @@
                         {
                             <tr class="pointer" onclick="setSuggestedValues('@HttpUtility.JavaScriptStringEncode(line.ItemDesc)', '@line.ItemPrice', @line.ItemId, @Model.LineIndex);">
                                 <td>@line.Item.ItemName</td>
-                                <td colspan="2">@line.ItemDesc</td>
+                                <td>@line.ItemDesc</td>
                                 <td class="text-center">@line.ItemPrice?.ToString("c")</td>
                                 <td class="text-center">@line.Invoice?.OrderDate.ToString("M/d/yy")</td>
                             </tr>
@@ -47,8 +47,8 @@
         }
         @if (Model.OverallLineItems.Any())
         {
-            <div class="border border-light" style="max-height:300px; overflow-y:scroll;">
-                <table class="table table-sm table-striped table-bordered table-hover w-100 semi-transparent">
+            <div class="border border-light" style="max-height:300px; overflow-y:scroll;overflow-x:auto;">
+                <table class="table table-sm table-striped table-bordered table-hover w-100 semi-transparent table-font-responsive">
                     <thead>
                         <tr>
                             <th class="text-center" colspan="5">
@@ -56,10 +56,10 @@
                             </th>
                         </tr>
                         <tr>
-                            <th>Customer</th>
+
                             <th>Item Type</th>
-                            <th>Description</th>
-                            <th>Price/ea</th>
+                            <th>Customer/Desc</th>
+                            <th>$/ea</th>
                             <th>Date</th>
                         </tr>
                     </thead>
@@ -67,9 +67,12 @@
                         @foreach (var line in Model.OverallLineItems)
                         {
                             <tr class="pointer" onclick="setSuggestedValues('@HttpUtility.JavaScriptStringEncode(line.ItemDesc)', '@line.ItemPrice', @line.ItemId, @Model.LineIndex);">
-                                <td>@line.Invoice?.Customer.Name</td>
+
                                 <td>@line.Item.ItemName</td>
-                                <td>@line.ItemDesc</td>
+                                <td class="word-wrap-break">
+                                    <small><strong>@line.Invoice?.Customer.Name</strong></small> <br />
+                                    @line.ItemDesc
+                                </td>
                                 <td>@line.ItemPrice?.ToString("c")</td>
                                 <td>@line.Invoice?.OrderDate.ToString("M/d/yy")</td>
                             </tr>

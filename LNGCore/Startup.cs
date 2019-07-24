@@ -71,7 +71,7 @@ namespace LNGCore
             services.AddScoped<SignInManager<LNGUser>, SignInManager<LNGUser>>();
             services.AddScoped<UserManager<LNGUser>, UserManager<LNGUser>>();
             services.AddScoped<IUserClaimsPrincipalFactory<LNGUser>, UserClaimsPrincipalFactory<LNGUser, IdentityRole>>();
-            services.AddDefaultIdentity<LNGUser>()
+            services.AddDefaultIdentity<LNGUser>(o => { o.Password.RequireNonAlphanumeric = false; })
             .AddDefaultUI(UIFramework.Bootstrap4)
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<IdentityContext>();

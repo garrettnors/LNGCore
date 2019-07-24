@@ -11,7 +11,7 @@
     <link href="@Url.Content("~/lib/select2/dist/css/select2.min.css")" rel="stylesheet" asp-append-version="true" />
     @{
 
-        var useDarkMode = false;
+        var useDarkMode = true;
         if (Context.Request.Cookies["SetDarkModeEnabled"] != null)
         {
             useDarkMode = bool.Parse(Context.Request.Cookies["SetDarkModeEnabled"]);

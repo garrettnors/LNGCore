@@ -131,6 +131,7 @@ namespace LNGCore.UI.Controllers
         [HttpPost]
         public IActionResult EditInvoice(EditInvoiceViewModel model)
         {
+            var originalId = model.Invoice.Id;
             var keyList = ModelState.Keys.Where(w => w.Contains("LineItems"));
             foreach (var key in keyList)
             {
@@ -189,7 +190,11 @@ namespace LNGCore.UI.Controllers
                 TempData["ErrorBannerMessage"] = "The invoice could not be saved. Please double-check all data and try again.";
             }
 
-            return RedirectToAction("Index", new { type = model.InvoiceType });
+            if (originalId == 0)
+                return RedirectToAction("Index", new { type = model.InvoiceType });
+
+            return RedirectToAction("EditInvoice", "Invoice", new { invoiceId = originalId });
+
         }
 
         public IActionResult GetInvoiceLines(int invoiceId, int startingIndex)
@@ -289,7 +294,7 @@ namespace LNGCore.UI.Controllers
             newLog.Date = DateTime.Now;
             newLog.InvoiceId = vm.InvoiceId;
             newLog.LogType = LogTypeEnum.SendInvoiceToCustomer.ToString();
-            newLog.Summary = 
+            newLog.Summary =
                 $"<strong>Subject:</strong> <br /> {mailSubject} <br /><br /> " +
                 $"<strong>Message:</strong> <br /> {mailMsg} <br /><br /> " +
                 $"<strong>Recipients:</strong> <br /> {string.Join(",", recipients)} <br /><br /> " +
@@ -332,7 +337,15 @@ namespace LNGCore.UI.Controllers
             };
 
             var byteArray = actionPdf.BuildFile(ControllerContext).Result;
-            return Convert.ToBase64String(byteArray, 0, byteArray.Length);        
+            return Convert.ToBase64String(byteArray, 0, byteArray.Length);
+        }
+
+        public IActionResult DeleteAttachment(string attachmentName = "", int invoiceId = 0)
+        {
+            if (System.IO.File.Exists(attachmentName))
+                System.IO.File.Delete(attachmentName);
+
+            return RedirectToAction("EditInvoice", new { invoiceId });
         }
     }
 }

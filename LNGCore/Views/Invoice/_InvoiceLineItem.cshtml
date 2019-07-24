@@ -7,12 +7,12 @@
             @Html.Hidden($"LineItems[{Model.LineIndex}].LineItemId", line.LineItemId)
             <input name="@($"LineItems[{Model.LineIndex}].Quantity")" type="number" step="1" data-lineindex="@Model.LineIndex" value="@(line.Quantity == 0 ? "" : line.Quantity.ToString())" class="form-control form-control-sm row-control" />
         </td>
-        <td class="px-1" style="width: 20%; min-width: 150px">
+        <td class="px-1" style="width: 20%; min-width: 140px">
             @Html.DropDownList($"LineItems[{Model.LineIndex}].ItemId",
                 new SelectList(Model.ItemTypes, "ItemId", "ItemName", line.ItemId),
                 new { data_lineindex = $"{Model.LineIndex}", @class = $"form-control form-control-sm row-control{(line.ItemId == 0 ? " neg-index" : "")}"})
         </td>
-        <td class="px-1">
+        <td class="px-1" style="min-width: 200px;">
             <input name="@($"LineItems[{Model.LineIndex}].ItemDesc")" type="text" data-lineindex="@Model.LineIndex" value="@line.ItemDesc" class="form-control form-control-sm row-control" />
         </td>
         <td class="px-1" style="width: 10%">

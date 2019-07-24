@@ -27,9 +27,10 @@ html {
 
 body {
     height: 100%;
-    background-image: linear-gradient(to right top, #000000, #140b12, #1a1521, #181e32, #002a41);
+    background-color: #1a1521;
+    /*background-image: linear-gradient(to right top, #000000, #140b12, #1a1521, #181e32, #002a41);
     background-attachment: fixed;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat;*/
 }
 
 .table {

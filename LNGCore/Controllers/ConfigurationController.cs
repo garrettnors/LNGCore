@@ -20,7 +20,7 @@ namespace LNGCore.UI.Controllers
         }
         public IActionResult Index()
         {
-            var useDarkMode = false;
+            var useDarkMode = true;
             var darkModeCookie = Request.Cookies["SetDarkModeEnabled"];
             if (darkModeCookie != null)
                 useDarkMode = bool.Parse(Request.Cookies["SetDarkModeEnabled"]);
@@ -37,8 +37,12 @@ namespace LNGCore.UI.Controllers
         public IActionResult SetDarkMode(bool useDarkMode)
         {
             var options = new CookieOptions();
+            options.IsEssential = true;
+            options.Path = "/";
+            options.HttpOnly = false;
+            options.Secure = true;
             options.Expires = DateTime.Now.AddYears(5);
-            Response.Cookies.Append("SetDarkModeEnabled", useDarkMode.ToString());
+            Response.Cookies.Append("SetDarkModeEnabled", useDarkMode.ToString(), options);
             return RedirectToAction("Index");
         }
 

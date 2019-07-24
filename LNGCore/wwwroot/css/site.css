@@ -17,6 +17,9 @@ body {
     /*border: 1px solid #b11212 !important;*/
     color: red;
 }
+.word-wrap-break {
+    word-wrap: break-word;
+}
 /* Carousel */
 .carousel-caption p {
     font-size: 20px;

@@ -28,7 +28,6 @@
 
 <script>
     function setDarkMode(check) {
-        debugger;
         var useDark = $(check).prop("checked");
         window.location.href = "@Url.Action("SetDarkMode","Configuration", new { useDarkMode = "__DARK__" })".replace("__DARK__",useDark);
         }
