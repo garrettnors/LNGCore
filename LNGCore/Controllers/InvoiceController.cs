@@ -132,12 +132,12 @@ namespace LNGCore.UI.Controllers
         public IActionResult EditInvoice(EditInvoiceViewModel model)
         {
             var originalId = model.Invoice.Id;
+
             var keyList = ModelState.Keys.Where(w => w.Contains("LineItems"));
             foreach (var key in keyList)
             {
                 ModelState.Remove(key);
             }
-
             if (ModelState.IsValid)
             {
                 model.Invoice.Voided = false;
@@ -189,6 +189,7 @@ namespace LNGCore.UI.Controllers
             {
                 TempData["ErrorBannerMessage"] = "The invoice could not be saved. Please double-check all data and try again.";
             }
+
 
             if (originalId == 0)
                 return RedirectToAction("Index", new { type = model.InvoiceType });

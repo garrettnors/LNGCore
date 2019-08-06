@@ -18,7 +18,8 @@ namespace LNGCore.Domain.Infrastructure
         }
         public enum LogTypeEnum
         {
-            SendInvoiceToCustomer
+            SendInvoiceToCustomer,
+            Error
         }
     }
 }

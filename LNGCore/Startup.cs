@@ -8,6 +8,7 @@ using LNGCore.Domain.Services.Implementations;
 using LNGCore.Domain.Services.Interfaces;
 using LNGCore.UI;
 using LNGCore.UI.Areas.Identity.Data;
+using LNGCore.UI.Filters;
 using LNGCore.UI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -56,7 +57,7 @@ namespace LNGCore
             //    options.DefaultAuthenticateScheme = "";
             //});
             services.AddAuthentication(IISDefaults.AuthenticationScheme);
-            services.AddMvc()
+            services.AddMvc(o => { o.Filters.Add<GlobalExceptionFilter>(); })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;

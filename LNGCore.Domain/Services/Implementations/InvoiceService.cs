@@ -16,11 +16,13 @@ namespace LNGCore.Domain.Services.Implementations
     public class InvoiceService : IInvoiceService
     {
         private readonly LngDbContext _db;
+        private readonly ICustomerService _customerService;
         private readonly ILogService _logService;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public InvoiceService(LngDbContext context, ILogService logService, IHostingEnvironment hostingEnvironment)
+        public InvoiceService(LngDbContext context, ICustomerService customerService, ILogService logService, IHostingEnvironment hostingEnvironment)
         {
             _db = context;
+            _customerService = customerService;
             _logService = logService;
             _hostingEnvironment = hostingEnvironment;
         }
@@ -51,18 +53,23 @@ namespace LNGCore.Domain.Services.Implementations
 
         public void Edit(Invoice item)
         {
-            var inovice = _db.Invoice.Find(item.Id);
+            var invoice = Get(item.Id);
 
-            if (inovice == null)
+            if (invoice == null)
                 return;
 
-            _db.Entry(inovice).CurrentValues.SetValues(item);
+            invoice.TaxPercent = invoice.Customer.Taxable ? (decimal)8.2500 : (decimal)0.00;
+
+            _db.Entry(invoice).CurrentValues.SetValues(item);
             _db.SaveChanges();
         }
 
         public int Add(Invoice invoice)
         {
-            invoice.TaxPercent = (decimal)8.2500;
+            var customer = _customerService.Get(invoice.CustomerId);
+
+            if (customer != null)
+                invoice.TaxPercent = customer.Taxable ? (decimal)8.2500 : (decimal)0.00;
 
             _db.Invoice.Add(invoice);
             _db.SaveChanges();
@@ -192,7 +199,7 @@ namespace LNGCore.Domain.Services.Implementations
 
             _db.SaveChanges();
         }
-        public string SaveAttachmentsToInvoice(int invoiceId, List<IFormFile> files, bool customerCanSee)
+        public void SaveAttachmentsToInvoice(int invoiceId, List<IFormFile> files, bool customerCanSee)
         {
             foreach (var file in files)
             {
@@ -207,7 +214,6 @@ namespace LNGCore.Domain.Services.Implementations
                     file.CopyTo(fileStream);
                 }
             }
-            return string.Empty;
         }
         private IQueryable<Invoice> SearchItems(IQueryable<Invoice> items, string searchTerm)
         {
@@ -270,9 +276,9 @@ namespace LNGCore.Domain.Services.Implementations
             var logs = _logService.GetLogsByInvoiceId(invoiceIds).ToList();
             var returnDict = new Dictionary<int, int>();
 
-            foreach (var item in invoiceIds)            
+            foreach (var item in invoiceIds)
                 returnDict.Add(item, logs.Count(c => c.InvoiceId == item));
-            
+
             return returnDict;
         }
     }

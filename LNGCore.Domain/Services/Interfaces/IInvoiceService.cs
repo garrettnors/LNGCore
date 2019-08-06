@@ -17,7 +17,7 @@ namespace LNGCore.Domain.Services.Interfaces
         IEnumerable<Item> GetItemTypes();
         void SaveLineItems(List<LineItem> lines, int invoiceId);     
         void SetInvoiceStatus(int invoiceId, InvoiceTypeEnum status);
-        string SaveAttachmentsToInvoice(int invoiceId, List<IFormFile> files, bool customerCanSee);
+        void SaveAttachmentsToInvoice(int invoiceId, List<IFormFile> files, bool customerCanSee);
         Dictionary<int, int> GetEmailCountsForInvoices(List<int> invoiceIds);
     }
 }

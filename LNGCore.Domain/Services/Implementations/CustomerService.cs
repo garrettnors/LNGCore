@@ -17,9 +17,11 @@ namespace LNGCore.Domain.Services.Implementations
         }
         public IEnumerable<Customer> GetAllCustomers(string searchTerm = "")
         {
+            
             var customers = _db.Customer.Include(i => i.Invoice).ThenInclude(i => i.LineItem).ToList();
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
+                searchTerm = searchTerm.ToLower();
                 customers = customers.Where(w =>
                     (w.BusinessName?.ToLower().Contains(searchTerm) ?? false) ||
                     (w.Name?.ToLower().Contains(searchTerm) ?? false) ||
