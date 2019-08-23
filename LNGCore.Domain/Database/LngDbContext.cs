@@ -282,7 +282,7 @@ namespace LNGCore.Domain.Database
 
                 entity.Property(e => e.ItemDesc)
                     .IsRequired()
-                    .HasMaxLength(50)
+                    .HasMaxLength(75)
                     .IsUnicode(false);
 
                 entity.Property(e => e.ItemId).HasColumnName("ItemID");

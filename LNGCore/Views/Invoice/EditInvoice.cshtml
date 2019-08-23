@@ -112,6 +112,7 @@
     @Html.HiddenFor(f => f.Invoice.Id)
     @Html.Hidden("lineIndex", 0)
     @Html.Hidden("invoiceId", Model.Invoice.Id)
+    @Html.HiddenFor(f => f.Invoice.TaxPercent)
     <div class="card semi-transparent">
         <div class="card-header semi-transparent">
             <h2 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h2>

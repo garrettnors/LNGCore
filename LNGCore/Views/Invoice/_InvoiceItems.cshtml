@@ -19,7 +19,9 @@
                         <div class="card-body slight-border p-2">
                             <div class="row no-gutters">
                                 <div class="col-lg-2 text-center text-left-lg">
-                                    <span class="h5 d-lg-block m-0 pointer" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
+                                    <span data-toggle="collapse" role="button" data-target="@($"#collapse{invoice.Id}")">
+                                        <span class="h5 d-lg-block m-0 pointer" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
+                                    </span>
                                 </div>
                                 <div class="col-lg-3 text-center">
                                     <small class="text-info d-none d-lg-block">
@@ -93,6 +95,27 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="card-footer p-0 collapse" id="@($"collapse{invoice.Id}")">
+                            <table class="table table-striped table-borderless table-sm m-0" style="background-color:rgba(38, 37, 49, 0.80);">
+                                <thead>
+                                    <tr>
+                                        <th>Qty.</th>
+                                        <th>Type</th>
+                                        <th>Desc</th>
+                                        <th>$/ea</th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in invoice.LineItem)
+                                {
+                                    <tr>
+                                        <td>@item.Quantity</td>
+                                        <td>@item.Item?.ItemName</td>
+                                        <td>@item.ItemDesc</td>
+                                        <td>@($"{item.ItemPrice:c}")</td>
+                                    </tr>
+                                }
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -200,7 +223,7 @@
     }
     function openEmailHistory(invoiceId) {
         $.ajax({
-            url: "@Url.Action("GetInvoiceEmailHistory", "Invoice", new { invoiceId = "__IID__" })".replace("__IID__", invoiceId),         
+            url: "@Url.Action("GetInvoiceEmailHistory", "Invoice", new { invoiceId = "__IID__" })".replace("__IID__", invoiceId),
             success: function (html) {
                 $("#bs-modal .modal-body").html(html);
                 $("#bs-modal").modal("show");

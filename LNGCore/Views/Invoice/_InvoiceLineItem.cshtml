@@ -13,7 +13,7 @@
                 new { data_lineindex = $"{Model.LineIndex}", @class = $"form-control form-control-sm row-control{(line.ItemId == 0 ? " neg-index" : "")}"})
         </td>
         <td class="px-1" style="min-width: 200px;">
-            <input name="@($"LineItems[{Model.LineIndex}].ItemDesc")" type="text" data-lineindex="@Model.LineIndex" value="@line.ItemDesc" class="form-control form-control-sm row-control" />
+            <input name="@($"LineItems[{Model.LineIndex}].ItemDesc")" type="text" data-lineindex="@Model.LineIndex" value="@line.ItemDesc" maxlength="75"  class="form-control form-control-sm row-control" />
         </td>
         <td class="px-1" style="width: 10%">
             <input name="@($"LineItems[{Model.LineIndex}].ItemPrice")" type="number" data-lineindex="@Model.LineIndex" step="0.01" value="@line.ItemPrice" class="form-control form-control-sm row-control" />

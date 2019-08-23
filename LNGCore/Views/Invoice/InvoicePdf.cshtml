@@ -2,9 +2,9 @@
 @{
     ViewData["Title"] = "GetInvoicePdf";
     Layout = "~/views/shared/_InvoiceLayout.cshtml";
-    var subTotal = Model.Invoice.LineItem.Sum(s => s.Quantity * s.ItemPrice);
-    var tax = subTotal * Model.Invoice.TaxPercent / 100;
-    var total = subTotal + tax + Model.Invoice.ShipCost;
+    var subTotal = Model.Invoice.LineItem.Sum(s => s.Quantity * s.ItemPrice) ?? 0;
+    var tax = subTotal * (Model.Invoice.TaxPercent ?? 0) / 100;
+    var total = subTotal + tax + (Model.Invoice.ShipCost ?? 0);
 }
 <style>
     .price-width {
@@ -39,7 +39,9 @@
 <hr class="mt-4" />
 <div class="row mt-1">
     <div class="col-4 text-center">
-        <h3 class="m-0 mt-4">INVOICE</h3>
+        <h3 class="m-0 mt-4">
+            @(Model.Invoice.IsQuote ? "QUOTE" : "INVOICE")
+        </h3>
         <h5 class="mb-0">Number @Model.Invoice.Id</h5>
         <small>Print Date: @DateTime.Now.ToString("d")</small>
     </div>
@@ -56,15 +58,15 @@
                         @Model.Invoice.Customer.Name <br />
                         @if (!string.IsNullOrWhiteSpace(Model.Invoice.Customer.BusinessName))
                         {
-                            <p class="m-0">@Model.Invoice.Customer.BusinessName</p>
+                        <p class="m-0">@Model.Invoice.Customer.BusinessName</p>
                         }
                         @if (!string.IsNullOrWhiteSpace(Model.Invoice.Customer.Street))
                         {
-                            <p class="m-0">@Model.Invoice.Customer.Street</p>
+                        <p class="m-0">@Model.Invoice.Customer.Street</p>
                         }
                         @if (Model.Invoice.Customer.ZipCode != null && Model.Invoice.Customer.City != null && Model.Invoice.Customer.State != null)
                         {
-                            @($"{Model.Invoice.Customer.City}, {Model.Invoice.Customer.State} {Model.Invoice.Customer.ZipCode}")
+                        @($"{Model.Invoice.Customer.City}, {Model.Invoice.Customer.State} {Model.Invoice.Customer.ZipCode}")
                         }
                     </address>
                 </td>
@@ -85,15 +87,15 @@
                         @Model.Invoice.Customer.Name <br />
                         @if (Model.Invoice.Customer.BusinessName != null)
                         {
-                            <p class="m-0">@Model.Invoice.Customer.BusinessName</p>
+                        <p class="m-0">@Model.Invoice.Customer.BusinessName</p>
                         }
                         @if (Model.Invoice.Customer.Street != null)
                         {
-                            <p class="m-0">@Model.Invoice.Customer.Street</p>
+                        <p class="m-0">@Model.Invoice.Customer.Street</p>
                         }
                         @if (Model.Invoice.Customer.ZipCode != null && Model.Invoice.Customer.City != null && Model.Invoice.Customer.State != null)
                         {
-                            @($"{Model.Invoice.Customer.City}, {Model.Invoice.Customer.State} {Model.Invoice.Customer.ZipCode}")
+                        @($"{Model.Invoice.Customer.City}, {Model.Invoice.Customer.State} {Model.Invoice.Customer.ZipCode}")
                         }
                     </address>
                 </td>
@@ -130,79 +132,83 @@
 @for (var i = 0; i < numberOfTables; i++)
 {
 
-    <div class="break-after @(i > 0 ? "pt-5" : "pt-2")">
-        <table class="table table-sm table-bordered">
-            <thead class="bg-light">
-                <tr>
-                    <th>Qty.</th>
-                    <th>Item</th>
-                    <th>Item Description</th>
-                    <th class="price-width">Item Price</th>
-                    <th class="price-width">Line Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var line in Model.Invoice.LineItem.Skip(i * Model.RowsPerPage).Take(Model.RowsPerPage))
+<div class="break-after @(i > 0 ? "pt-5" : "pt-2")">
+    <table class="table table-sm table-bordered">
+        <thead class="bg-light">
+            <tr>
+                <th>Qty.</th>
+                <th>Item</th>
+                <th>Item Description</th>
+                <th class="price-width">Item Price</th>
+                <th class="price-width">Line Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var line in Model.Invoice.LineItem.Skip(i * Model.RowsPerPage).Take(Model.RowsPerPage))
                 {
-                    <tr>
-                        <td>@line.Quantity</td>
-                        <td>@line.Item.ItemName</td>
-                        <td>@line.ItemDesc</td>
-                        <td class="text-right">@($"{line.ItemPrice:c}")</td>
-                        <td class="text-right">@($"{(line.ItemPrice * line.Quantity):c}")</td>
-                    </tr>
+            <tr>
+                <td>@line.Quantity</td>
+                <td>@line.Item.ItemName</td>
+                <td>@line.ItemDesc</td>
+                <td class="text-right">@($"{line.ItemPrice:c}")</td>
+                <td class="text-right">@($"{(line.ItemPrice * line.Quantity):c}")</td>
+            </tr>
                     index++;
                 }
-            </tbody>
-        </table>
-        <div class="row">
-            <div class="col-6 text-center">
-                @if (i < numberOfTables - 1)
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-6 text-center">
+            @if (i < numberOfTables - 1)
                 {
-                    <h3 class="font-italic py-5">Continued on next page...</h3>
+            <h3 class="font-italic py-5">Continued on next page...</h3>
+                }
+        </div>
+        <div class="col-6">
+            <div class="float-right">
+                <table class="table table-sm table-responsive table-bordered mt-2">
+                    <tr>
+                        <td class="bg-light price-width text-center">
+                            Subtotal
+                        </td>
+                        <td class="price-width text-right">
+                            @($"{subTotal:c}")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light price-width text-center">
+                            Tax
+                        </td>
+                        <td class="price-width text-right">
+                            @($"{tax:c}")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light price-width text-center">
+                            Shipping
+                        </td>
+                        <td class="price-width text-right">
+                            @($"{Model.Invoice.ShipCost ?? 0:c}")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light price-width text-center">
+                            Total
+                        </td>
+                        <td class="price-width text-right">
+                            @($"{total:c}")
+                        </td>
+                    </tr>
+                </table>
+                @if (Model.Invoice.IsQuote)
+                {
+                <h3 class="text-center">QUOTE</h3>
                 }
             </div>
-            <div class="col-6">
-                <div class="float-right">
-                    <table class="table table-sm table-responsive table-bordered mt-2">
-                        <tr>
-                            <td class="bg-light price-width text-center">
-                                Subtotal
-                            </td>
-                            <td class="price-width text-right">
-                                @($"{subTotal:c}")
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light price-width text-center">
-                                Tax
-                            </td>
-                            <td class="price-width text-right">
-                                @($"{tax:c}")
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light price-width text-center">
-                                Shipping
-                            </td>
-                            <td class="price-width text-right">
-                                @($"{Model.Invoice.ShipCost:c}")
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="bg-light price-width text-center">
-                                Total
-                            </td>
-                            <td class="price-width text-right">
-                                @($"{total:c}")
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="clearfix"></div>
-            </div>
+            <div class="clearfix"></div>
         </div>
     </div>
+</div>
 }
 
 @{
@@ -221,10 +227,10 @@
                 image.Dispose();
                 var base64 = Convert.ToBase64String(bytes, 0, bytes.Length);
 
-                <div class="break-after">
-                    <h1 class="text-center py-5">Attached Proof</h1>
-                    <img src="data:image/jpg;base64,@(base64)" style="max-width: 700px;max-height: 1000px;" class="mx-auto d-block" />
-                </div>
+    <div class="break-after">
+        <h1 class="text-center py-5">Attached Proof</h1>
+        <img src="data:image/jpg;base64,@(base64)" style="max-width: 700px;max-height: 1000px;" class="mx-auto d-block" />
+    </div>
             }
         }
     }
