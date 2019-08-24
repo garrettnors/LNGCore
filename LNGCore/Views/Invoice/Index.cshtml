@@ -18,7 +18,7 @@
 </script>
 <div class="row pb-3">
     <div class="col-4 col-lg-6">
-        <a href="@Url.Action("EditInvoice", "Invoice", new {invoiceId = 0})" class="btn btn-sm btn-success" onclick=""><span class="fas fa-plus"></span> Add</a>
+        <a href="@Url.Action("EditInvoice", "Invoice", new {invoiceId = 0, invoiceType = Model.InvoiceType})" class="btn btn-sm btn-success"><span class="fas fa-plus"></span> Add</a>
     </div>
     <div class="col-8 col-lg-6 col-xl-4 offset-xl-2">
 

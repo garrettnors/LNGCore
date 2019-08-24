@@ -100,7 +100,7 @@ namespace LNGCore.UI.Controllers
             return View(vm);
         }
 
-        public IActionResult EditInvoice(int invoiceId = 0)
+        public IActionResult EditInvoice(int invoiceId = 0, InvoiceTypeEnum invoiceType = InvoiceTypeEnum.Open)
         {
             var invoice = _invoiceService.Get(invoiceId);
 
@@ -114,16 +114,23 @@ namespace LNGCore.UI.Controllers
                 Employees = _employeeService.GetEmployees().ToList()
             };
 
-            if (invoice.Voided)
-                vm.InvoiceType = InvoiceTypeEnum.Voided;
-            else if (invoice.IsQuote)
-                vm.InvoiceType = InvoiceTypeEnum.Quote;
-            else if (invoice.IsDonated == true)
-                vm.InvoiceType = InvoiceTypeEnum.Donated;
-            else if (invoice.IsPaid == true)
-                vm.InvoiceType = InvoiceTypeEnum.Paid;
+            if (invoiceId == 0)
+            {
+                vm.InvoiceType = invoiceType;
+            }
             else
-                vm.InvoiceType = InvoiceTypeEnum.Open;
+            {
+                if (invoice.Voided)
+                    vm.InvoiceType = InvoiceTypeEnum.Voided;
+                else if (invoice.IsQuote)
+                    vm.InvoiceType = InvoiceTypeEnum.Quote;
+                else if (invoice.IsDonated == true)
+                    vm.InvoiceType = InvoiceTypeEnum.Donated;
+                else if (invoice.IsPaid == true)
+                    vm.InvoiceType = InvoiceTypeEnum.Paid;
+                else
+                    vm.InvoiceType = InvoiceTypeEnum.Open;
+            }
 
             return View(vm);
         }

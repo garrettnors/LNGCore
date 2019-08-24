@@ -33,11 +33,11 @@
         $("label[for='" + $(button).attr('id') + "']").html(buttonName);
     }
 
-    $(document).ready(function () {        
+    $(document).ready(function () {
         addLinesToTable();
         setUpSelect2();
     });
-    
+
     function setUpSelect2() {
         $(".select2").select2({
             width: "100%",
@@ -114,8 +114,14 @@
     @Html.Hidden("invoiceId", Model.Invoice.Id)
     @Html.HiddenFor(f => f.Invoice.TaxPercent)
     <div class="card semi-transparent">
-        <div class="card-header semi-transparent">
-            <h2 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h2>
+        <div class="card-header semi-transparent d-flex justify-content-between">
+            <h3 class="m-0">@(Model.Invoice.Id == 0 ? "Add Invoice" : "Edit Invoice")</h3>
+            @if (Model.Invoice.Id > 0)
+            {
+                <div>
+                    <a class="btn btn-info" href="@Url.Action("ViewInvoice","Invoice", new {invoiceId = Model.Invoice.Id})">Print/View Invoice</a>
+                </div>
+            }
         </div>
         <div class="card-body">
             <div class="row no-gutters">

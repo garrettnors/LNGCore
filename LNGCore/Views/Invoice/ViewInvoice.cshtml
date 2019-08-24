@@ -29,10 +29,11 @@
 <div class="row">
     <div class="col-lg-5">
         <div class="card semi-transparent mb-3">
-            <div class="card-header semi-transparent">
+            <div class="card-header semi-transparent d-flex justify-content-between">
                 <h4 class="m-0">
                     Email Options
                 </h4>
+                <a class="btn btn-sm btn-info" href="@Url.Action("EditInvoice","Invoice", new {invoiceId = Model.Invoice.Id})">Edit Invoice</a> 
             </div>
             <div class="card-body">
                 @using (Html.BeginForm("SendInvoiceEmail", "Invoice", FormMethod.Post))

@@ -7,129 +7,129 @@
     <div class="card-body">
         @if (Model.Invoices.Any())
         {
-            if (Model.PaginationParameters.NumberOfPages > 1)
-            {
-                <partial name="_Pagination" model="Model.PaginationParameters" />
-            }
+        if (Model.PaginationParameters.NumberOfPages > 1)
+        {
+        <partial name="_Pagination" model="Model.PaginationParameters" />
+        }
 
-            foreach (var invoice in Model.Invoices)
-            {
-                <div class="pb-2" id="invoice@(invoice.Id)">
-                    <div class="card semi-transparent">
-                        <div class="card-body slight-border p-2">
-                            <div class="row no-gutters">
-                                <div class="col-lg-2 text-center text-left-lg">
-                                    <span data-toggle="collapse" role="button" data-target="@($"#collapse{invoice.Id}")">
-                                        <span class="h5 d-lg-block m-0 pointer" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
+        foreach (var invoice in Model.Invoices)
+        {
+        <div class="pb-2" id="invoice@(invoice.Id)">
+            <div class="card semi-transparent">
+                <div class="card-body slight-border p-2">
+                    <div class="row no-gutters">
+                        <div class="col-lg-2 text-center text-left-lg">
+                            <span data-toggle="collapse" role="button" data-target="@($" #collapse{invoice.Id}")">
+                                <span class="h5 d-lg-block m-0 pointer" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <small class="text-info d-none d-lg-block">
+                                Ordered <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
+                            </small>
+                            <small class="text-danger d-block">
+                                Needed <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
+                            </small>
+                            <small class="text-success d-block pointer" onclick="openEmailHistory(@invoice.Id)">
+                                Emailed @(Model.InvoiceEmailCounts[invoice.Id]) Time@(Model.InvoiceEmailCounts[invoice.Id] == 1 ? "" : "s")
+                            </small>
+                            <hr class="d-lg-none my-1" />
+                        </div>
+                        <div class="col-lg-5 pr-lg-4">
+                            <small>
+                                @(string.IsNullOrWhiteSpace(invoice.Notes) ? "No Notes." : invoice.Notes)
+                            </small>
+                        </div>
+                        <div class="col-lg-2 text-right">
+                            <small class="text-secondary">@($"{invoice.LineItem.Count()} Item{(invoice.LineItem.Count() > 1 ? "s" : "")} | #{@invoice.Id}")</small>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-info dropdown-toggle" data-display="static" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    I Want To...
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right text-right" aria-labelledby="dropdownMenuButton">
+                                    @if (invoice.IsPaid != true)
+                                    {
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Paid');">
+                                        Set As Paid
+                                        <span class="icon-width text-center text-success fas fa-dollar-sign"></span>
                                     </span>
-                                </div>
-                                <div class="col-lg-3 text-center">
-                                    <small class="text-info d-none d-lg-block">
-                                        Ordered <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
-                                    </small>
-                                    <small class="text-danger d-block">
-                                        Needed <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
-                                    </small>
-                                    <small class="text-success d-block pointer" onclick="openEmailHistory(@invoice.Id)">
-                                        Emailed @(Model.InvoiceEmailCounts[invoice.Id]) Time@(Model.InvoiceEmailCounts[invoice.Id] == 1 ? "" : "s")
-                                    </small>
-                                    <hr class="d-lg-none my-1" />
-                                </div>
-                                <div class="col-lg-5 pr-lg-4">
-                                    <small>
-                                        @(string.IsNullOrWhiteSpace(invoice.Notes) ? "No Notes." : invoice.Notes)
-                                    </small>
-                                </div>
-                                <div class="col-lg-2 text-right">
-                                    <small class="text-secondary">@($"{invoice.LineItem.Count()} Item{(invoice.LineItem.Count() > 1 ? "s" : "")} | #{@invoice.Id}")</small>
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-info dropdown-toggle" data-display="static" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            I Want To...
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right text-right" aria-labelledby="dropdownMenuButton">
-                                            @if (invoice.IsPaid != true)
-                                            {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Paid');">
-                                                    Set As Paid
-                                                    <span class="icon-width text-center text-success fas fa-dollar-sign"></span>
-                                                </span>
-                                            }
-                                            @if (invoice.Voided || invoice.IsQuote || invoice.IsPaid == true || invoice.IsDonated == true)
-                                            {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Open');">
-                                                    Set As Open
-                                                    <span class="icon-width text-center text-info-light fas fa-book-open"></span>
-                                                </span>
-                                            }
-                                            @if (invoice.IsDonated != true)
-                                            {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Donated');">
-                                                    Set As Donated
-                                                    <span class="icon-width text-center text-pink fas fa-gift"></span>
-                                                </span>
-                                            }
-                                            @if (!invoice.IsQuote)
-                                            {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Quote');">
-                                                    Set As Quote
-                                                    <span class="icon-width text-center text-purple fas fa-quote-left"></span>
-                                                </span>
-                                            }
-                                            @if (!invoice.Voided)
-                                            {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Voided');">
-                                                    Void Invoice
-                                                    <span class="icon-width text-center text-danger fas fa-trash"></span>
-                                                </span>
-                                            }
-                                            <hr class="border-secondary m-1 mx-4" />
-                                            <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice", new { invoiceId = invoice.Id })">
-                                                Edit Invoice
-                                                <span class="icon-width text-center text-lime fas fa-edit"></span>
-                                            </a>
-                                            <a class="pointer dropdown-item" href="@Url.Action("ViewInvoice", "Invoice", new { invoiceId = invoice.Id })">
-                                                Print/Email Invoice
-                                                <span class="icon-width text-center text-info far fa-file-alt"></span>
-                                            </a>
-                                        </div>
-                                    </div>
+                                    }
+                                    @if (invoice.Voided || invoice.IsQuote || invoice.IsPaid == true || invoice.IsDonated == true)
+                                    {
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Open');">
+                                        Set As Open
+                                        <span class="icon-width text-center text-info-light fas fa-book-open"></span>
+                                    </span>
+                                    }
+                                    @if (invoice.IsDonated != true)
+                                    {
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Donated');">
+                                        Set As Donated
+                                        <span class="icon-width text-center text-pink fas fa-gift"></span>
+                                    </span>
+                                    }
+                                    @if (!invoice.IsQuote)
+                                    {
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Quote');">
+                                        Set As Quote
+                                        <span class="icon-width text-center text-purple fas fa-quote-left"></span>
+                                    </span>
+                                    }
+                                    @if (!invoice.Voided)
+                                    {
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Voided');">
+                                        Void Invoice
+                                        <span class="icon-width text-center text-danger fas fa-trash"></span>
+                                    </span>
+                                    }
+                                    <hr class="border-secondary m-1 mx-4" />
+                                    <a class="pointer dropdown-item" href="@Url.Action(" EditInvoice", "Invoice" , new { invoiceId=invoice.Id })">
+                                        Edit Invoice
+                                        <span class="icon-width text-center text-lime fas fa-edit"></span>
+                                    </a>
+                                    <a class="pointer dropdown-item" href="@Url.Action(" ViewInvoice", "Invoice" , new { invoiceId=invoice.Id })">
+                                        Print/Email Invoice
+                                        <span class="icon-width text-center text-info far fa-file-alt"></span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer p-0 collapse" id="@($"collapse{invoice.Id}")">
-                            <table class="table table-striped table-borderless table-sm m-0" style="background-color:rgba(38, 37, 49, 0.80);">
-                                <thead>
-                                    <tr>
-                                        <th>Qty.</th>
-                                        <th>Type</th>
-                                        <th>Desc</th>
-                                        <th>$/ea</th>
-                                    </tr>
-                                </thead>
-                                @foreach (var item in invoice.LineItem)
-                                {
-                                    <tr>
-                                        <td>@item.Quantity</td>
-                                        <td>@item.Item?.ItemName</td>
-                                        <td>@item.ItemDesc</td>
-                                        <td>@($"{item.ItemPrice:c}")</td>
-                                    </tr>
-                                }
-                            </table>
-                        </div>
                     </div>
                 </div>
-            }
-            if (Model.PaginationParameters.NumberOfPages > 1)
-            {
-                <partial name="_Pagination" model="Model.PaginationParameters" />
-            }
+                <div class="card-footer p-0 collapse" id="@($" collapse{invoice.Id}")">
+                    <table class="table table-striped table-borderless table-sm m-0" style="background-color:rgba(38, 37, 49, 0.80);">
+                        <thead>
+                            <tr>
+                                <th>Qty.</th>
+                                <th>Type</th>
+                                <th>Desc</th>
+                                <th>$/ea</th>
+                            </tr>
+                        </thead>
+                        @foreach (var item in invoice.LineItem)
+                        {
+                        <tr>
+                            <td>@item.Quantity</td>
+                            <td>@item.Item?.ItemName</td>
+                            <td>@item.ItemDesc</td>
+                            <td>@($"{item.ItemPrice:c}")</td>
+                        </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+        }
+        if (Model.PaginationParameters.NumberOfPages > 1)
+        {
+        <partial name="_Pagination" model="Model.PaginationParameters" />
+        }
 
         }
         else
         {
-            var searchTermText = $" for search term \"{Model.SearchTerm}\"";
-            <h2 class="text-center">@($"No Items Found{(string.IsNullOrWhiteSpace(Model.SearchTerm) ? "" : searchTermText)}.")</h2>
+        var searchTermText = $" for search term \"{Model.SearchTerm}\"";
+        <h2 class="text-center">@($"No Items Found{(string.IsNullOrWhiteSpace(Model.SearchTerm) ? "" : searchTermText)}.")</h2>
         }
     </div>
 </div>
@@ -137,87 +137,15 @@
 
 <script>
     function setStatus(invoiceId, status) {
-
-        var confirmText = "";
-        var confirmButtonText = "";
-        var notifyText = "";
-
-        if (status == "Paid") {
-            confirmText = "Are you sure you want to mark this invoice as paid?";
-            confirmButtonText = "Yes, Mark Paid";
-            notifyText = "The invoice has been marked paid and moved to the Paid Invoices tab."
-        }
-        if (status == "Open") {
-            confirmText = "Are you sure you want to mark this invoice as open?";
-            confirmButtonText = "Yes, Open Invoice";
-            notifyText = "The invoice has been marked open and moved to the Open Invoices tab."
-        }
-        if (status == "Voided") {
-            confirmText = "Are you sure you want to void this invoice?";
-            confirmButtonText = "Yes, Void Invoice";
-            notifyText = "The invoice has been voided and moved to the Voided Items tab."
-        }
-         if (status == "Quote") {
-            confirmText = "Are you sure you want to make this invoice a quote?";
-            confirmButtonText = "Yes, Convert to Quote";
-            notifyText = "The invoice has been converted and moved to the Open Quotes tab."
-        }
-         if (status == "Donated") {
-            confirmText = "Are you sure you want to donate this invoice?";
-            confirmButtonText = "Yes, Donate Invoice";
-            notifyText = "The invoice has been marked donated and moved to the Donated Items tab."
-        }
-
-        Swal.fire({
-            text: confirmText,
-            type: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#57c386',
-            cancelButtonColor: '#888',
-            confirmButtonText: confirmButtonText
-        }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                    url: "@Html.Raw(Url.Action("SetInvoiceStatus", "Invoice", new {invoiceId = "__INVOICE__", status = InvoiceTypeEnum.Paid}))".replace("__INVOICE__", invoiceId),
-                    success: function () {
-                        var timerInterval;
-                        Swal.fire({
-                            position: 'middle',
-                            type: 'success',
-                            title: 'Success',
-                            html: notifyText +
-                                '<br /><br />' +
-                                '<div class="progress">' +
-                                '<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" id="successProgress"' +
-                                ' role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>' +
-                                '</div>',
-                            showConfirmButton: false,
-                            timer: 4000,
-                            onBeforeOpen: function() {
-                                timerInterval = setInterval(function () {
-                                    var timeLeft = Swal.getTimerLeft();
-                                    if (timeLeft === undefined) {
-                                        clearInterval(timerInterval); //stops interval loop if the timer is out of time
-                                    } else {
-                                        //swal sends milliseconds left, flipping and adding total timer gives upward count
-                                        var progress = (((Swal.getTimerLeft() * -1) + 4000) / 100).toFixed(0);
-
-                                        //putting final value over 100% will give a few milliseconds at the end to finish animation (5*4 is 120% total, so the bar will be full 1 second early)
-                                        $("#successProgress").css("width", progress*5 + "%");
-                                    }
-                                 },
-                             100);
-                            }
-                        });
-                        $("#invoice" + invoiceId).remove();
-                    },
-                    error: function() {
-                        Swal.fire({
-                            type: 'error',
-                            text: 'Something went wrong.... invoice could not be modified. Does it still exist? Reload the page and try again.'
-                        });
-                    }
-                });
+        $.ajax({
+            url: "@Html.Raw(Url.Action("SetInvoiceStatus", "Invoice", new { invoiceId = "__INVOICE__", status = "__STATUS__" }))"
+                .replace("__INVOICE__", invoiceId).replace("__STATUS__", status),
+            success: function () {
+                toastr.success("Moved invoice #" + invoiceId + " to " + status);
+                $("#invoice" + invoiceId).remove();
+            },
+            error: function () {
+                toastr.error("Something went wrong, the invoice could not be moved.");
             }
         });
     }
