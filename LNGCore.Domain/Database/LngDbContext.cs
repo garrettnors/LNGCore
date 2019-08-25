@@ -312,7 +312,7 @@ namespace LNGCore.Domain.Database
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Summary).IsRequired();
+                entity.Property(e => e.Summary).HasColumnType("varchar(MAX)").IsRequired();
             });
         }
     }
