@@ -57,6 +57,15 @@ namespace LNGCore
             //    options.DefaultAuthenticateScheme = "";
             //});
             services.AddAuthentication(IISDefaults.AuthenticationScheme);
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = true;
+            });
+
             services.AddMvc(o => { o.Filters.Add<GlobalExceptionFilter>(); })
                 .AddJsonOptions(options =>
                 {
