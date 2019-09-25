@@ -182,19 +182,24 @@ namespace LNGCore.Domain.Services.Implementations
 
         public void SaveLineItems(List<LineItem> lines, int invoiceId)
         {
+            //remove all existing lineitems and add new lines (in case of edits where lines were removed)
+            var existingItems = _db.LineItem.Where(w => w.InvoiceId == invoiceId);
+            _db.LineItem.RemoveRange(existingItems);
+            
             foreach (var lineItem in lines)
             {
-                var line = _db.LineItem.FirstOrDefault(f => f.LineItemId == lineItem.LineItemId) ??
-                           new LineItem();
-                line.InvoiceId = invoiceId;
-                line.ItemDesc = lineItem.ItemDesc;
-                line.ItemId = lineItem.ItemId;
-                line.ItemPrice = lineItem.ItemPrice;
-                line.Quantity = lineItem.Quantity;
-                line.Price = lineItem.Price;
+                var line = new LineItem
+                {
+                    InvoiceId = invoiceId,
+                    ItemDesc = lineItem.ItemDesc,
+                    ItemId = lineItem.ItemId,
+                    ItemPrice = lineItem.ItemPrice,
+                    Quantity = lineItem.Quantity,
+                    Price = lineItem.Price
+                };
 
-                if (line.LineItemId == 0)
-                    _db.LineItem.Add(line);
+
+                _db.LineItem.Add(line);
             }
 
             _db.SaveChanges();
