@@ -5,7 +5,7 @@
     <tr id="@($"row{line.LineItemId}")">
         <td class="px-1" style="width: 10%">
             @Html.Hidden($"LineItems[{Model.LineIndex}].LineItemId", line.LineItemId)
-            <input name="@($"LineItems[{Model.LineIndex}].Quantity")" type="number" step="1" data-lineindex="@Model.LineIndex" value="@(line.Quantity == 0 ? "" : line.Quantity.ToString())" class="form-control form-control-sm row-control" />
+            <input name="@($"LineItems[{Model.LineIndex}].Quantity")" type="number" step="1" data-lineindex="@Model.LineIndex" value="@(line.Quantity == 0 ? "" : line.Quantity.ToString())" class="form-control form-control-sm row-control" onchange="calculateJobCost();"/>
         </td>
         <td class="px-1" style="width: 20%; min-width: 140px">
             @Html.DropDownList($"LineItems[{Model.LineIndex}].ItemId",
@@ -16,7 +16,7 @@
             <input name="@($"LineItems[{Model.LineIndex}].ItemDesc")" type="text" data-lineindex="@Model.LineIndex" value="@line.ItemDesc" maxlength="75"  class="form-control form-control-sm row-control" />
         </td>
         <td class="px-1" style="width: 10%">
-            <input name="@($"LineItems[{Model.LineIndex}].ItemPrice")" type="number" data-lineindex="@Model.LineIndex" step="0.01" value="@line.ItemPrice" class="form-control form-control-sm row-control" />
+            <input name="@($"LineItems[{Model.LineIndex}].ItemPrice")" type="number" data-lineindex="@Model.LineIndex" step="0.01" value="@line.ItemPrice" class="form-control form-control-sm row-control" onchange="calculateJobCost();" />
         </td>
         <td class="px-1" style="width:1%">
             <button type="button" onclick="getSuggestedValues(@Model.LineIndex)" class="btn btn-sm btn-info">

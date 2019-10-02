@@ -239,6 +239,8 @@ namespace LNGCore.Domain.Database
 
                 entity.Property(e => e.TaxPercent).HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.JobCost).HasColumnType("decimal(18, 2)");
+
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.Invoice)
                     .HasForeignKey(d => d.CustomerId)

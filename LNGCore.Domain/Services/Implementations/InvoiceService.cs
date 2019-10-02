@@ -67,9 +67,8 @@ namespace LNGCore.Domain.Services.Implementations
         public int Add(Invoice invoice)
         {
             var customer = _customerService.Get(invoice.CustomerId);
-
-            if (customer != null)
-                invoice.TaxPercent = customer.Taxable ? (decimal)8.2500 : (decimal)0.00;
+            
+            invoice.TaxPercent = customer != null && customer.Taxable ? (decimal)8.2500 : (decimal)0.00;
 
             _db.Invoice.Add(invoice);
             _db.SaveChanges();
@@ -185,7 +184,7 @@ namespace LNGCore.Domain.Services.Implementations
             //remove all existing lineitems and add new lines (in case of edits where lines were removed)
             var existingItems = _db.LineItem.Where(w => w.InvoiceId == invoiceId);
             _db.LineItem.RemoveRange(existingItems);
-            
+
             foreach (var lineItem in lines)
             {
                 var line = new LineItem

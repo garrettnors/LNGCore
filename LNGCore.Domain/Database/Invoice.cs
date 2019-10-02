@@ -27,6 +27,8 @@ namespace LNGCore.Domain.Database
         public bool? IsDonated { get; set; }
         public decimal? ShipCost { get; set; }
         public string InvoiceProofUrl { get; set; }
+        public decimal? JobCost { get; set; }
+        public string JobCostDesc { get; set; }
 
         public virtual Customer Customer { get; set; }
         public virtual Employee Employee { get; set; }
