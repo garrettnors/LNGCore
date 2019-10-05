@@ -151,7 +151,7 @@
             @if (Model.Invoice.Id > 0)
             {
                 <div>
-                    <a class="btn btn-info" href="@Url.Action(" ViewInvoice","Invoice", new {invoiceId=Model.Invoice.Id})">Print/View Invoice</a>
+                    <a class="btn btn-info" href="@Url.Action("ViewInvoice","Invoice", new {invoiceId=Model.Invoice.Id})">Print/View Invoice</a>
                 </div>
             }
         </div>
