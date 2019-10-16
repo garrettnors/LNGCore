@@ -27,6 +27,8 @@ namespace LNGCore.UI.Models.Admin
         public List<LineItem> LineItems { get; set; }
         public List<IFormFile> UploadedFiles { get; set; }
         public List<IFormFile> UploadedProofs { get; set; }
+        public int? PreviousInvoiceId { get; set; }
+        public int? NextInvoiceId { get; set; }
     }
 
     //public class LineItemRow

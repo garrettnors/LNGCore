@@ -106,7 +106,7 @@ namespace LNGCore.UI.Controllers
 
             if (invoice == null)
                 return RedirectToAction("Index");
-
+            
             var vm = new EditInvoiceViewModel
             {
                 Invoice = invoice,
@@ -131,6 +131,9 @@ namespace LNGCore.UI.Controllers
                 else
                     vm.InvoiceType = InvoiceTypeEnum.Open;
             }
+
+            vm.PreviousInvoiceId = _invoiceService.GetPreviousInvoiceId(invoiceId, vm.InvoiceType);
+            vm.NextInvoiceId = _invoiceService.GetNextInvoiceId(invoiceId, vm.InvoiceType); 
 
             return View(vm);
         }

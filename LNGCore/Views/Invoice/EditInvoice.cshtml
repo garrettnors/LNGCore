@@ -36,7 +36,7 @@
 
     $(document).ready(function () {
         addLinesToTable();
-        setUpSelect2();        
+        setUpSelect2();
     });
 
     function setUpSelect2() {
@@ -97,14 +97,14 @@
         });
     }
 
-    function calculateJobCost() { 
+    function calculateJobCost() {
         const shopCutPercent = 25;
         var lineItemTotal = 0;
         $("input[name*='ItemPrice']").each(function () {
             var linePrice = +$(this).val();
-            if (linePrice > 0) {
-                var qtyCtrlName = $(this).prop("name").replace("ItemPrice", "Quantity");
-                var qty = +$("input[name='" + qtyCtrlName + "']").val();
+            var qtyCtrlName = $(this).prop("name").replace("ItemPrice", "Quantity");
+            var qty = +$("input[name='" + qtyCtrlName + "']").val();
+            if (qty > 0) {
                 lineItemTotal = lineItemTotal + (linePrice * qty);
             }
         });
@@ -151,7 +151,15 @@
             @if (Model.Invoice.Id > 0)
             {
                 <div>
-                    <a class="btn btn-info" href="@Url.Action("ViewInvoice","Invoice", new {invoiceId=Model.Invoice.Id})">Print/View Invoice</a>
+                    @if (Model.PreviousInvoiceId != null)
+                    {
+                        <a class="btn btn-primary" href="@Url.Action("EditInvoice", "Invoice", new { invoiceId = Model.PreviousInvoiceId })"><span class="fa fa-arrow-left"></span></a>
+                    }
+                    <a class="btn btn-primary" href="@Url.Action("ViewInvoice", "Invoice", new { invoiceId = Model.Invoice.Id })">Print/View</a>
+                    @if (Model.NextInvoiceId != null)
+                    {
+                        <a class="btn btn-primary" href="@Url.Action("EditInvoice","Invoice", new {invoiceId=Model.NextInvoiceId})"><span class="fa fa-arrow-right"></span></a>
+                    }
                 </div>
             }
         </div>
@@ -234,10 +242,10 @@
                         Job Cost
                     </label>
                     @Html.TextBoxFor(f => f.Invoice.JobCost, new { @class = "form-control small-text", type = "number", step = ".01", onchange = "calculateJobCost();" })
-                    <div class="text-center m-0 mt-3 text-muted" id="lblJobCost">                        
+                    <div class="text-center m-0 mt-3 text-muted" id="lblJobCost">
                     </div>
                 </div>
-            </div>            
+            </div>
             <hr class="mb-2" />
             <table class="table table-borderless table-sm table-responsive" id="tblLineItems">
                 <thead>

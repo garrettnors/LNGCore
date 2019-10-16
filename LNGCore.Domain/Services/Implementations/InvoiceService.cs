@@ -285,5 +285,26 @@ namespace LNGCore.Domain.Services.Implementations
 
             return returnDict;
         }
+
+        public int? GetNextInvoiceId(int invoiceId, InvoiceTypeEnum type)
+        {
+            var currentInvc = Get(invoiceId);
+
+            if (currentInvc == null)            
+                return null;
+
+            return GetInvoices(type).Where(w => w.Id > invoiceId)?.OrderBy(o => o.Id).FirstOrDefault()?.Id;
+        }
+
+        public int? GetPreviousInvoiceId(int invoiceId, InvoiceTypeEnum type)
+        {
+
+            var currentInvc = Get(invoiceId);
+
+            if (currentInvc == null)
+                return null;
+
+            return GetInvoices(type).Where(w => w.Id < invoiceId)?.OrderBy(o => o.Id).LastOrDefault()?.Id;
+        }
     }
 }
