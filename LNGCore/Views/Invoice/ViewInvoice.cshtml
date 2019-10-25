@@ -36,7 +36,7 @@
                 <a class="btn btn-sm btn-info" href="@Url.Action("EditInvoice","Invoice", new {invoiceId = Model.Invoice.Id})">Edit Invoice</a> 
             </div>
             <div class="card-body">
-                @using (Html.BeginForm("SendInvoiceEmail", "Invoice", FormMethod.Post))
+                @using (Html.BeginForm("SendInvoiceEmail", "Invoice", FormMethod.Post, new {id = "formSendEmail"}))
                 {
                     @Html.Hidden("InvoiceId", Model.Invoice.Id)
                     @Html.Hidden("CustomerId", Model.Invoice.CustomerId)
@@ -69,7 +69,7 @@
                     <div class="ml-1 mb-2">
                         @Html.CheckBox("SendToCompany", true, new { @class = "scale-up-50" }) <label class="pointer disable-select" for="SendToCompany"><span class="h5 m-0 ml-2">Send Copy To LNG</span></label>
                     </div>
-                    <button type="submit" onclick="return confirm('Are you sure you want to send this invoice? Double check the recipients you are sending to!');" class="btn btn-sm btn-success">Send This Invoice</button>
+                    <button type="button" onclick="getConfirmation(this);" class="btn btn-sm btn-success">Send This Invoice</button>
                 }
             </div>
         </div>
@@ -84,7 +84,17 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-7">
-        <embed id="pdfEmbed" src="data:application/pdf;base64, @Model.InvoiceData" type="application/pdf" style="height:1000px; width:100%;" />
+    <div class="col-lg-7">     
+        <embed id="pdfEmbed" src="@Url.Action("GetInvoicePdfFile","Invoice", new {invoiceId = Model.Invoice.Id})" type="application/pdf" style="height:1000px; width:100%;" />
     </div>
 </div>
+<script>
+    function getConfirmation(btn) {
+        if (confirm('Are you sure you want to send this invoice? Double check the recipients you are sending to!')) {
+            $(btn).html("Sending...do not close this window...");
+            $(btn).prop("disabled", true);
+            $("#formSendEmail").submit();            
+        }
+        return false;
+    }
+</script>

@@ -269,8 +269,7 @@ namespace LNGCore.UI.Controllers
         {
             var vm = new ViewInvoiceViewModel
             {
-                Invoice = _invoiceService.Get(invoiceId),
-                InvoiceData = GetInvoicePdf(invoiceId)
+                Invoice = _invoiceService.Get(invoiceId)
             };
             return View(vm);
         }
@@ -286,7 +285,13 @@ namespace LNGCore.UI.Controllers
             if (vm.SendToSecondary && !string.IsNullOrEmpty(vm.SecondaryEmail))
                 recipients.Add(vm.SecondaryEmail);
 
-            var attachmentContent = new MemoryStream(Convert.FromBase64String(GetInvoicePdf(vm.InvoiceId)));
+            if (vm.SendToCompany && !recipients.Any())
+            {
+                recipients.Add(_config.GetSection("SiteConfiguration")["MailerEmail"]);
+                vm.SendToCompany = false;
+            }
+
+            var attachmentContent = new MemoryStream(GetInvoicePdf(vm.InvoiceId));
             var attachment = new Attachment(attachmentContent, $"Invoice{vm.InvoiceId}.pdf", "application/pdf");
 
             var mailSubject = $"Your order information is ready to view! (Order #{vm.InvoiceId})";
@@ -338,7 +343,7 @@ namespace LNGCore.UI.Controllers
             return RedirectToAction("ViewInvoice", new { invoiceId = vm.InvoiceId });
         }
 
-        public string GetInvoicePdf(int invoiceId)
+        public byte[] GetInvoicePdf(int invoiceId)
         {
             const int itemsPerPageMax = 20;
             const string footer = "--footer-center \"Thank you for choosing LNG Laserworks, we appreciate your business!\" " +
@@ -360,7 +365,12 @@ namespace LNGCore.UI.Controllers
             };
 
             var byteArray = actionPdf.BuildFile(ControllerContext).Result;
-            return Convert.ToBase64String(byteArray, 0, byteArray.Length);
+            return byteArray;
+        }
+
+        public FileResult GetInvoicePdfFile(int invoiceId)
+        {
+            return File(GetInvoicePdf(invoiceId), "application/pdf");
         }
 
         public IActionResult DeleteAttachment(string attachmentName = "", int invoiceId = 0)
