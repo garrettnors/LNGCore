@@ -170,7 +170,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th><input type="checkbox" onclick="toggleAll(this);" /></th>
+                                        <th><input type="checkbox" onclick="toggleAll(this, @(group.FirstOrDefault().EmployeeId));" /></th>
                                         <th>Invoice For</th>
                                         <th class="d-none d-lg-table-cell">Date Ordered</th>
                                         <th class="d-none d-lg-table-cell">Date Paid</th>
@@ -188,7 +188,7 @@
                                     var tax = invoice.LineItem.Sum(s => s.ItemPrice * s.Quantity * (invoice.TaxPercent / 100)) ?? 0;
                                     var participantCut = totalAfterJobCost - shopCut;
                                     <tr>
-                                        <td><input type="checkbox" class="chkInvc" id="chk@(invoice.Id)" /></td>
+                                        <td><input type="checkbox" class="@($"chkInvc chkInvc{invoice.EmployeeId}")" id="chk@(invoice.Id)" /></td>
                                         <td>@invoice.Customer.Name</td>
                                         <td class="d-none d-lg-table-cell">@($"{invoice.OrderDate:d}")</td>
                                         <td class="d-none d-lg-table-cell">@($"{invoice.PaidDate:d}")</td>
@@ -253,9 +253,9 @@
 </div>
 
 <script>
-    function toggleAll(check) {
+    function toggleAll(check, empId) {
         var isChecked = $(check).prop("checked");
-        $(".chkInvc").prop("checked", isChecked);
+        $(".chkInvc"+empId).prop("checked", isChecked);
     }
     function saveCheckedItems() {
         var ids = [];

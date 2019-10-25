@@ -231,7 +231,6 @@ namespace LNGCore.UI.Controllers
                 TempData["SuccessBannerMessage"] = $"Item{(items.Count == 1 ? "" : "s")} #{string.Join(",", items)} paid status set to {isPaid.ToString()}";
             }
 
-
             return HttpStatusCode.OK;
         }
 
