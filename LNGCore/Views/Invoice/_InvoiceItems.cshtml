@@ -9,137 +9,137 @@
         {
             if (Model.InvoiceType == InvoiceTypeEnum.Paid)
             {
-                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalUnpaidCuts">View Unpaid Cuts</button>
+        <button class="btn btn-sm btn-primary mb-3" data-toggle="modal" data-target="#modalUnpaidCuts">View Unpaid Cuts</button>
             }
             if (Model.PaginationParameters.NumberOfPages > 1)
             {
-                <partial name="_Pagination" model="Model.PaginationParameters" />
+        <partial name="_Pagination" model="Model.PaginationParameters" />
             }
 
             foreach (var invoice in Model.Invoices)
             {
-                <div class="pb-2" id="invoice@(invoice.Id)">
-                    <div class="card semi-transparent">
-                        <div class="card-body slight-border p-2">
-                            <div class="row no-gutters">
-                                <div class="col-lg-2 text-center text-left-lg">
-                                    <span data-toggle="collapse" role="button" data-target="@($"#collapse{invoice.Id}")">
-                                        <span class="h5 d-lg-block m-0 pointer" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
-                                    </span>
-                                    @if (Model.InvoiceType == InvoiceTypeEnum.Paid)
+        <div class="pb-2" id="invoice@(invoice.Id)">
+            <div class="card semi-transparent">
+                <div class="card-body slight-border p-2">
+                    <div class="row no-gutters">
+                        <div class="col-lg-2 text-center text-left-lg">
+                            <span data-toggle="collapse" role="button" data-target="@($"#collapse{invoice.Id}")">
+                                <span class="h5 d-lg-block m-0 pointer" data-toggle="tooltip" data-placement="left" title="Customer #@invoice.CustomerId">@invoice.Customer.Name</span>
+                            </span>
+                            @if (Model.InvoiceType == InvoiceTypeEnum.Paid)
                                     {
-                                        <span class="pointer" onclick="setPaidToParticipantStatus([@(invoice.Id)], @(!invoice.IsPaidToEmployees ? "true" : "false"));">
-                                            <small class="text-@(invoice.IsPaidToEmployees ? "success":"danger") d-block">Participants @(invoice.IsPaidToEmployees ? "" : "Not ")Paid</small>
-                                        </span>
+                            <span class="pointer" onclick="setPaidToParticipantStatus([@(invoice.Id)], @(!invoice.IsPaidToEmployees ? "true" : "false"));">
+                                <small class="text-@(invoice.IsPaidToEmployees ? "success":"danger") d-block">Participants @(invoice.IsPaidToEmployees ? "" : "Not ")Paid</small>
+                            </span>
                                     }
-                                </div>
-                                <div class="col-lg-3 text-center">
-                                    <small class="text-info d-none d-lg-block">
-                                        Ordered <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
-                                    </small>
-                                    <small class="text-danger d-block">
-                                        Needed <span class="font-weight-bold">@invoice.Deadline.ToString("d")</span>
-                                    </small>
-                                    <small class="text-success d-block pointer" onclick="openEmailHistory(@invoice.Id)">
-                                        Emailed @(Model.InvoiceEmailCounts[invoice.Id]) Time@(Model.InvoiceEmailCounts[invoice.Id] == 1 ? "" : "s")
-                                    </small>
-                                    <hr class="d-lg-none my-1" />
-                                </div>
-                                <div class="col-lg-5 pr-lg-4">
-                                    <small>
-                                        @(string.IsNullOrWhiteSpace(invoice.Notes) ? "No Notes." : invoice.Notes)
-                                    </small>
-                                </div>
-                                <div class="col-lg-2 text-right">
-                                    <small class="text-secondary">@($"{invoice.LineItem.Count()} Item{(invoice.LineItem.Count() > 1 ? "s" : "")} | #{@invoice.Id}")</small>
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-info dropdown-toggle" data-display="static" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            I Want To...
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right text-right" aria-labelledby="dropdownMenuButton">
-                                            @if (invoice.IsPaid != true)
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <small class="text-info d-none d-lg-block">
+                                Ordered <span class="font-weight-bold">@invoice.OrderDate.ToString("d")</span>
+                            </small>
+                            <small class="text-danger d-block">
+                                Needed <span class="font-weight-bold">@invoice.Deadline.ToString("d")</span>
+                            </small>
+                            <small class="text-success d-block pointer" onclick="openEmailHistory(@invoice.Id)">
+                                Emailed @(Model.InvoiceEmailCounts[invoice.Id]) Time@(Model.InvoiceEmailCounts[invoice.Id] == 1 ? "" : "s")
+                            </small>
+                            <hr class="d-lg-none my-1" />
+                        </div>
+                        <div class="col-lg-5 pr-lg-4">
+                            <small>
+                                @(string.IsNullOrWhiteSpace(invoice.Notes) ? "No Notes." : invoice.Notes)
+                            </small>
+                        </div>
+                        <div class="col-lg-2 text-right">
+                            <small class="text-secondary">@($"{invoice.LineItem.Count()} Item{(invoice.LineItem.Count() > 1 ? "s" : "")} | #{@invoice.Id}")</small>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-info dropdown-toggle" data-display="static" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    I Want To...
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right text-right" aria-labelledby="dropdownMenuButton">
+                                    @if (invoice.IsPaid != true)
                                             {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Paid');">
-                                                    Set As Paid
-                                                    <span class="icon-width text-center text-success fas fa-dollar-sign"></span>
-                                                </span>
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Paid');">
+                                        Set As Paid
+                                        <span class="icon-width text-center text-success fas fa-dollar-sign"></span>
+                                    </span>
                                             }
-                                            @if (invoice.Voided || invoice.IsQuote || invoice.IsPaid == true || invoice.IsDonated == true)
+                                    @if (invoice.Voided || invoice.IsQuote || invoice.IsPaid == true || invoice.IsDonated == true)
                                             {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Open');">
-                                                    Set As Open
-                                                    <span class="icon-width text-center text-info-light fas fa-book-open"></span>
-                                                </span>
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Open');">
+                                        Set As Open
+                                        <span class="icon-width text-center text-info-light fas fa-book-open"></span>
+                                    </span>
                                             }
-                                            @if (invoice.IsDonated != true)
+                                    @if (invoice.IsDonated != true)
                                             {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Donated');">
-                                                    Set As Donated
-                                                    <span class="icon-width text-center text-pink fas fa-gift"></span>
-                                                </span>
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Donated');">
+                                        Set As Donated
+                                        <span class="icon-width text-center text-pink fas fa-gift"></span>
+                                    </span>
                                             }
-                                            @if (!invoice.IsQuote)
+                                    @if (!invoice.IsQuote)
                                             {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Quote');">
-                                                    Set As Quote
-                                                    <span class="icon-width text-center text-purple fas fa-quote-left"></span>
-                                                </span>
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Quote');">
+                                        Set As Quote
+                                        <span class="icon-width text-center text-purple fas fa-quote-left"></span>
+                                    </span>
                                             }
-                                            @if (!invoice.Voided)
+                                    @if (!invoice.Voided)
                                             {
-                                                <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Voided');">
-                                                    Void Invoice
-                                                    <span class="icon-width text-center text-danger fas fa-trash"></span>
-                                                </span>
+                                    <span class="pointer dropdown-item" onclick="setStatus(@invoice.Id, 'Voided');">
+                                        Void Invoice
+                                        <span class="icon-width text-center text-danger fas fa-trash"></span>
+                                    </span>
                                             }
-                                            <hr class="border-secondary m-1 mx-4" />
-                                            <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice" , new { invoiceId=invoice.Id })">
-                                                Edit Invoice
-                                                <span class="icon-width text-center text-lime fas fa-edit"></span>
-                                            </a>
-                                            <a class="pointer dropdown-item" href="@Url.Action("ViewInvoice", "Invoice" , new { invoiceId=invoice.Id })">
-                                                Print/Email Invoice
-                                                <span class="icon-width text-center text-info far fa-file-alt"></span>
-                                            </a>
-                                        </div>
-                                    </div>
+                                    <hr class="border-secondary m-1 mx-4" />
+                                    <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice" , new { invoiceId=invoice.Id })">
+                                        Edit Invoice
+                                        <span class="icon-width text-center text-lime fas fa-edit"></span>
+                                    </a>
+                                    <a class="pointer dropdown-item" href="@Url.Action("ViewInvoice", "Invoice" , new { invoiceId=invoice.Id })">
+                                        Print/Email Invoice
+                                        <span class="icon-width text-center text-info far fa-file-alt"></span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer p-0 collapse" id="@($"collapse{invoice.Id}")">
-                            <table class="table table-striped table-borderless table-sm m-0" style="background-color:rgba(38, 37, 49, 0.80);">
-                                <thead>
-                                    <tr>
-                                        <th>Qty.</th>
-                                        <th>Type</th>
-                                        <th>Desc</th>
-                                        <th>$/ea</th>
-                                    </tr>
-                                </thead>
-                                @foreach (var item in invoice.LineItem)
-                                {
-                                    <tr>
-                                        <td>@item.Quantity</td>
-                                        <td>@item.Item?.ItemName</td>
-                                        <td>@item.ItemDesc</td>
-                                        <td>@($"{item.ItemPrice:c}")</td>
-                                    </tr>
-                                }
-                            </table>
-                        </div>
                     </div>
                 </div>
+                <div class="card-footer p-0 collapse" id="@($"collapse{invoice.Id}")">
+                    <table class="table table-striped table-borderless table-sm m-0" style="background-color:rgba(38, 37, 49, 0.80);">
+                        <thead>
+                            <tr>
+                                <th>Qty.</th>
+                                <th>Type</th>
+                                <th>Desc</th>
+                                <th>$/ea</th>
+                            </tr>
+                        </thead>
+                        @foreach (var item in invoice.LineItem)
+                                {
+                        <tr>
+                            <td>@item.Quantity</td>
+                            <td>@item.Item?.ItemName</td>
+                            <td>@item.ItemDesc</td>
+                            <td>@($"{item.ItemPrice:c}")</td>
+                        </tr>
+                                }
+                    </table>
+                </div>
+            </div>
+        </div>
             }
             if (Model.PaginationParameters.NumberOfPages > 1)
             {
-                <partial name="_Pagination" model="Model.PaginationParameters" />
+        <partial name="_Pagination" model="Model.PaginationParameters" />
             }
 
         }
         else
         {
             var searchTermText = $" for search term \"{Model.SearchTerm}\"";
-            <h2 class="text-center">@($"No Items Found{(string.IsNullOrWhiteSpace(Model.SearchTerm) ? "" : searchTermText)}.")</h2>
+        <h2 class="text-center">@($"No Items Found{(string.IsNullOrWhiteSpace(Model.SearchTerm) ? "" : searchTermText)}.")</h2>
         }
     </div>
 </div>
@@ -162,85 +162,85 @@
 
                         foreach (var group in groupedInvoices)
                         {
-                            <table class="table table-sm bg-slate-50">
-                                <thead>
-                                    <tr>
-                                        <td colspan="10">
-                                            <h4 class="m-0 text-center">@(group.FirstOrDefault().Employee.EmpName)</h4>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th><input type="checkbox" onclick="toggleAll(this, @(group.FirstOrDefault().EmployeeId));" /></th>
-                                        <th>Invoice For</th>
-                                        <th class="d-none d-lg-table-cell">Date Ordered</th>
-                                        <th class="d-none d-lg-table-cell">Date Paid</th>
-                                        <th>Job Cost</th>
-                                        <th>Shop (25%)</th>
-                                        <th>Ship</th>
-                                        <th>Tax</th>
-                                        <th>Emp(s). Cut</th>
-                                    </tr>
-                                </thead>
-                                @foreach (var invoice in group)
+                        <table class="table table-sm bg-slate-50">
+                            <thead>
+                                <tr>
+                                    <td colspan="10">
+                                        <h4 class="m-0 text-center">@(group.FirstOrDefault().Employee.EmpName)</h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><input type="checkbox" onclick="toggleAll(this, @(group.FirstOrDefault().EmployeeId));" /></th>
+                                    <th>Invoice For</th>
+                                    <th class="d-none d-lg-table-cell">Date Ordered</th>
+                                    <th class="d-none d-lg-table-cell">Date Paid</th>
+                                    <th>Job Cost</th>
+                                    <th>Shop (25%)</th>
+                                    <th>Ship</th>
+                                    <th>Tax</th>
+                                    <th>Emp(s). Cut</th>
+                                </tr>
+                            </thead>
+                            @foreach (var invoice in group)
                                 {
                                     var totalAfterJobCost = (invoice.LineItem.Sum(s => s.ItemPrice * s.Quantity) ?? 0) - (invoice.JobCost ?? 0);
                                     var shopCut = totalAfterJobCost * (decimal).25;
                                     var tax = invoice.LineItem.Sum(s => s.ItemPrice * s.Quantity * (invoice.TaxPercent / 100)) ?? 0;
                                     var participantCut = totalAfterJobCost - shopCut;
-                                    <tr>
-                                        <td><input type="checkbox" class="@($"chkInvc chkInvc{invoice.EmployeeId}")" id="chk@(invoice.Id)" /></td>
-                                        <td>@invoice.Customer.Name</td>
-                                        <td class="d-none d-lg-table-cell">@($"{invoice.OrderDate:d}")</td>
-                                        <td class="d-none d-lg-table-cell">@($"{invoice.PaidDate:d}")</td>
-                                        <td>@($"{invoice.JobCost ?? 0:c}")</td>
-                                        <td>@($"{shopCut:c}")</td>
-                                        <td>@($"{invoice.ShipCost ?? 0:c}")</td>
-                                        <td>@($"{tax:c}")</td>
-                                        <td>@($"{participantCut:c}")</td>
-                                    </tr>
-                                    @if (!string.IsNullOrEmpty(invoice.Notes))
+                            <tr>
+                                <td><input type="checkbox" class="@($"chkInvc chkInvc{invoice.EmployeeId}")" id="chk@(invoice.Id)" /></td>
+                                <td>@invoice.Customer.Name</td>
+                                <td class="d-none d-lg-table-cell">@($"{invoice.OrderDate:d}")</td>
+                                <td class="d-none d-lg-table-cell">@($"{invoice.PaidDate:d}")</td>
+                                <td>@($"{invoice.JobCost ?? 0:c}")</td>
+                                <td>@($"{shopCut:c}")</td>
+                                <td>@($"{invoice.ShipCost ?? 0:c}")</td>
+                                <td>@($"{tax:c}")</td>
+                                <td>@($"{participantCut:c}")</td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(invoice.Notes))
                                     {
-                                        <tr>
-                                            <td colspan="10" class="border-0">
-                                                <strong>Notes:</strong> @(invoice.Notes)
-                                            </td>
-                                        </tr>
+                            <tr>
+                                <td colspan="10" class="border-0">
+                                    <strong>Notes:</strong> @(invoice.Notes)
+                                </td>
+                            </tr>
                                     }
 
                                 }
-                                <tfoot>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th class="d-none d-lg-table-cell"></th>
-                                        <th class="d-none d-lg-table-cell"></th>
-                                        <th>Job Cost</th>
-                                        <th>Shop (25%)</th>
-                                        <th>Ship</th>
-                                        <th>Tax</th>
-                                        <th>Emp(s). Cut</th>
-                                    </tr>
-                                    <tr>
-                                        @{
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th class="d-none d-lg-table-cell"></th>
+                                    <th class="d-none d-lg-table-cell"></th>
+                                    <th>Job Cost</th>
+                                    <th>Shop (25%)</th>
+                                    <th>Ship</th>
+                                    <th>Tax</th>
+                                    <th>Emp(s). Cut</th>
+                                </tr>
+                                <tr>
+                                    @{
                                             var sumJobCost = group.Sum(s => s.JobCost ?? 0);
                                             var sumTotalAfterJobCost = (group.Sum(s => s.LineItem.Sum(se => se.ItemPrice * se.Quantity)) ?? 0) - sumJobCost;
                                             var sumShopCut = sumTotalAfterJobCost * (decimal).25;
                                             var sumTax = group.Sum(s => (s.LineItem.Sum(se => se.ItemPrice * se.Quantity) * (s.TaxPercent / 100))) ?? 0;
                                             var sumParticipantCut = sumTotalAfterJobCost - sumShopCut;
                                             var shipCost = group.Sum(s => s.ShipCost ?? 0);
-                                        }
-                                        <th></th>
-                                        <th></th>
-                                        <th class="d-none d-lg-table-cell"></th>
-                                        <th class="d-none d-lg-table-cell"></th>
-                                        <th>@($"{sumJobCost:c}")</th>
-                                        <th>@($"{sumShopCut:c}")</th>
-                                        <th>@($"{shipCost:c}")</th>
-                                        <th>@($"{sumTax:c}")</th>
-                                        <th>@($"{sumParticipantCut:c}")</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    }
+                                    <th></th>
+                                    <th></th>
+                                    <th class="d-none d-lg-table-cell"></th>
+                                    <th class="d-none d-lg-table-cell"></th>
+                                    <th>@($"{sumJobCost:c}")</th>
+                                    <th>@($"{sumShopCut:c}")</th>
+                                    <th>@($"{shipCost:c}")</th>
+                                    <th>@($"{sumTax:c}")</th>
+                                    <th>@($"{sumParticipantCut:c}")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
                         }
                     }
 
