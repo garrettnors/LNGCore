@@ -21,5 +21,6 @@ namespace LNGCore.Domain.Services.Interfaces
         Dictionary<int, int> GetEmailCountsForInvoices(List<int> invoiceIds);
         int? GetNextInvoiceId(int invoiceId, InvoiceTypeEnum type);
         int? GetPreviousInvoiceId(int invoiceId, InvoiceTypeEnum type);
+        void SetParticipantPaidStatus(List<int> ids, bool isPaid);
     }
 }

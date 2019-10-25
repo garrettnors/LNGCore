@@ -106,7 +106,7 @@ namespace LNGCore.UI.Controllers
 
             if (invoice == null)
                 return RedirectToAction("Index");
-            
+
             var vm = new EditInvoiceViewModel
             {
                 Invoice = invoice,
@@ -133,7 +133,7 @@ namespace LNGCore.UI.Controllers
             }
 
             vm.PreviousInvoiceId = _invoiceService.GetPreviousInvoiceId(invoiceId, vm.InvoiceType);
-            vm.NextInvoiceId = _invoiceService.GetNextInvoiceId(invoiceId, vm.InvoiceType); 
+            vm.NextInvoiceId = _invoiceService.GetNextInvoiceId(invoiceId, vm.InvoiceType);
 
             return View(vm);
         }
@@ -220,6 +220,19 @@ namespace LNGCore.UI.Controllers
             };
 
             return PartialView("_InvoiceLineItem", vm);
+        }
+
+        [HttpPost]
+        public HttpStatusCode SetPaidItems(List<int> items, bool isPaid = false)
+        {
+            if (items.Any())
+            {
+                _invoiceService.SetParticipantPaidStatus(items, isPaid);
+                TempData["SuccessBannerMessage"] = $"Item{(items.Count == 1 ? "" : "s")} #{string.Join(",", items)} paid status set to {isPaid.ToString()}";
+            }
+
+
+            return HttpStatusCode.OK;
         }
 
         public PartialViewResult GetLineItemSuggestions(LineItemSuggestionViewModel model)

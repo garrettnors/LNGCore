@@ -119,7 +119,7 @@ namespace LNGCore.Domain.Services.Implementations
                 .Include(i => i.Employee)
                 .Include(i => i.LineItem)
                 .ThenInclude(t => t.Item)
-                .OrderByDescending(o => o.OrderDate);
+                .OrderBy(o => o.IsPaidToEmployees).ThenByDescending(t => t.OrderDate);
         }
 
         public IEnumerable<Invoice> GetInvoicesByCustomer(int customerId)
@@ -252,8 +252,7 @@ namespace LNGCore.Domain.Services.Implementations
             invoice.Voided = false;
             invoice.IsQuote = false;
             invoice.IsDonated = false;
-            invoice.PaidDate = null;
-
+            invoice.PaidDate = null;            
             switch (status)
             {
                 case InvoiceTypeEnum.Paid:
@@ -305,6 +304,14 @@ namespace LNGCore.Domain.Services.Implementations
                 return null;
 
             return GetInvoices(type).Where(w => w.Id < invoiceId)?.OrderBy(o => o.Id).LastOrDefault()?.Id;
+        }
+
+        public void SetParticipantPaidStatus(List<int> ids, bool isPaid)
+        {
+            foreach (var id in ids)            
+                _db.Invoice.FirstOrDefault(f => f.Id == id).IsPaidToEmployees = isPaid;
+            
+            _db.SaveChanges();
         }
     }
 }

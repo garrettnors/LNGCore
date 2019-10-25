@@ -64,7 +64,7 @@ namespace LNGCore.Controllers
             if (!string.IsNullOrWhiteSpace(searchTerm))
                 searchTerms = $"&keywords={searchTerm}";
 
-            var response = await client.GetAsync($"https://openapi.etsy.com/v2/shops/hoppergator/listings/active?api_key={etsyKey}{searchTerms}&includes=Images");
+            var response = await client.GetAsync($"https://openapi.etsy.com/v2/shops/MooLouStore/listings/active?api_key={etsyKey}{searchTerms}&includes=Images");
             var model = response.Content.ReadAsAsync<EtsyListings>();
             return await model;
         }

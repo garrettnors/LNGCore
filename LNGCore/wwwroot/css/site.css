@@ -31,8 +31,10 @@ body {
 .overflow-hide{
     overflow-x:hidden;
 }
-.modal-lg {
-    max-width: 800px;
+@media (min-width: 992px) {
+    .modal-lg {
+        max-width: 950px;
+    }
 }
 .text-info-light {
     color: #00b7ef;
