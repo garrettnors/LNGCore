@@ -63,7 +63,12 @@ body {
 .bg-white-50 {
     background-color: rgba(255, 255, 255, 0.50) !important;
 }
-
+.bg-black-20 {
+    background-color: rgba(0, 0, 0, 0.20) !important;
+}
+.bg-slate-50 {
+    background-color: rgba(31, 34, 45, 0.50) !important;
+}
 .checkbox-lg {
     transform: scale(1.5);
     margin-left: 5px;

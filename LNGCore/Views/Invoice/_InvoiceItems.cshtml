@@ -93,11 +93,11 @@
                                                 </span>
                                             }
                                             <hr class="border-secondary m-1 mx-4" />
-                                            <a class="pointer dropdown-item" href="@Url.Action(" EditInvoice", "Invoice" , new { invoiceId=invoice.Id })">
+                                            <a class="pointer dropdown-item" href="@Url.Action("EditInvoice", "Invoice" , new { invoiceId=invoice.Id })">
                                                 Edit Invoice
                                                 <span class="icon-width text-center text-lime fas fa-edit"></span>
                                             </a>
-                                            <a class="pointer dropdown-item" href="@Url.Action(" ViewInvoice", "Invoice" , new { invoiceId=invoice.Id })">
+                                            <a class="pointer dropdown-item" href="@Url.Action("ViewInvoice", "Invoice" , new { invoiceId=invoice.Id })">
                                                 Print/Email Invoice
                                                 <span class="icon-width text-center text-info far fa-file-alt"></span>
                                             </a>
@@ -148,7 +148,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="card m-0">
-                <div class="card-header">
+                <div class="card-header semi-transparent">
                     <h5 class="m-0">
                         Unpaid Cuts
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -157,78 +157,93 @@
                     </h5>
                 </div>
                 <div class="card-body small-text p-0 p-lg-3" style="overflow-x:auto;">
-                    <table class="table table-sm table-striped">
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" onclick="toggleAll(this);" /></th>
-                                <th>Invoice For</th>
-                                <th class="d-none d-lg-table-cell">Date Ordered</th>
-                                <th class="d-none d-lg-table-cell">Date Paid</th>
-                                <th>Primary Emp.</th>
-                                <th>Job Cost</th>
-                                <th>Shop (25%)</th>
-                                <th>Ship</th>
-                                <th>Tax</th>
-                                <th>Emp(s). Cut</th>
-                            </tr>
-                        </thead>
-                        @{
-                            foreach (var invoice in Model.Invoices.Where(w => w.IsPaid == true && !w.IsPaidToEmployees).OrderBy(o => o.EmployeeId).ThenByDescending(t => t.OrderDate))
-                            {
-                                var totalAfterJobCost = (invoice.LineItem.Sum(s => s.ItemPrice * s.Quantity) ?? 0) - (invoice.JobCost ?? 0);
-                                var shopCut = totalAfterJobCost * (decimal).25;
-                                var tax = invoice.LineItem.Sum(s => s.ItemPrice * s.Quantity * (invoice.TaxPercent / 100)) ?? 0;
-                                var participantCut = totalAfterJobCost - shopCut;
-                                <tr>
-                                    <td><input type="checkbox" class="chkInvc" id="chk@(invoice.Id)" /></td>
-                                    <td>@invoice.Customer.Name</td>
-                                    <td class="d-none d-lg-table-cell">@($"{invoice.OrderDate:d}")</td>
-                                    <td class="d-none d-lg-table-cell">@($"{invoice.PaidDate:d}")</td>
-                                    <td>@invoice.Employee.EmpName</td>
-                                    <td>@($"{invoice.JobCost ?? 0:c}")</td>
-                                    <td>@($"{shopCut:c}")</td>
-                                    <td>@($"{invoice.ShipCost ?? 0:c}")</td>
-                                    <td>@($"{tax:c}")</td>
-                                    <td>@($"{participantCut:c}")</td>
-                                </tr>
-                            }
-                        }
-                        <tfoot>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th class="d-none d-lg-table-cell"></th>
-                                <th class="d-none d-lg-table-cell"></th>
-                                <th>Totals</th>
-                                <th>Job Cost</th>
-                                <th>Shop (25%)</th>
-                                <th>Ship</th>
-                                <th>Tax</th>
-                                <th>Emp(s). Cut</th>
-                            </tr>
-                            <tr>
-                                @{
-                                    var paidInv = Model.Invoices.Where(w => w.IsPaid == true && !w.IsPaidToEmployees);
-                                    var sumJobCost = paidInv.Sum(s => s.JobCost ?? 0);
-                                    var sumTotalAfterJobCost = (paidInv.Sum(s => s.LineItem.Sum(se => se.ItemPrice * se.Quantity)) ?? 0) - sumJobCost;
-                                    var sumShopCut = sumTotalAfterJobCost * (decimal).25;
-                                    var sumTax = paidInv.Sum(s => (s.LineItem.Sum(se => se.ItemPrice * se.Quantity) * (s.TaxPercent / 100))) ?? 0;
-                                    var sumParticipantCut = sumTotalAfterJobCost - sumShopCut;
-                                    var shipCost = paidInv.Sum(s => s.ShipCost ?? 0);
+                    @{
+                        var groupedInvoices = Model.Invoices.Where(w => w.IsPaid == true && !w.IsPaidToEmployees).OrderBy(o => o.EmployeeId).ThenByDescending(t => t.OrderDate).GroupBy(g => g.EmployeeId);
+
+                        foreach (var group in groupedInvoices)
+                        {
+                            <table class="table table-sm bg-slate-50">
+                                <thead>
+                                    <tr>
+                                        <td colspan="10">
+                                            <h4 class="m-0 text-center">@(group.FirstOrDefault().Employee.EmpName)</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><input type="checkbox" onclick="toggleAll(this);" /></th>
+                                        <th>Invoice For</th>
+                                        <th class="d-none d-lg-table-cell">Date Ordered</th>
+                                        <th class="d-none d-lg-table-cell">Date Paid</th>
+                                        <th>Job Cost</th>
+                                        <th>Shop (25%)</th>
+                                        <th>Ship</th>
+                                        <th>Tax</th>
+                                        <th>Emp(s). Cut</th>
+                                    </tr>
+                                </thead>
+                                @foreach (var invoice in group)
+                                {
+                                    var totalAfterJobCost = (invoice.LineItem.Sum(s => s.ItemPrice * s.Quantity) ?? 0) - (invoice.JobCost ?? 0);
+                                    var shopCut = totalAfterJobCost * (decimal).25;
+                                    var tax = invoice.LineItem.Sum(s => s.ItemPrice * s.Quantity * (invoice.TaxPercent / 100)) ?? 0;
+                                    var participantCut = totalAfterJobCost - shopCut;
+                                    <tr>
+                                        <td><input type="checkbox" class="chkInvc" id="chk@(invoice.Id)" /></td>
+                                        <td>@invoice.Customer.Name</td>
+                                        <td class="d-none d-lg-table-cell">@($"{invoice.OrderDate:d}")</td>
+                                        <td class="d-none d-lg-table-cell">@($"{invoice.PaidDate:d}")</td>
+                                        <td>@($"{invoice.JobCost ?? 0:c}")</td>
+                                        <td>@($"{shopCut:c}")</td>
+                                        <td>@($"{invoice.ShipCost ?? 0:c}")</td>
+                                        <td>@($"{tax:c}")</td>
+                                        <td>@($"{participantCut:c}")</td>
+                                    </tr>
+                                    @if (!string.IsNullOrEmpty(invoice.Notes))
+                                    {
+                                        <tr>
+                                            <td colspan="10" class="border-0">
+                                                <strong>Notes:</strong> @(invoice.Notes)
+                                            </td>
+                                        </tr>
+                                    }
+
                                 }
-                                <th></th>
-                                <th></th>
-                                <th class="d-none d-lg-table-cell"></th>
-                                <th class="d-none d-lg-table-cell"></th>
-                                <th></th>
-                                <th>@($"{sumJobCost:c}")</th>
-                                <th>@($"{sumShopCut:c}")</th>
-                                <th>@($"{shipCost:c}")</th>
-                                <th>@($"{sumTax:c}")</th>
-                                <th>@($"{sumParticipantCut:c}")</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="d-none d-lg-table-cell"></th>
+                                        <th class="d-none d-lg-table-cell"></th>
+                                        <th>Job Cost</th>
+                                        <th>Shop (25%)</th>
+                                        <th>Ship</th>
+                                        <th>Tax</th>
+                                        <th>Emp(s). Cut</th>
+                                    </tr>
+                                    <tr>
+                                        @{
+                                            var sumJobCost = group.Sum(s => s.JobCost ?? 0);
+                                            var sumTotalAfterJobCost = (group.Sum(s => s.LineItem.Sum(se => se.ItemPrice * se.Quantity)) ?? 0) - sumJobCost;
+                                            var sumShopCut = sumTotalAfterJobCost * (decimal).25;
+                                            var sumTax = group.Sum(s => (s.LineItem.Sum(se => se.ItemPrice * se.Quantity) * (s.TaxPercent / 100))) ?? 0;
+                                            var sumParticipantCut = sumTotalAfterJobCost - sumShopCut;
+                                            var shipCost = group.Sum(s => s.ShipCost ?? 0);
+                                        }
+                                        <th></th>
+                                        <th></th>
+                                        <th class="d-none d-lg-table-cell"></th>
+                                        <th class="d-none d-lg-table-cell"></th>
+                                        <th>@($"{sumJobCost:c}")</th>
+                                        <th>@($"{sumShopCut:c}")</th>
+                                        <th>@($"{shipCost:c}")</th>
+                                        <th>@($"{sumTax:c}")</th>
+                                        <th>@($"{sumParticipantCut:c}")</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        }
+                    }
+
                     <button type="button" class="btn btn-primary" onclick="saveCheckedItems();">Save Checked As Paid</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
