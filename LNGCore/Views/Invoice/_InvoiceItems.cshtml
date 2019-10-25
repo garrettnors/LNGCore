@@ -173,7 +173,7 @@
                             </tr>
                         </thead>
                         @{
-                            foreach (var invoice in Model.Invoices.Where(w => w.IsPaid == true && !w.IsPaidToEmployees))
+                            foreach (var invoice in Model.Invoices.Where(w => w.IsPaid == true && !w.IsPaidToEmployees).OrderBy(o => o.EmployeeId).ThenByDescending(t => t.OrderDate))
                             {
                                 var totalAfterJobCost = (invoice.LineItem.Sum(s => s.ItemPrice * s.Quantity) ?? 0) - (invoice.JobCost ?? 0);
                                 var shopCut = totalAfterJobCost * (decimal).25;
