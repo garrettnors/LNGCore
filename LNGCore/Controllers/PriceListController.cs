@@ -37,7 +37,7 @@ namespace LNGCore.UI.Controllers
             pagination.NumberOfPages =
                 priceList.Count <= take ? 1 : (int)Math.Ceiling(priceList.Count / (decimal)take);
 
-            vm.Prices = priceList.Skip(skip).Take(take).ToList();
+            vm.Prices = priceList.OrderBy(b => b.ItemType.ItemName).ThenBy(t => t.ItemNumber).Skip(skip).Take(take).ToList();
             vm.PaginationParameters = pagination;
             vm.SearchTerm = searchTerm;
 
@@ -60,12 +60,12 @@ namespace LNGCore.UI.Controllers
         {
             if (price.Id == 0)
             {
-                TempData["BannerSuccessMessage"] = "Price successfully added.";
+                TempData["SuccessBannerMessage"] = "Price successfully added.";
                 _priceListService.Add(price);
             }
             else
             {
-                TempData["BannerSuccessMessage"] = "Price successfully updated.";
+                TempData["SuccessBannerMessage"] = "Price successfully updated.";
                 _priceListService.Edit(price);
             }
 
@@ -76,7 +76,7 @@ namespace LNGCore.UI.Controllers
         public IActionResult DeletePrice(int priceId)
         {
             _priceListService.Delete(priceId);
-            TempData["BannerSuccessMessage"] = "Price successfully deleted.";
+            TempData["SuccessBannerMessage"] = "Price successfully deleted.";
             return RedirectToAction("Index");
         }
     }
