@@ -26,8 +26,15 @@
             }
         });
     }
-
 </script>
+
+@if (TempData["KeepModalOpenForId"] != null)
+{
+    <script>
+        editPrice(@TempData["KeepModalOpenForId"])
+    </script>
+}
+
 <div class="row pb-3">
     <div class="col-4 col-lg-6">
         <button onclick="editPrice(0);" class="btn btn-sm btn-success"><span class="fas fa-plus"></span> Add</button>
@@ -66,7 +73,7 @@
         {
             <tr>
                 <td class="text-center"><span onclick="editPrice(@price.Id)" class="pointer fas fa-user-edit"></span></td>
-                <td>@($"{price.ItemType}")</td>
+                <td>@($"{price.ItemType.ItemName}")</td>
                 <td>@($"{price.ItemNumber}")</td>
                 <td class="w-40">@($"{price.ItemDesc}")</td>
                 <td>@($"{price.OurCost:c}")</td>

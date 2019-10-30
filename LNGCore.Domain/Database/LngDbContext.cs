@@ -312,8 +312,8 @@ namespace LNGCore.Domain.Database
                 entity.Property(e => e.ItemDesc)
                 .HasMaxLength(500);
 
-                entity.Property(e => e.ItemType)
-                .HasMaxLength(50);
+                entity.HasOne(m => m.ItemType).WithMany(m => m.PriceList).HasForeignKey(f => f.ItemTypeId)
+                    .HasConstraintName("FK_PriceList_Item");
 
                 entity.Property(e => e.ItemNumber)
                 .HasMaxLength(50);

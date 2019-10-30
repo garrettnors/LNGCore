@@ -5,18 +5,22 @@ using System.Threading.Tasks;
 using LNGCore.Domain.Database;
 using LNGCore.Domain.Services.Interfaces;
 using LNGCore.UI.Models.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LNGCore.UI.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class PriceListController : Controller
     {
         private readonly IPriceListService _priceListService;
-        public PriceListController(IPriceListService priceListService)
+        private readonly IInvoiceService _invoiceService;
+        public PriceListController(IPriceListService priceListService, IInvoiceService invoiceService)
         {
             _priceListService = priceListService;
+            _invoiceService = invoiceService;
         }
-        public IActionResult Index(int page = 1, int take = 15, string searchTerm = "")
+        public IActionResult Index(int page = 1, int take = 25, string searchTerm = "")
         {
             ViewBag.ActiveAction = ControllerContext.RouteData.Values["controller"];
 
@@ -43,12 +47,16 @@ namespace LNGCore.UI.Controllers
         [HttpGet]
         public IActionResult EditPrice(int itemId)
         {
-            var price = _priceListService.Get(itemId);
-            return PartialView("_EditPrice", price);
+            var vm = new EditPriceViewModel
+            {
+                Price = _priceListService.Get(itemId),
+                Items = _invoiceService.GetItemTypes().ToList()           
+            };
+            return PartialView("_EditPrice", vm);
         }
 
         [HttpPost]
-        public IActionResult EditPrice(PriceList price)
+        public IActionResult EditPrice(PriceList price, bool keepModalOpen = false)
         {
             if (price.Id == 0)
             {
@@ -60,7 +68,8 @@ namespace LNGCore.UI.Controllers
                 TempData["BannerSuccessMessage"] = "Price successfully updated.";
                 _priceListService.Edit(price);
             }
-                       
+
+            TempData["KeepModalOpenForId"] = keepModalOpen ? (int?)price.Id : null;
             return RedirectToAction("Index");
         }
 

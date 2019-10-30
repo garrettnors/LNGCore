@@ -1,74 +1,90 @@
-﻿@model LNGCore.Domain.Database.PriceList
+﻿@model LNGCore.UI.Models.Admin.EditPriceViewModel
 
+<script>
+    function SetIdZeroAndSubmit() {
+        $("#keepModalOpen").val(true);
+        $("#Price_Id").val(0);
+        $("#frmEditPrice").submit();
+    }
+</script>
 
-@Html.HiddenFor(f => f.Id)
 <div class="card m-0">
     <div class="card-header">
-        <h4 class="m-0">@(Model.Id == 0 ? "Add New Price" : $"Edit {Model.ItemType ?? Model.ItemNumber}")</h4>
+        <h4 class="m-0">@(Model.Price.Id == 0 ? "Add New Price" : $"Edit {Model.Price.ItemNumber}")</h4>
     </div>
     <div class="card-body">
-        @using (Html.BeginForm("EditPrice", "PriceList", FormMethod.Post))
+        @using (Html.BeginForm("EditPrice", "PriceList", FormMethod.Post, new { id = "frmEditPrice" }))
         {
-            @Html.HiddenFor(f => f.Id);
+            @Html.Hidden("keepModalOpen", false);
+            @Html.HiddenFor(f => f.Price.Id);
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-4">
                         <div class="form-group">
-                            @Html.LabelFor(f => f.ItemType)
-                            @Html.TextBoxFor(f => f.ItemType, new { @class = "form-control form-control-sm", @maxlength = "50" })
+                            @Html.LabelFor(f => f.Price.ItemTypeId)
+                            @Html.DropDownListFor(f => f.Price.ItemTypeId,
+                                                new SelectList(Model.Items, "ItemId", "ItemName", Model.Price.ItemTypeId),
+                                                new { @class = "form-control form-control-sm" })
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="form-group">
-                            @Html.LabelFor(f => f.ItemNumber)
-                            @Html.TextBoxFor(f => f.ItemNumber, new { @class = "form-control form-control-sm", @maxlength = "50" })
+                            @Html.LabelFor(f => f.Price.ItemNumber)
+                            @Html.TextBoxFor(f => f.Price.ItemNumber, new { @class = "form-control form-control-sm", @maxlength = "50" })
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="form-group">
-                            @Html.LabelFor(f => f.CaseQty)
-                            @Html.TextBoxFor(f => f.CaseQty, new { @class = "form-control form-control-sm", @type = "number", step = "1"})
+                            @Html.LabelFor(f => f.Price.CaseQty)
+                            @Html.TextBoxFor(f => f.Price.CaseQty, new { @class = "form-control form-control-sm", @type = "number", step = "1" })
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
-                            @Html.LabelFor(f => f.ItemDesc)
-                            @Html.TextBoxFor(f => f.ItemDesc, new { @class = "form-control form-control-sm", @maxlength = "500" })
+                            @Html.LabelFor(f => f.Price.ItemDesc)
+                            @Html.TextBoxFor(f => f.Price.ItemDesc, new { @class = "form-control form-control-sm", @maxlength = "500" })
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-6 col-lg-3">
                         <div class="form-group">
-                            @Html.LabelFor(f => f.OurCost)
-                            @Html.TextBoxFor(f => f.OurCost, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
+                            @Html.LabelFor(f => f.Price.OurCost)
+                            @Html.TextBoxFor(f => f.Price.OurCost, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col-6 col-lg-3">
                         <div class="form-group">
-                            @Html.LabelFor(f => f.OurBulkCost)
-                            @Html.TextBoxFor(f => f.OurBulkCost, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
+                            @Html.LabelFor(f => f.Price.OurBulkCost)
+                            @Html.TextBoxFor(f => f.Price.OurBulkCost, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col-6 col-lg-3">
                         <div class="form-group">
-                            @Html.LabelFor(f => f.RetailPrice)
-                            @Html.TextBoxFor(f => f.RetailPrice, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
+                            @Html.LabelFor(f => f.Price.RetailPrice)
+                            @Html.TextBoxFor(f => f.Price.RetailPrice, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col-6 col-lg-3">
                         <div class="form-group">
-                            @Html.LabelFor(f => f.RetailBulkPrice)
-                            @Html.TextBoxFor(f => f.RetailBulkPrice, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
+                            @Html.LabelFor(f => f.Price.RetailBulkPrice)
+                            @Html.TextBoxFor(f => f.Price.RetailBulkPrice, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
                         </div>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-sm btn-success">Save Price</button>
-            <span class="pr-3"></span>
-            <button type="button" data-dismiss="modal" class="btn btn-sm btn-secondary">Cancel</button>
+            <div class="text-center">
+                <button type="submit" class="btn btn-sm btn-success">Save Price</button>
+                <span class="pr-3"></span>
+                @if (Model.Price.Id > 0)
+                {
+                    <button type="button" onclick="SetIdZeroAndSubmit();" class="btn btn-sm btn-info">Save As New Price</button>
+                    <span class="pr-3"></span>
+                }
+                <button type="button" data-dismiss="modal" class="btn btn-sm btn-secondary">Cancel</button>
+            </div>
             <div>
                 @Html.ValidationSummary()
             </div>

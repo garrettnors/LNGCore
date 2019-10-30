@@ -12,7 +12,7 @@ namespace LNGCore.Domain.Database
 
         public int Id { get; set; }
         [DisplayName("Item Type")]
-        public string ItemType { get; set; }
+        public int ItemTypeId { get; set; }
         [DisplayName("Item Number")]
         public string ItemNumber { get; set; }
         [DisplayName("Item Description")]
@@ -27,5 +27,7 @@ namespace LNGCore.Domain.Database
         public decimal? RetailPrice { get; set; }
         [DisplayName("Retail Bulk Price")]
         public decimal? RetailBulkPrice { get; set; }
+
+        public Item ItemType { get; set; }
     }
 }

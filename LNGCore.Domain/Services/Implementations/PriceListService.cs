@@ -1,5 +1,6 @@
 ﻿using LNGCore.Domain.Database;
 using LNGCore.Domain.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace LNGCore.Domain.Services.Implementations
 
         public PriceList Get(int itemId)
         {
-            return _db.PriceList.FirstOrDefault(f => f.Id == itemId) ?? new PriceList();
+            return _db.PriceList.Include(i => i.ItemType).FirstOrDefault(f => f.Id == itemId) ?? new PriceList();
         }
 
         public List<PriceList> GetAll(string searchTerm = null)
@@ -52,14 +53,14 @@ namespace LNGCore.Domain.Services.Implementations
             if (searchTerm != null)
             {
                 searchTerm = searchTerm.ToLower();
-                return _db.PriceList.Where(w => 
-                (w.ItemType == null ? false : w.ItemType.Contains(searchTerm))
+                return _db.PriceList.Include(i => i.ItemType).Where(w => 
+                (w.ItemType == null ? false : w.ItemType.ItemName.Contains(searchTerm))
                 || (w.ItemNumber == null ? false : w.ItemNumber.Contains(searchTerm))
                 || (w.ItemDesc == null ? false : w.ItemDesc.Contains(searchTerm))
                 ).ToList();
             }
 
-            return _db.PriceList.ToList();
+            return _db.PriceList.Include(i => i.ItemType).ToList();
         }
     }
 }
