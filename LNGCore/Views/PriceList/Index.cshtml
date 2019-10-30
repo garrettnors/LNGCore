@@ -1,0 +1,81 @@
+﻿@model LNGCore.UI.Models.Admin.PriceListViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+@{
+    ViewData["Title"] = "Price List";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<script>
+    function getTabBody(tabId, page) {
+        var url = "@Html.Raw(Url.Action("Index", "PriceList", new { page = "__PAGE__", searchTerm = Model.SearchTerm }))";
+        window.location.href = url.replace("__PAGE__", page);
+    }
+    function clearSearch() {
+        $("#searchTerm").val("");
+        $("#formSearch").submit();
+    }
+    function editPrice(priceListId) {
+        $.ajax({
+            url: "@Html.Raw(Url.Action("EditPrice", "PriceList", new { itemId = "__PRICELISTID__" }))".replace("__PRICELISTID__", priceListId),
+            success: function (data) {
+
+                $("#bs-modal .modal-content").html(data);
+                $("#bs-modal").modal("show");
+            }
+        });
+    }
+
+</script>
+<div class="row pb-3">
+    <div class="col-4 col-lg-6">
+        <button onclick="editPrice(0);" class="btn btn-sm btn-success"><span class="fas fa-plus"></span> Add</button>
+    </div>
+    <div class="col-8 col-lg-6 col-xl-4 offset-xl-2">
+        @using (Html.BeginForm("Index", "PriceList", FormMethod.Get, new { id = "formSearch" }))
+        {            
+            <div class="input-group input-group-sm">
+                <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
+                <span class="input-group-append">
+                    <button class="btn btn-info" type="submit">Search</button>
+                </span>
+                <span class="input-group-append">
+                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+                </span>
+            </div>
+        }
+    </div>
+</div>
+<table class="table table-sm table-bordered table-striped table-bg table-font-responsive">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Item Type</th>
+            <th>Item #</th>
+            <th>Item Desc.</th>
+            <th>Cost</th>
+            <th>Bulk Cost</th>
+            <th>Retail $</th>
+            <th>Retail Bulk $</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var price in Model.Prices)
+        {
+            <tr>
+                <td class="text-center"><span onclick="editPrice(@price.Id)" class="pointer fas fa-user-edit"></span></td>
+                <td>@($"{price.ItemType}")</td>
+                <td>@($"{price.ItemNumber}")</td>
+                <td class="w-40">@($"{price.ItemDesc}")</td>
+                <td>@($"{price.OurCost:c}")</td>
+                <td>@($"{price.OurBulkCost:c}")</td>
+                <td>@($"{price.RetailPrice:c}")</td>
+                <td>@($"{price.RetailBulkPrice:c}")</td>
+                <td class="text-center"><a href="@Url.Action("DeletePrice", "PriceList", new { priceId = price.Id})" onclick="return confirm('Are you sure you want to delete this price?'); return false;" class="text-danger"><span class="fa fa-trash"></span></a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<partial name="_Pagination" model="@Model.PaginationParameters" />

@@ -1,0 +1,81 @@
+﻿@model LNGCore.Domain.Database.PriceList
+
+
+@Html.HiddenFor(f => f.Id)
+<div class="card m-0">
+    <div class="card-header">
+        <h4 class="m-0">@(Model.Id == 0 ? "Add New Price" : $"Edit {Model.ItemType ?? Model.ItemNumber}")</h4>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm("EditPrice", "PriceList", FormMethod.Post))
+        {
+            @Html.HiddenFor(f => f.Id);
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            @Html.LabelFor(f => f.ItemType)
+                            @Html.TextBoxFor(f => f.ItemType, new { @class = "form-control form-control-sm", @maxlength = "50" })
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            @Html.LabelFor(f => f.ItemNumber)
+                            @Html.TextBoxFor(f => f.ItemNumber, new { @class = "form-control form-control-sm", @maxlength = "50" })
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            @Html.LabelFor(f => f.CaseQty)
+                            @Html.TextBoxFor(f => f.CaseQty, new { @class = "form-control form-control-sm", @type = "number", step = "1"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            @Html.LabelFor(f => f.ItemDesc)
+                            @Html.TextBoxFor(f => f.ItemDesc, new { @class = "form-control form-control-sm", @maxlength = "500" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        <div class="form-group">
+                            @Html.LabelFor(f => f.OurCost)
+                            @Html.TextBoxFor(f => f.OurCost, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            @Html.LabelFor(f => f.OurBulkCost)
+                            @Html.TextBoxFor(f => f.OurBulkCost, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            @Html.LabelFor(f => f.RetailPrice)
+                            @Html.TextBoxFor(f => f.RetailPrice, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            @Html.LabelFor(f => f.RetailBulkPrice)
+                            @Html.TextBoxFor(f => f.RetailBulkPrice, new { @class = "form-control form-control-sm", @type = "number", step = ".01" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-sm btn-success">Save Price</button>
+            <span class="pr-3"></span>
+            <button type="button" data-dismiss="modal" class="btn btn-sm btn-secondary">Cancel</button>
+            <div>
+                @Html.ValidationSummary()
+            </div>
+        }
+
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

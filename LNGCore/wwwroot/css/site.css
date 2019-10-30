@@ -57,6 +57,9 @@ body {
 .icon-width{
     width: 20px;
 }
+.w-40{
+    width:40% !important;
+}
 .scale-up-50 {
     transform: scale(1.5);
 }

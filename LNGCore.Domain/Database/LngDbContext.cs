@@ -28,6 +28,7 @@ namespace LNGCore.Domain.Database
         public virtual DbSet<InvoiceAttachment> InvoiceAttachment { get; set; }
         public virtual DbSet<Item> Item { get; set; }
         public virtual DbSet<LineItem> LineItem { get; set; }
+        public virtual DbSet<PriceList> PriceList { get; set; }
         public virtual DbSet<Log> Log { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -304,6 +305,30 @@ namespace LNGCore.Domain.Database
                     .HasForeignKey(d => d.ItemId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LineItem_Item");
+            });
+
+            modelBuilder.Entity<PriceList>(entity =>
+            {
+                entity.Property(e => e.ItemDesc)
+                .HasMaxLength(500);
+
+                entity.Property(e => e.ItemType)
+                .HasMaxLength(50);
+
+                entity.Property(e => e.ItemNumber)
+                .HasMaxLength(50);
+
+                entity.Property(e => e.OurCost)
+                .HasColumnType("decimal(18,2)").IsRequired(false);
+
+                entity.Property(e => e.OurBulkCost)
+                .HasColumnType("decimal(18,2)").IsRequired(false);
+
+                entity.Property(e => e.RetailPrice)
+                .HasColumnType("decimal(18,2)").IsRequired(false);
+
+                entity.Property(e => e.RetailBulkPrice)
+                .HasColumnType("decimal(18,2)").IsRequired(false);
             });
 
             modelBuilder.Entity<Log>(entity =>
