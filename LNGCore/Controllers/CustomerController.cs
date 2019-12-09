@@ -87,14 +87,14 @@ namespace LNGCore.UI.Controllers
         [HttpPost]
         public Tuple<int, string> EditCustomerAjax(EditCustomerViewModel model)
         {
-            if (!ModelState.IsValid)            
+            if (!ModelState.IsValid)
                 return null;
-            
-            if (model.Customer.Id == 0)            
-                model.Customer.Id = _customerService.Add(model.Customer);            
-            else            
-                _customerService.Edit(model.Customer);                
-            
+
+            if (model.Customer.Id == 0)
+                model.Customer.Id = _customerService.Add(model.Customer);
+            else
+                _customerService.Edit(model.Customer);
+
 
             return Tuple.Create(model.Customer.Id, model.Customer.DisplayName);
         }

@@ -1,0 +1,110 @@
+﻿@model LNGCore.UI.Models.Admin.ItemViewModel
+@{
+    ViewData["Title"] = "Items";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<script>
+    function getTabBody(tabId, page) {
+        var url = "@Html.Raw(Url.Action("Index", "Item", new { page = "__PAGE__", searchTerm = Model.SearchTerm }))";
+        window.location.href = url.replace("__PAGE__", page);
+    }
+    function clearSearch() {
+        $("#searchTerm").val("");
+        $("#formSearch").submit();
+    }
+    function editItem(itemId) {
+        $.ajax({
+            url: "@Html.Raw(Url.Action("EditItem", "Item", new { itemId = "__ITMID__" }))".replace("__ITMID__", itemId),
+            success: function(data) {
+                $("#bs-modal-sm .modal-content").html(data);
+                $("#bs-modal-sm").modal("show");
+            }
+        });
+    }
+
+</script>
+
+<div class="row pb-3">
+    <div class="col-4 col-lg-6">
+        <button onclick="editItem(0);" class="btn btn-sm btn-success"><span class="fas fa-plus"></span> Add</button>
+    </div>
+    <div class="col-8 col-lg-6 col-xl-4 offset-xl-2">
+        @using (Html.BeginForm("Index", "Item", FormMethod.Get, new { id = "formSearch" }))
+        {
+            <div class="input-group input-group-sm">
+                <input name="searchTerm" id="searchTerm" type="text" class="form-control border-info" value="@Model.SearchTerm" />
+                <span class="input-group-append">
+                    <button class="btn btn-info" type="submit">Search</button>
+                </span>
+                <span class="input-group-append">
+                    <button class="btn btn-secondary" type="button" onclick="clearSearch()">Clear</button>
+                </span>
+            </div>
+        }
+    </div>
+</div>
+@{ 
+    var halfCount = Model.Items.Count / 2;
+}
+<partial name="_Pagination" model="@Model.PaginationParameters" />
+<div class="row">
+    <div class="col-lg-6">
+        <table class="table table-sm table-bordered table-striped table-bg table-font-responsive">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Item Name</th>
+                    <th>Item Count</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items.Take(halfCount))
+                {
+                    <tr>
+                        <td class="text-center"><span onclick="editItem(@item.ItemId)" class="pointer fas fa-user-edit"></span></td>
+                        <td>@item.ItemName</td>
+                        <td>@item.LineItem.Count</td>
+                        <td class="text-center">
+                            @if (!item.LineItem.Any())
+                            {
+                                <a class="pointer text-danger" onclick="return confirm('Are you sure you want to delete this item type?'); return false;" href="@Url.Action("DeleteItem","Item", new { itemId = @item.ItemId })"><span class="fa fa-trash"></span></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-6">
+        <table class="table table-sm table-bordered table-striped table-bg table-font-responsive">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Item Name</th>
+                    <th>Item Count</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items.Skip(halfCount))
+                {
+                    <tr>
+                        <td class="text-center"><span onclick="editItem(@item.ItemId)" class="pointer fas fa-user-edit"></span></td>
+                        <td>@item.ItemName</td>
+                        <td>@item.LineItem.Count</td>
+                        <td class="text-center">
+                            @if (!item.LineItem.Any())
+                            {
+                                <a class="pointer text-danger" onclick="return confirm('Are you sure you want to delete this item type?'); return false;" href="@Url.Action("DeleteItem","Item", new { itemId = @item.ItemId })"><span class="fa fa-trash"></span></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<partial name="_Pagination" model="@Model.PaginationParameters" />

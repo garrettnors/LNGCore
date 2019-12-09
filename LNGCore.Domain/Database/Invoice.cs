@@ -30,6 +30,8 @@ namespace LNGCore.Domain.Database
         public decimal? JobCost { get; set; }
         public string JobCostDesc { get; set; }
         public bool IsPaidToEmployees { get; set; }
+        public string StripeChargeId { get; set; }
+        public string Identifier { get; set; }
 
         public virtual Customer Customer { get; set; }
         public virtual Employee Employee { get; set; }

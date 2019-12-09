@@ -34,7 +34,7 @@ namespace LNGCore
             //a secrets.json file will contain some private keys and connection strings that I wish to hide from the public repo.
             var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("secrets.json", optional: false, reloadOnChange: true);
+            .AddJsonFile(env.IsDevelopment() ? "secrets.development.json" : "secrets.json", optional: false, reloadOnChange: true);
             RotativaConfiguration.Setup(env);
             Configuration = configurationBuilder.Build();
         }
@@ -94,6 +94,7 @@ namespace LNGCore
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IConfigurationService, ConfigurationService>();
             services.AddScoped<IPriceListService, PriceListService>();
+            services.AddScoped<IItemService, ItemService>();
             services.AddScoped<LngDbContext, LngDbContext>();
             services.AddSingleton(Configuration);
         }

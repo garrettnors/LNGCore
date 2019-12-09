@@ -1,7 +1,6 @@
 ﻿using LNGCore.UI.Models.Admin;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,13 +8,10 @@ using Rotativa.AspNetCore;
 using System.Net.Mail;
 using System.IO;
 using LNGCore.Domain.Services.Interfaces;
-using LNGCore.Domain.Database;
 using Microsoft.AspNetCore.Authorization;
 using static LNGCore.Domain.Infrastructure.Enums;
 using LNGCore.Services.Logical;
 using Microsoft.Extensions.Configuration;
-using System.Text;
-using Rotativa.AspNetCore.Options;
 
 namespace LNGCore.UI.Controllers
 {
@@ -177,7 +173,6 @@ namespace LNGCore.UI.Controllers
                         break;
                 }
 
-
                 if (model.Invoice.Id == 0)
                 {
                     model.Invoice.Id = _invoiceService.Add(model.Invoice);
@@ -190,7 +185,6 @@ namespace LNGCore.UI.Controllers
                 var saveLines = model.LineItems.Where(w => w.Quantity > 0).ToList();
 
                 _invoiceService.SaveLineItems(saveLines, model.Invoice.Id);
-                //_invoiceService.SaveAttachmentsToInvoice(invoiceId, model.UploadedFiles, false);
                 _invoiceService.SaveAttachmentsToInvoice(model.Invoice.Id, model.UploadedProofs, true);
                 TempData["SuccessBannerMessage"] = "The invoice has been successfully saved!";
 
@@ -291,11 +285,13 @@ namespace LNGCore.UI.Controllers
                 vm.SendToCompany = false;
             }
 
+            var invoice = _invoiceService.Get(vm.InvoiceId);
             var attachmentContent = new MemoryStream(GetInvoicePdf(vm.InvoiceId));
             var attachment = new Attachment(attachmentContent, $"Invoice{vm.InvoiceId}.pdf", "application/pdf");
 
             var mailSubject = $"Your order information is ready to view! (Order #{vm.InvoiceId})";
-            var mailMsg = vm.Note.Replace(Environment.NewLine, "<br />");
+            var payMsg = string.IsNullOrEmpty(invoice.Identifier) ? "" : $"<br /><br /><a href=\"https://www.lnglaserworks.com/payment/index/{invoice.Identifier}\">You can pay this invoice by following this link.</a>";
+            var mailMsg = vm.Note.Replace(Environment.NewLine, "<br />") + payMsg;
 
             foreach (var recipient in recipients)
             {

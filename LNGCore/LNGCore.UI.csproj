@@ -30,6 +30,7 @@
     <PackageReference Include="popper.js" Version="1.14.3" />
     <PackageReference Include="Rotativa.AspNetCore" Version="1.1.1" />
     <PackageReference Include="Select2.js" Version="4.0.5" />
+    <PackageReference Include="Stripe.net" Version="34.1.0" />
   </ItemGroup>
 
   <ItemGroup>

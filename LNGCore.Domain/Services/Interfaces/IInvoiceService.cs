@@ -15,12 +15,13 @@ namespace LNGCore.Domain.Services.Interfaces
         IEnumerable<LineItem> GetLineItems(int invoiceId, int startingIndex, int roundToNearest);
         IEnumerable<LineItem> GetLineItems(int? itemId = 0, int? customerId = null, bool includeCustomer = true);
         IEnumerable<Item> GetItemTypes();
-        void SaveLineItems(List<LineItem> lines, int invoiceId);     
-        void SetInvoiceStatus(int invoiceId, InvoiceTypeEnum status);
+        void SaveLineItems(List<LineItem> lines, int invoiceId);
+        void SetInvoiceStatus(int invoiceId, InvoiceTypeEnum status, string stripeChargeId = null);
         void SaveAttachmentsToInvoice(int invoiceId, List<IFormFile> files, bool customerCanSee);
         Dictionary<int, int> GetEmailCountsForInvoices(List<int> invoiceIds);
         int? GetNextInvoiceId(int invoiceId, InvoiceTypeEnum type);
         int? GetPreviousInvoiceId(int invoiceId, InvoiceTypeEnum type);
         void SetParticipantPaidStatus(List<int> ids, bool isPaid);
+        Invoice GetByIdentifierGuid(string guid);
     }
 }

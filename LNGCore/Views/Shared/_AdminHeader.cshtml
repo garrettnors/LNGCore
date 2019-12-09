@@ -8,11 +8,12 @@
             <ul class="navbar-nav">
                 @{
                     var navItems = new Dictionary<string, string> {
-                        { "Dashboard", "Home" },//action, desc
+                        { "Dashboard", "Home" },//controller, desc
                         { "Invoice", "Invoices" },
                         { "Customer", "Customers" },
-                        { "Configuration", "Configuration" },
-                        { "PriceList", "Price List" }
+                        { "Item", "Item Types" },
+                        { "PriceList", "Price List" },
+                        { "Configuration", "Configuration" }
                     };
 
                     foreach (var nav in navItems)

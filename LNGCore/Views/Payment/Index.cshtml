@@ -1,0 +1,229 @@
+﻿@model LNGCore.UI.Models.Payment.PaymentViewModel
+@{
+    ViewData["Title"] = "Index";
+    var subTotal = Model.Invoice.LineItem.Sum(s => s.Quantity * s.ItemPrice) ?? 0;
+    var tax = subTotal * (Model.Invoice.TaxPercent ?? 0) / 100;
+    var total = subTotal + tax + (Model.Invoice.ShipCost ?? 0);
+}
+<style>
+    .StripeElement {
+        box-sizing: border-box;
+        height: 40px;
+        padding: 10px 12px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        background-color: white;
+        box-shadow: 0 1px 3px 0 #e6ebf1;
+        -webkit-transition: box-shadow 150ms ease;
+        transition: box-shadow 150ms ease;
+    }
+
+    .StripeElement--focus {
+        box-shadow: 0 1px 3px 0 #cfd7df;
+    }
+
+    .StripeElement--invalid {
+        border-color: #fa755a;
+    }
+
+    .StripeElement--webkit-autofill {
+        background-color: #fefde5 !important;
+    }
+</style>
+<script src="https://js.stripe.com/v3/"></script>
+<div class="container">
+    @if (!Model.Invoice.IsPaid ?? false && !Model.Invoice.Voided && !Model.Invoice.IsQuote)
+    {
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3 py-3">
+            <form asp-controller="Payment" asp-action="Charge" method="post" id="payment-form">
+                <div>
+                    <h5 class="text-center">
+                        <label for="card-element">
+                            Please enter your payment information below
+                        </label>
+                    </h5>
+                    <div id="card-element" style="background-color:#f5f5f5">
+                        <!-- A Stripe Element will be inserted here. -->
+                    </div>
+
+                    <!-- Used to display Element errors. -->
+                    <div id="card-errors" class="text-danger" role="alert"></div>
+                </div>
+                <input type="hidden" id="InvoiceIdentifier" name="InvoiceIdentifier" value="@(Model.Invoice.Identifier)" />
+                <div class="mt-3 text-center">
+                    <button type="submit" class="btn btn-primary">Submit @($"{total:c}") Payment</button>
+                    <small class="text-muted mt-2 d-block">Payments are processed securely through <a href="https://stripe.com/" target="_blank">Stripe</a></small>
+                </div>
+            </form>
+        </div>
+        <script>
+                function stripeTokenHandler(token) {
+                    debugger;
+                    // Insert the token ID into the form so it gets submitted to the server
+                    var form = document.getElementById('payment-form');
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.setAttribute('type', 'hidden');
+                    hiddenInput.setAttribute('name', 'StripeToken');
+                    hiddenInput.setAttribute('value', token.id);
+                    form.appendChild(hiddenInput);
+
+                    // Submit the form
+                    form.submit();
+                }
+                var stripe = Stripe('@(Model.StripePubKey)');
+                var elements = stripe.elements();
+
+                // Custom styling can be passed to options when creating an Element.
+                var style = {
+                    base: {
+                        color: '#32325d',
+                        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                        fontSmoothing: 'antialiased',
+                        fontSize: '16px',
+                        '::placeholder': {
+                            color: '#aab7c4'
+                        }
+                    },
+                    invalid: {
+                        color: '#fa755a',
+                        iconColor: '#fa755a'
+                    }
+                };
+
+
+                var card = elements.create("card", { style: style });
+                card.mount("#card-element");
+
+                var form = document.getElementById('payment-form');
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    stripe.createToken(card).then(function (result) {
+                        if (result.error) {
+                            // Inform the customer that there was an error.
+                            var errorElement = document.getElementById('card-errors');
+                            errorElement.textContent = result.error.message;
+                        } else {
+                            // Send the token to your server.
+                            stripeTokenHandler(result.token);
+                        }
+                    });
+                });
+
+        </script>
+    </div>
+    }
+    else if (Model.Invoice.Voided)
+    {
+    <div class="alert alert-info">
+        <h5 class="text-center">Your invoice was voided, no further action is necessary.</h5>
+    </div>
+    }
+    else
+    {
+    <div class="alert alert-info">
+        <h5 class="text-center">Your invoice has already been paid, no further action is necessary. Thank you!</h5>
+    </div>
+    }
+    <hr />
+    <div style="font-size:.9rem;">
+        <h4>Invoice Information</h4>
+        <div class="row">
+            <div class="col-12">
+                <div class="pt-2">
+                    <table class="table table-sm table-bordered">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Qty.</th>
+                                <th>Item</th>
+                                <th>Item Description</th>
+                                <th class="price-width">Item Price</th>
+                                <th class="price-width">Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var line in Model.Invoice.LineItem)
+                        {
+                            <tr>
+                                <td>@line.Quantity</td>
+                                <td>@line.Item.ItemName</td>
+                                <td>@line.ItemDesc</td>
+                                <td class="text-right">@($"{line.ItemPrice:c}")</td>
+                                <td class="text-right">@($"{(line.ItemPrice * line.Quantity):c}")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="float-right">
+                    <table class="table table-sm table-responsive table-bordered mt-2">
+                        <tr>
+                            <td class="bg-light price-width text-center">
+                                Subtotal
+                            </td>
+                            <td class="price-width text-right">
+                                @($"{subTotal:c}")
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light price-width text-center">
+                                Tax
+                            </td>
+                            <td class="price-width text-right">
+                                @($"{tax:c}")
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light price-width text-center">
+                                Shipping
+                            </td>
+                            <td class="price-width text-right">
+                                @($"{Model.Invoice.ShipCost ?? 0:c}")
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bg-light price-width text-center">
+                                Total
+                            </td>
+                            <td class="price-width text-right">
+                                @($"{total:c}")
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+
+    @{
+        var directory = $"Uploads/{Model.Invoice.Id}";
+        if (System.IO.Directory.Exists(directory))
+        {
+            string[] files = System.IO.Directory.GetFiles(directory);
+            if (files.Any())
+            {
+
+                foreach (var attachment in files)
+                {
+                    var image = System.IO.File.OpenRead(attachment);
+                    byte[] bytes = new byte[image.Length];
+                    image.Read(bytes, 0, bytes.Length);
+                    image.Dispose();
+                    var base64 = Convert.ToBase64String(bytes, 0, bytes.Length);
+
+        <div class="break-after">
+            <h1 class="text-center py-5">Attached Proof</h1>
+            <img src="data:image/jpg;base64,@(base64)" style="max-width: 700px;max-height: 1000px;" class="mx-auto d-block" />
+        </div>
+                }
+            }
+        }
+    }
+</div>

@@ -52,7 +52,7 @@ namespace LNGCore.Domain.Services.Implementations
 
         public IEnumerable<Log> GetLogsByInvoiceId(int invoiceId)
         {
-            return _db.Log.Where(w => w.InvoiceId == invoiceId);
+            return _db.Log.Where(w => w.InvoiceId == invoiceId && w.LogType == "SendInvoiceToCustomer");
         }
 
         public IEnumerable<Log> GetLogsByInvoiceId(List<int> invoiceIds)

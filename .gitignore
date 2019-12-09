@@ -331,3 +331,4 @@ ASALocalRun/
 
 # Secrets JSON file that contains keys and connection string data
 secrets.json
+/LNGCore/secrets.development.json

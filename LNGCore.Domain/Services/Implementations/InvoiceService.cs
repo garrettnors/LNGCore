@@ -58,6 +58,7 @@ namespace LNGCore.Domain.Services.Implementations
             if (invoice == null)
                 return;
 
+            item.Identifier = invoice.Identifier;
             invoice.TaxPercent = invoice.Customer.Taxable ? (decimal)8.2500 : (decimal)0.00;
 
             _db.Entry(invoice).CurrentValues.SetValues(item);
@@ -67,8 +68,9 @@ namespace LNGCore.Domain.Services.Implementations
         public int Add(Invoice invoice)
         {
             var customer = _customerService.Get(invoice.CustomerId);
-            
+
             invoice.TaxPercent = customer != null && customer.Taxable ? (decimal)8.2500 : (decimal)0.00;
+            invoice.Identifier = Guid.NewGuid().ToString();
 
             _db.Invoice.Add(invoice);
             _db.SaveChanges();
@@ -160,9 +162,7 @@ namespace LNGCore.Domain.Services.Implementations
 
             return lineItems.OrderByDescending(o => o.Invoice.OrderDate).Take(40).Include(i => i.Invoice).ThenInclude(t => t.Customer).Include(i => i.Item);
         }
-
-
-
+               
         public IEnumerable<Invoice> GetYearToDateSales()
         {
             return _db.Invoice.Where(
@@ -241,18 +241,19 @@ namespace LNGCore.Domain.Services.Implementations
             return items;
         }
 
-        public void SetInvoiceStatus(int invoiceId, InvoiceTypeEnum status)
+        public void SetInvoiceStatus(int invoiceId, InvoiceTypeEnum status, string stripeChargeId = null)
         {
             var invoice = Get(invoiceId);
 
             if (invoice?.Id == 0)
                 throw new InvalidDataException();
 
+            invoice.StripeChargeId = stripeChargeId;
             invoice.IsPaid = false;
             invoice.Voided = false;
             invoice.IsQuote = false;
             invoice.IsDonated = false;
-            invoice.PaidDate = null;            
+            invoice.PaidDate = null;
             switch (status)
             {
                 case InvoiceTypeEnum.Paid:
@@ -289,7 +290,7 @@ namespace LNGCore.Domain.Services.Implementations
         {
             var currentInvc = Get(invoiceId);
 
-            if (currentInvc == null)            
+            if (currentInvc == null)
                 return null;
 
             return GetInvoices(type).Where(w => w.Id > invoiceId)?.OrderBy(o => o.Id).FirstOrDefault()?.Id;
@@ -297,7 +298,6 @@ namespace LNGCore.Domain.Services.Implementations
 
         public int? GetPreviousInvoiceId(int invoiceId, InvoiceTypeEnum type)
         {
-
             var currentInvc = Get(invoiceId);
 
             if (currentInvc == null)
@@ -308,10 +308,20 @@ namespace LNGCore.Domain.Services.Implementations
 
         public void SetParticipantPaidStatus(List<int> ids, bool isPaid)
         {
-            foreach (var id in ids)            
+            foreach (var id in ids)
                 _db.Invoice.FirstOrDefault(f => f.Id == id).IsPaidToEmployees = isPaid;
-            
+
             _db.SaveChanges();
+        }
+
+        public Invoice GetByIdentifierGuid(string guid)
+        {
+            return _db.Invoice
+                .Include(i => i.Customer)
+                .Include(i => i.Employee)
+                .Include(i => i.LineItem)
+                .ThenInclude(t => t.Item)
+                .FirstOrDefault(f => f.Identifier == guid);
         }
     }
 }
