@@ -17,11 +17,13 @@ namespace LNGCore.UI.Controllers
         private readonly IConfiguration _config;
         private readonly IInvoiceService _invoiceService;
         private readonly ILogService _logService;
+        private readonly ChargeService _chargeService;
         public PaymentController(IInvoiceService invoiceService, ILogService logService, IConfiguration config)
         {
             _invoiceService = invoiceService;
             _config = config;
             _logService = logService;
+            _chargeService = new ChargeService();
 
             // Set your secret key: remember to change this to your live secret key in production
             // See your keys here: https://dashboard.stripe.com/account/apikeys
@@ -56,9 +58,11 @@ namespace LNGCore.UI.Controllers
                 return RedirectToAction("NoInvoice");
 
             var token = model.StripeToken;
-            var subTotal = invoice.LineItem.Sum(s => s.Quantity * s.ItemPrice) ?? 0;
-            var tax = subTotal * (invoice.TaxPercent ?? 0) / 100;
-            var total = subTotal + tax + (invoice.ShipCost ?? 0);
+            
+            var subtotal = invoice.LineItem.Sum(s => s.Quantity * s.ItemPrice) ?? 0;
+            var tax = invoice.LineItem.Sum(s => s.TaxAmount);
+
+            var total = subtotal + tax + (invoice.ShipCost ?? 0);
 
             var options = new ChargeCreateOptions
             {
@@ -73,9 +77,8 @@ namespace LNGCore.UI.Controllers
 
             if (!string.IsNullOrWhiteSpace(customerEmail))
                 options.ReceiptEmail = customerEmail;
-            
-            var service = new ChargeService();
-            Charge charge = service.Create(options);
+                        
+            Charge charge = _chargeService.Create(options);
 
             if (charge == null)
                 return RedirectToAction("NoInvoice");
@@ -87,17 +90,29 @@ namespace LNGCore.UI.Controllers
             log.Summary = JsonConvert.SerializeObject(charge);
             _logService.Add(log);
 
-            if (charge.Paid)            
+            if (charge.Paid)
                 _invoiceService.SetInvoiceStatus(invoice.Id, Domain.Infrastructure.Enums.InvoiceTypeEnum.Paid, charge.Id);
-            
+
             return RedirectToAction("ChargeResult", new { chargeId = charge.Id });
         }
 
         public IActionResult ChargeResult(string chargeId)
         {
-            var service = new ChargeService();
-            Charge charge = service.Get(chargeId);
-            return View(charge);
+            try
+            {
+                Charge charge = _chargeService.Get(chargeId);
+                return View(charge);
+            }
+            catch (Exception e)
+            {
+                var log = _logService.Get(0);
+                log.Date = DateTime.Now;
+                log.LogType = "Error Occurred";
+                log.Summary = $"Charge ID:{chargeId} - {JsonConvert.SerializeObject(e.ToString())}";
+                _logService.Add(log);
+
+                return View(new Charge());
+            }
         }
     }
 }

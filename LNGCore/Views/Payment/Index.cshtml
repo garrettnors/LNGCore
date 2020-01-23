@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Index";
     var subTotal = Model.Invoice.LineItem.Sum(s => s.Quantity * s.ItemPrice) ?? 0;
-    var tax = subTotal * (Model.Invoice.TaxPercent ?? 0) / 100;
+    var tax = subTotal * Model.Invoice.TaxPercent / 100;
     var total = subTotal + tax + (Model.Invoice.ShipCost ?? 0);
 }
 <style>

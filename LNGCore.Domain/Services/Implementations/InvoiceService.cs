@@ -59,7 +59,7 @@ namespace LNGCore.Domain.Services.Implementations
                 return;
 
             item.Identifier = invoice.Identifier;
-            invoice.TaxPercent = invoice.Customer.Taxable ? (decimal)8.2500 : (decimal)0.00;
+            
 
             _db.Entry(invoice).CurrentValues.SetValues(item);
             _db.SaveChanges();
@@ -69,7 +69,7 @@ namespace LNGCore.Domain.Services.Implementations
         {
             var customer = _customerService.Get(invoice.CustomerId);
 
-            invoice.TaxPercent = customer != null && customer.Taxable ? (decimal)8.2500 : (decimal)0.00;
+            invoice.TaxPercent = (decimal)8.2500;
             invoice.Identifier = Guid.NewGuid().ToString();
 
             _db.Invoice.Add(invoice);
@@ -184,7 +184,10 @@ namespace LNGCore.Domain.Services.Implementations
             //remove all existing lineitems and add new lines (in case of edits where lines were removed)
             var existingItems = _db.LineItem.Where(w => w.InvoiceId == invoiceId);
             _db.LineItem.RemoveRange(existingItems);
-
+            
+            var invoice = Get(invoiceId);
+            var customerTaxRate = invoice.Customer.Taxable ? invoice.TaxPercent / 100 : 0;
+            
             foreach (var lineItem in lines)
             {
                 var line = new LineItem
@@ -194,7 +197,7 @@ namespace LNGCore.Domain.Services.Implementations
                     ItemId = lineItem.ItemId,
                     ItemPrice = lineItem.ItemPrice,
                     Quantity = lineItem.Quantity,
-                    Price = lineItem.Price
+                    TaxAmount = (lineItem.ItemPrice ?? 0) * lineItem.Quantity * customerTaxRate
                 };
 
 

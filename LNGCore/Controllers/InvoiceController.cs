@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using static LNGCore.Domain.Infrastructure.Enums;
 using LNGCore.Services.Logical;
 using Microsoft.Extensions.Configuration;
+using LNGCore.Domain.Infrastructure;
 
 namespace LNGCore.UI.Controllers
 {
@@ -375,6 +376,43 @@ namespace LNGCore.UI.Controllers
                 System.IO.File.Delete(attachmentName);
 
             return RedirectToAction("EditInvoice", new { invoiceId });
+        }
+
+        public IActionResult ViewReports(int? salesYear, InvoiceReportTypeEnum reportType = InvoiceReportTypeEnum.Sales)
+        {
+            var invoices = _invoiceService.GetInvoices(InvoiceTypeEnum.All);
+            var availableYears = invoices.Select(s => s.OrderDate.Year).Distinct().ToList();
+            
+            switch (reportType)
+            {
+                case InvoiceReportTypeEnum.Sales:
+                    invoices = invoices.Where(w => !w.Voided && !w.IsQuote && (!w.IsDonated ?? false) && w.LineItem.Sum(s => s.TaxAmount) > 0);
+                    break;
+                case InvoiceReportTypeEnum.NonTaxSales:
+                    invoices = invoices.Where(w => !w.Voided && !w.IsQuote && (!w.IsDonated ?? false) && w.LineItem.Sum(s => s.TaxAmount) == 0); //todo: in the case of some taxed, some not, this report will fail
+                    break;
+                case InvoiceReportTypeEnum.Donated:
+                    invoices = invoices.Where(w => !w.Voided && !w.IsQuote && w.IsDonated == true);
+                    break;
+                case InvoiceReportTypeEnum.Shipping:
+                    invoices = invoices.Where(w => !w.Voided && !w.IsQuote && (!w.IsDonated ?? false) && (w.ShipCost ?? 0) > 0);
+                    break;
+                default:
+                    break;
+            }
+                       
+            if (salesYear == null || !availableYears.Contains(salesYear ?? 0))
+                salesYear = availableYears.OrderByDescending(o => o).First();
+
+            var vm = new ViewReportsViewModel
+            {
+                Invoices = invoices.Where(w => w.OrderDate.Year == salesYear).ToList(),
+                AvailableYears = availableYears,
+                ReportType = reportType,
+                ReportTypes = Enum.GetValues(typeof(Enums.InvoiceReportTypeEnum)).Cast<Enums.InvoiceReportTypeEnum>().ToList(),
+                SelectedYear = (int)salesYear
+            };
+            return View(vm);
         }
     }
 }

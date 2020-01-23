@@ -7,19 +7,20 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 @{
-                    var navItems = new Dictionary<string, string> {
-                        { "Dashboard", "Home" },//controller, desc
-                        { "Invoice", "Invoices" },
-                        { "Customer", "Customers" },
-                        { "Item", "Item Types" },
-                        { "PriceList", "Price List" },
-                        { "Configuration", "Configuration" }
+                    var navItems = new List<Tuple<string, string, string>> {//controller, action, desc
+                        new Tuple<string,string,string>("Dashboard", "Index", "Home"),
+                        new Tuple<string,string,string>("Invoice", "Index", "Invoices"),
+                        new Tuple<string,string,string>("Customer", "Index", "Customers"),
+                        new Tuple<string,string,string>("Item", "Index", "Item Types"),
+                        new Tuple<string,string,string>("PriceList", "Index", "Price List"),
+                        new Tuple<string,string,string>("Invoice", "ViewReports", "View Reports"),
+                        new Tuple<string,string,string>("Configuration", "Index", "Configuration")
                     };
 
                     foreach (var nav in navItems)
                     {
-                        <li class="nav-item @(nav.Key.ToLower() == ViewBag.ActiveAction?.ToString().ToLower() ? "active" : "")">
-                            <a class="nav-link" asp-controller="@nav.Key" asp-action="Index">@nav.Value</a>
+                        <li class="nav-item @(nav.Item3.ToLower() == ViewBag.ActiveAction?.ToString().ToLower() ? "active" : "")">
+                            <a class="nav-link" asp-controller="@nav.Item1" asp-action="@nav.Item2">@nav.Item3</a>
                         </li>
                     }
                 }

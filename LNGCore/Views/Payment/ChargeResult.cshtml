@@ -3,10 +3,20 @@
     ViewData["Title"] = "Payment Result";
 }
 
-<div class="container text-center">
-    <h2>Thank you!</h2>
-    <h3>Your payment of @($"{(decimal)Model.Amount/100:c}") was successful.</h3>
-    <a href="@(Model.ReceiptUrl)" target="_blank">
-        <h4>Click here to view your receipt.</h4>
-    </a>
-</div>
+@if (string.IsNullOrEmpty(Model.Id)) //something went wrong getting the charge result, reassure the user and move on...
+{
+    <div class="container text-center">
+        <h2>Thank you for your payment!</h2>
+        <h3>You may close this window. If there were any problems with your payment, we will contact you with more information.</h3>        
+    </div>
+}
+else
+{
+    <div class="container text-center">
+        <h2>Thank you!</h2>
+        <h3>Your payment of @($"{(decimal)Model.Amount / 100:c}") was successful.</h3>
+        <a href="@(Model.ReceiptUrl)" target="_blank">
+            <h4>Click here to view your receipt.</h4>
+        </a>
+    </div>
+}

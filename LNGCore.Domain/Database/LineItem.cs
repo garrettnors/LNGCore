@@ -10,7 +10,7 @@ namespace LNGCore.Domain.Database
         public string ItemDesc { get; set; }
         public int Quantity { get; set; }
         public decimal? ItemPrice { get; set; }
-        public decimal? Price { get; set; }
+        public decimal TaxAmount { get; set; }
         public int ItemId { get; set; }
         public virtual Invoice Invoice { get; set; }
         public virtual Item Item { get; set; }

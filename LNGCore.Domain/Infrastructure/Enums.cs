@@ -16,6 +16,14 @@ namespace LNGCore.Domain.Infrastructure
             PastDue,
             All
         }
+
+        public enum InvoiceReportTypeEnum
+        {
+            Sales,
+            NonTaxSales,
+            Donated,
+            Shipping
+        }
         public enum LogTypeEnum
         {
             SendInvoiceToCustomer,

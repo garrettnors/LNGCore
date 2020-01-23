@@ -1,5 +1,7 @@
 ﻿using LNGCore.Domain.Database;
 using LNGCore.Domain.Services.Interfaces;
+using LNGCore.Services.Logical;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +12,11 @@ namespace LNGCore.Domain.Services.Implementations
     public class LogService : ILogService
     {
         private readonly LngDbContext _db;
-        public LogService(LngDbContext context)
+        private readonly IConfiguration _config;
+        public LogService(LngDbContext context, IConfiguration config)
         {
             _db = context;
+            _config = config;
         }
 
         public void Delete(int itemId)
@@ -47,6 +51,21 @@ namespace LNGCore.Domain.Services.Implementations
             _db.Log.Add(log);
             _db.SaveChanges();
 
+            if (!log.Summary.Contains("Model State Invalid") && log.LogType != "SendInvoiceToCustomer") //don't really give a shit about these
+            {
+                var email = new Email(_config)
+                {
+                    MailSubject = $"An error occured at LNG",
+                    Message = log.Summary,
+                    SenderEmail = _config.GetSection("SiteConfiguration")["SiteEmail"],
+                    SenderDisplayName = _config.GetSection("SiteConfiguration")["SiteName"],
+                    RecipientEmail = _config.GetSection("SiteConfiguration")["GEmail"],
+                    RecipientDisplayName = _config.GetSection("SiteConfiguration")["GEmail"]
+                };
+
+                email.SendEmail();
+            }
+            
             return log.Id;
         }
 

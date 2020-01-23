@@ -19,7 +19,7 @@ namespace LNGCore.Domain.Database
         public string Notes { get; set; }
         public string ShippingMethod { get; set; }
         public bool IsQuote { get; set; }
-        public decimal? TaxPercent { get; set; }
+        public decimal TaxPercent { get; set; }
         public int EmployeeId { get; set; }
         public string Pofield { get; set; }
         public bool Voided { get; set; }

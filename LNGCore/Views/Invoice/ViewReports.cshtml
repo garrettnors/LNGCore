@@ -1,0 +1,171 @@
+﻿@model LNGCore.UI.Models.Admin.ViewReportsViewModel
+@{
+    Layout = "~/views/shared/_InvoiceLayout.cshtml";
+    ViewData["Title"] = "ViewReports";
+    var formattedReportTypeName = System.Text.RegularExpressions.Regex.Replace(Model.ReportType.ToString(), "(\\B[A-Z])", " $1");
+}
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<style>
+    .keep-together {
+        page-break-inside: avoid;
+        page-break-before: auto
+    }
+</style>
+<div class="container">
+    <div class="row d-print-none pt-3">
+        <div class="col-2">
+            <a asp-controller="Invoice" asp-action="Index" class="btn btn-primary">🡰 To Dashboard</a>
+        </div>
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Selected Year</span>
+                </div>
+                <select class="form-control" asp-for="SelectedYear" asp-items="Model.AvailableYears.OrderByDescending(o => o).Select(s => new SelectListItem {Text= s.ToString(), Value= s.ToString() })"></select>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Selected Report Type</span>
+                </div>
+                <select class="form-control" asp-for="ReportType" asp-items="Model.ReportTypes.Select(s => new SelectListItem {Text= s.ToString(), Value= s.ToString() })"></select>
+            </div>
+        </div>
+        <div class="col-2 text-right">
+            <button onclick="window.print();return false;" class="btn btn-primary">Print Report</button>
+        </div>
+    </div>
+    <br />
+    <h2 class="text-center p-4">
+        @($"{formattedReportTypeName} For {Model.SelectedYear}")
+    </h2>
+    <hr />
+    @{
+        var customers = Model.Invoices.Select(s => s.Customer).OrderBy(o => o.DisplayName).Distinct();
+        decimal yearSubTotal = 0;
+        decimal yearTaxTotal = 0;
+        bool firstRow = true;
+        if (Model.ReportType == LNGCore.Domain.Infrastructure.Enums.InvoiceReportTypeEnum.Shipping)
+        {
+            foreach (var customer in customers)
+            {
+                var customerItems = Model.Invoices.Where(w => w.CustomerId == customer.Id).ToList();
+
+                decimal tableTotal = 0;
+
+                <div class="row no-gutters keep-together @(firstRow ? "pt-4" : "pt-5")">
+                    @{ firstRow = false; }
+                    <div class="col-8 offset-2">
+                        <h4>@customer.DisplayName</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Invoice Date</th>
+                                    <th class="text-right">Shipping Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in customerItems)
+                                {
+                                    tableTotal += item.ShipCost ?? 0;
+                                    <tr>
+                                        <td>@($"{item.OrderDate:d}")</td>
+                                        <td class="text-right">@($"{item.ShipCost:c}")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2" class="text-right">
+                                        @($"Total shipping costs for {customer.DisplayName}: ")
+                                        <b>@($"{tableTotal:c}")</b>
+                                        @{
+                                            yearSubTotal += tableTotal;
+                                        }
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            }
+            <h3 class="text-center">@($"Total Shipping for {Model.SelectedYear}: {yearSubTotal:c}")</h3>
+        }
+        else
+        {
+            foreach (var customer in customers)
+            {
+                var customerItems = Model.Invoices.Where(w => w.CustomerId == customer.Id).ToList();
+
+                decimal tableSubTotal = 0;
+                decimal tableTaxTotal = 0;
+
+                <div class="row no-gutters keep-together @(firstRow ? "pt-4" : "pt-5")">
+                    @{ firstRow = false; }
+                    <div class="col-8 offset-2">
+                        <h4>@customer.DisplayName</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Invoice Date</th>
+                                    <th class="text-right">Subtotal</th>
+                                    <th class="text-right">Tax</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in customerItems)
+                                {
+                                    var invoiceSubtotal = item.LineItem.Sum(s => (s.ItemPrice ?? 0) * s.Quantity);
+                                    var invoiceTax = (item.TaxPercent * invoiceSubtotal) / 100;
+                                    var invoiceTotal = invoiceSubtotal + invoiceTax;
+                                    tableSubTotal += invoiceSubtotal;
+                                    tableTaxTotal += invoiceTax;
+                                    <tr>
+                                        <td>@($"{item.OrderDate:d}")</td>
+                                        <td class="text-right">@($"{invoiceSubtotal:c}")</td>
+                                        <td class="text-right">@($"{invoiceTax:c}")</td>
+                                        <td class="text-right">@($"{invoiceTotal:c}")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <b>@($"Total for {customer.DisplayName}: ")</b>
+                                    </td>
+                                    <td class="text-right">
+                                        <b>@($"{tableSubTotal:c}")</b>
+                                    </td>
+                                    <td class="text-right">
+                                        <b>@($"{tableTaxTotal:c}")</b>
+                                    </td>
+                                    <td class="text-right">
+                                        <b>@($"{tableSubTotal + tableTaxTotal:c}")</b>
+                                        @{
+                                            yearSubTotal += tableSubTotal;
+                                            yearTaxTotal += tableTaxTotal;
+                                        }
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            }
+            <h4 class="text-center">@($"Subtotal for {Model.SelectedYear}: {yearSubTotal:c}")</h4>
+            <h4 class="text-center">@($"Tax Total for {Model.SelectedYear}: {yearTaxTotal:c}")</h4>
+            <h3 class="text-center">@($"Total for {Model.SelectedYear}: {yearSubTotal + yearTaxTotal:c}")</h3>
+        }
+    }
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#SelectedYear,#ReportType").change(function () {
+            var selectedYear = $("#SelectedYear").val();
+            var selectedType = $("#ReportType").val();
+            window.location.href = '@Html.Raw(Url.Action("ViewReports","Invoice", new {salesYear = "__SY__", reportType = "__ST__" }))'.replace('__SY__', selectedYear).replace('__ST__', selectedType);
+        });
+    });
+</script>
