@@ -93,7 +93,7 @@ namespace LNGCore.UI.Controllers
             if (charge.Paid)
                 _invoiceService.SetInvoiceStatus(invoice.Id, Domain.Infrastructure.Enums.InvoiceTypeEnum.Paid, charge.Id);
 
-            return RedirectToAction("ChargeResult", new { chargeId = charge.Id });
+            return View("ChargeResult", charge);
         }
 
         public IActionResult ChargeResult(string chargeId)
