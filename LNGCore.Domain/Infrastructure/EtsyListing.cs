@@ -48,7 +48,7 @@ namespace LNGCore.Infrastructure
         public int listing_id { get; set; }
         public string state { get; set; }
         public int user_id { get; set; }
-        public int category_id { get; set; }
+        public int? category_id { get; set; }
         public string title { get; set; }
         public string description { get; set; }
         public int creation_tsz { get; set; }
