@@ -17,6 +17,22 @@ namespace LNGCore.Domain.Database
         public int EmployeeId { get; set; }
         public int? InvoiceId { get; set; }
         public bool Recurring { get; set; }
+        public DateTime? RecurringDate
+        {
+            get
+            {
+                var nextEventDate = EventDate;
+                if (Recurring)
+                {
+                    while (nextEventDate < DateTime.Now)
+                    {
+                        nextEventDate = nextEventDate.AddYears(1);
+                    }
+                    return nextEventDate;
+                }
+                return null;
+            }
+        }
 
         public virtual Employee Employee { get; set; }
     }

@@ -32,10 +32,17 @@ namespace LNGCore.UI.Controllers
         public IActionResult Index()
         {
             ViewBag.ActiveAction = ControllerContext.RouteData.Values["controller"];
+            var dd = new DateTime(2020, 6, 1);
+            var tt = dd - DateTime.Now;
+            var xx = tt.Days <= 90;
+            var events = _eventService.GetAllEvents().ToList();
+            var upcomingEvents = events.Where(w => ((w.RecurringDate ?? w.EventDate) - DateTime.Now).Days >= 0 && ((w.RecurringDate ?? w.EventDate) - DateTime.Now).Days <= 90);
+            var nonUpcomingEvents = events.Except(upcomingEvents);
 
             var vm = new DashboardViewModel
             {
-                UpcomingEvents = _eventService.GetUpcomingEvents().ToList(),
+                UpcomingEvents = upcomingEvents.ToList(),
+                AllNonUpcomingEvents = nonUpcomingEvents.ToList(),
                 YtdSales = _invoiceService.GetYearToDateSales().Sum(s => s.InvoiceTotal) ?? 0,
                 OpenInvoiceAmount = _invoiceService.GetInvoices(InvoiceTypeEnum.Open).Sum(s => s.InvoiceTotal) ?? 0,
                 PastDueAmount = _invoiceService.GetInvoices(InvoiceTypeEnum.PastDue).Sum(s => s.InvoiceTotal) ?? 0

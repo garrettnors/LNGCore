@@ -8,7 +8,6 @@ namespace LNGCore.Domain.Services.Interfaces
     public interface IEventService : IBaseService<Event>
     {
         IEnumerable<Event> GetAllEvents();
-        IEnumerable<Event> GetUpcomingEvents();
         IEnumerable<Event> GetCompletedEvents();
     }
 }
