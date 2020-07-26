@@ -100,7 +100,7 @@ namespace LNGCore.Infrastructure
 
     public class Image
     {
-        public int listing_image_id { get; set; }
+        public long listing_image_id { get; set; }
         public string hex_code { get; set; }
         public int red { get; set; }
         public int green { get; set; }
