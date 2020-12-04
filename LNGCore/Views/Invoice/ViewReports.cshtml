@@ -118,7 +118,7 @@
                                 @foreach (var item in customerItems)
                                 {
                                     var invoiceSubtotal = item.LineItem.Sum(s => (s.ItemPrice ?? 0) * s.Quantity);
-                                    var invoiceTax = (item.TaxPercent * invoiceSubtotal) / 100;
+                                    var invoiceTax = item.LineItem.Sum(s => s.TaxAmount);
                                     var invoiceTotal = invoiceSubtotal + invoiceTax;
                                     tableSubTotal += invoiceSubtotal;
                                     tableTaxTotal += invoiceTax;
