@@ -5,6 +5,14 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
+<style>
+    .form-control:disabled, .form-control[readonly] {
+        background-color: rgba(202,240,255,.07);
+        color: rgba(255,255,255,.70);
+        border: 0px;
+    }
+</style>
+
 <script>
     function addLinesToTable() {
         var index = $("#lineIndex").val();
@@ -136,7 +144,7 @@
             $("[name='Invoice.EmployeeId']").val(-1).trigger("change");
         });
 
-/**/</script>
+        /**/</script>
 }
 
 @using (Html.BeginForm("EditInvoice", "Invoice", FormMethod.Post, new { id = "formEditInvoice", enctype = "multipart/form-data" }))
@@ -230,11 +238,20 @@
                             @Html.TextBox("Invoice.Deadline", Model.Invoice.Deadline == DateTime.MinValue ? "" : Model.Invoice.Deadline.ToString("yyyy-MM-dd"), new { type = "date", @class = "form-control form-control-sm" })
                         </div>
                     </div>
-                    <div>
-                        <label class="m-0 mt-2 text-muted">
-                            Notes <small class="font-italic">(not visible to customers)</small>
-                        </label>
-                        @Html.TextAreaFor(f => f.Invoice.Notes, new { @class = "form-control small-text", rows = "2" })
+                    <div class="row no-gutters">
+                        <div class="col-md-8 px-md-1">
+                            <label class="m-0 mt-2 text-muted">
+                                Notes <small class="font-italic">(not visible to customers)</small>
+                            </label>
+                            @Html.TextAreaFor(f => f.Invoice.Notes, new { @class = "form-control small-text", rows = "2" })
+                        </div>
+                        <div class="col-md-4 px-md-1">
+                            <label class="m-0 mt-2 text-muted">
+                                Total Tax
+                            </label>
+                            <input type="text" disabled readonly value="@($"{Model.Invoice.LineItem.Sum(s => s.TaxAmount):c}")" class="form-control" />
+                            <small class="font-italic text-muted">(<b>Saving</b> will update tax)</small>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-3 px-lg-1">
