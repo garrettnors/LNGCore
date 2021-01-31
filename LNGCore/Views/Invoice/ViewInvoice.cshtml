@@ -67,7 +67,7 @@
                     @Html.TextArea("Note", $"Hello, attached you will find information regarding your order number {Model.Invoice.Id}. \n\r If you have any questions, please do not hesitate to email us at info@lnglaserworks.com or reply to this email. ", new { rows = 6, @class = "form-control" })
                     <div class="small text-muted text-right">Optional</div>
                     <div class="ml-1 mb-2">
-                        @Html.CheckBox("SendToCompany", true, new { @class = "scale-up-50" }) <label class="pointer disable-select" for="SendToCompany"><span class="h5 m-0 ml-2">Send Copy To LNG</span></label>
+                        @Html.CheckBox("SendToCompany", false, new { @class = "scale-up-50" }) <label class="pointer disable-select" for="SendToCompany"><span class="h5 m-0 ml-2">Send Copy To LNG</span></label>
                     </div>
                     <button type="button" onclick="getConfirmation(this);" class="btn btn-sm btn-success">Send This Invoice</button>
                 }
