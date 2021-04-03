@@ -197,7 +197,7 @@ namespace LNGCore.Domain.Services.Implementations
                     ItemId = lineItem.ItemId,
                     ItemPrice = lineItem.ItemPrice,
                     Quantity = lineItem.Quantity,
-                    TaxAmount = (lineItem.ItemPrice ?? 0) * lineItem.Quantity * customerTaxRate
+                    TaxAmount = (lineItem.ItemPrice ?? 0) * customerTaxRate
                 };
 
 

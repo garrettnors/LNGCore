@@ -3,7 +3,7 @@
     ViewData["Title"] = "GetInvoicePdf";
     Layout = "~/views/shared/_InvoiceLayout.cshtml";
     var subTotal = Model.Invoice.LineItem.Sum(s => s.Quantity * s.ItemPrice) ?? 0;
-    var tax = Model.Invoice.LineItem.Sum(s => s.TaxAmount);
+    var tax = Model.Invoice.LineItem.Sum(s => s.TaxAmount * s.Quantity);
     var total = subTotal + tax + (Model.Invoice.ShipCost ?? 0);
 }
 <style>
