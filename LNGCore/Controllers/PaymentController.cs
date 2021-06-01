@@ -60,7 +60,7 @@ namespace LNGCore.UI.Controllers
             var token = model.StripeToken;
             
             var subtotal = invoice.LineItem.Sum(s => s.Quantity * s.ItemPrice) ?? 0;
-            var tax = invoice.LineItem.Sum(s => s.TaxAmount);
+            var tax = invoice.LineItem.Sum(s => s.TaxAmount * s.Quantity);
 
             var total = subtotal + tax + (invoice.ShipCost ?? 0);
 

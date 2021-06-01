@@ -249,7 +249,7 @@
                             <label class="m-0 mt-2 text-muted">
                                 Total Tax
                             </label>
-                            <input type="text" disabled readonly value="@($"{Model.Invoice.LineItem.Sum(s => s.TaxAmount):c}")" class="form-control" />
+                            <input type="text" disabled readonly value="@($"{Model.Invoice.LineItem.Sum(s => s.TaxAmount * s.Quantity):c}")" class="form-control" />
                             <small class="font-italic text-muted">(<b>Saving</b> will update tax)</small>
                         </div>
                     </div>

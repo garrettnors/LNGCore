@@ -291,7 +291,15 @@ namespace LNGCore.UI.Controllers
             var attachment = new Attachment(attachmentContent, $"Invoice{vm.InvoiceId}.pdf", "application/pdf");
 
             var mailSubject = $"Your order information is ready to view! (Order #{vm.InvoiceId})";
-            var payMsg = string.IsNullOrEmpty(invoice.Identifier) ? "" : $"<br /><br /><a href=\"https://www.lnglaserworks.com/payment/index/{invoice.Identifier}\">You can pay this invoice by following this link.</a>";
+            var payMsg = string.Empty;
+
+            if (!invoice.IsQuote && !invoice.Voided && invoice.IsDonated == false && invoice.IsPaid == false)
+            {
+                payMsg = string.IsNullOrEmpty(invoice.Identifier)
+                    ? string.Empty
+                    : $"<br /><br /><a href=\"https://www.lnglaserworks.com/payment/index/{invoice.Identifier}\">You can pay this invoice by following this link.</a>";
+            }
+
             var mailMsg = vm.Note.Replace(Environment.NewLine, "<br />") + payMsg;
 
             foreach (var recipient in recipients)
@@ -382,7 +390,7 @@ namespace LNGCore.UI.Controllers
         {
             var invoices = _invoiceService.GetInvoices(InvoiceTypeEnum.All);
             var availableYears = invoices.Select(s => s.OrderDate.Year).Distinct().ToList();
-            
+
             switch (reportType)
             {
                 case InvoiceReportTypeEnum.Sales:
@@ -400,7 +408,7 @@ namespace LNGCore.UI.Controllers
                 default:
                     break;
             }
-                       
+
             if (salesYear == null || !availableYears.Contains(salesYear ?? 0))
                 salesYear = availableYears.OrderByDescending(o => o).First();
 

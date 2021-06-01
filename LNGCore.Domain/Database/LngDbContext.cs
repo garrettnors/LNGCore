@@ -292,7 +292,7 @@ namespace LNGCore.Domain.Database
 
                 entity.Property(e => e.ItemPrice).HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.TaxAmount).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.TaxAmount).HasColumnType("decimal(18, 4)");
 
                 entity.HasOne(d => d.Invoice)
                     .WithMany(p => p.LineItem)
