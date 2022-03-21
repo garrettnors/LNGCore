@@ -1,9 +1,11 @@
 ﻿using LNGCore.Domain.Database;
 using LNGCore.Domain.Infrastructure;
 using LNGCore.Domain.Services.Interfaces;
+using LNGCore.UI.Models.Admin;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -325,6 +327,24 @@ namespace LNGCore.Domain.Services.Implementations
                 .Include(i => i.LineItem)
                 .ThenInclude(t => t.Item)
                 .FirstOrDefault(f => f.Identifier == guid);
+        }
+
+        public byte[] GetInvoicePdfBytes(int invoiceId)
+        {
+            var invoice = Get(invoiceId);
+            if (invoice == null || invoice.Id == 0)
+                return null;
+
+            var vm = new InvoicePdfModel
+            {
+                DocTitle = invoiceId.ToString(),
+                Invoice = invoice,
+                RowsPerPage = 20,
+                TotalLineItems = invoice.LineItem.Count(),
+                IncludeProofs = true
+            };
+            var doc = new InvoiceDocument(vm);
+            return doc.GeneratePdf();       
         }
     }
 }

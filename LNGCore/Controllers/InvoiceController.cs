@@ -260,11 +260,12 @@ namespace LNGCore.UI.Controllers
             return StatusCode((int)HttpStatusCode.OK);
         }
 
-        public IActionResult ViewInvoice(int invoiceId)
+        public IActionResult ViewInvoice(int invoiceId, bool useRotativa = false)
         {
             var vm = new ViewInvoiceViewModel
             {
-                Invoice = _invoiceService.Get(invoiceId)
+                Invoice = _invoiceService.Get(invoiceId),
+                UseRotativa = useRotativa
             };
             return View(vm);
         }
@@ -421,6 +422,37 @@ namespace LNGCore.UI.Controllers
                 SelectedYear = (int)salesYear
             };
             return View(vm);
+        }
+        public FileResult GetInvoiceQuestPdfFile(int invoiceId)
+        {
+            return File(GetInvoiceQuestPdf(invoiceId), "application/pdf");
+        }
+
+        public byte[] GetInvoiceQuestPdf(int invoiceId)
+        {
+            return _invoiceService.GetInvoicePdfBytes(invoiceId);
+            //const int itemsPerPageMax = 20;
+            //const string footer = "--footer-center \"Thank you for choosing LNG Laserworks, we appreciate your business!\" " +
+            //    "--footer-line --footer-font-size \"12\" --footer-font-name \"calibri light\"";
+            //const string header = "--header-right \"Page [page]\" --header-font-size \"12\" --header-font-name \"calibri light\"";
+            //var invoice = _invoiceService.Get(invoiceId);
+            //var model = new ViewInvoicePdfViewModel
+            //{
+            //    DocTitle = invoiceId.ToString(),
+            //    Invoice = invoice,
+            //    RowsPerPage = itemsPerPageMax,
+            //    TotalLineItems = invoice.LineItem.Count()
+            //};
+
+            //var actionPdf = new ViewAsPdf("InvoicePdf", model)
+            //{
+            //    PageSize = Rotativa.AspNetCore.Options.Size.Letter,
+            //    CustomSwitches = $"{(model.TotalLineItems > itemsPerPageMax ? header : null)} {footer}"
+            //};
+
+            //var byteArray = actionPdf.BuildFile(ControllerContext).Result;
+            //return byteArray;
+            return null;
         }
     }
 }

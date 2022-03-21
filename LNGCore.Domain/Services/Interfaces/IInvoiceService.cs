@@ -1,4 +1,5 @@
 ﻿using LNGCore.Domain.Database;
+using LNGCore.UI.Models.Admin;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -23,5 +24,6 @@ namespace LNGCore.Domain.Services.Interfaces
         int? GetPreviousInvoiceId(int invoiceId, InvoiceTypeEnum type);
         void SetParticipantPaidStatus(List<int> ids, bool isPaid);
         Invoice GetByIdentifierGuid(string guid);
+        byte[] GetInvoicePdfBytes(int invoiceId);
     }
 }

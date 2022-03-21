@@ -1,0 +1,49 @@
+﻿
+@{
+    Layout = null;
+    // today is mad's turn.
+    var isMaddiesTurn = (DateTime.Now - new DateTime(2021, 9, 12)).Days % 2 == 0;
+    var imgSrc = $"/kids/{(isMaddiesTurn ? "mad" : "em")}.jpg";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whose Turn Is It?</title>
+    <link href="~/lib/bootstrap/dist/css/flatly/bootstrap.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            background-color: @($"#{(isMaddiesTurn ? "5dadff" : "ae71ff")}");
+            color: @($"#{(isMaddiesTurn ? "234b75" : "3b2375")}");
+            font-family: 'Dancing Script', cursive;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid d-flex h-100 justify-content-center">
+        <div class="align-self-center">
+            <div class="card" style="background-color: #ffffff70;">
+                <div class="card-body">
+                    <div class="text-center">
+                        <h3>Today is @($"{DateTime.Now:d}")</h3>
+                        <hr />
+                        <h4>That means it's...</h4>
+                        <h2>@($"{(isMaddiesTurn ? "Maddie" : "Emmy")}'s Turn!")</h2>
+                        <div class="pyro fadeOut">
+                            <div class="before"></div>
+                            <div class="after"></div>
+                        </div>
+                        <img src="@imgSrc" class="w-75" style="max-width:300px;" alt="whoseturn" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

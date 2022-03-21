@@ -147,7 +147,10 @@ namespace LNGCore.Controllers
             return RedirectToAction("Contact");
         }
 
-
+        public IActionResult WhoseTurnIsIt()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

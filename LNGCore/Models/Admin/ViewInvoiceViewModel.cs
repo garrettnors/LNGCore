@@ -11,5 +11,6 @@ namespace LNGCore.UI.Models.Admin
         public Invoice Invoice { get; set; }      
         public byte[] InvoiceData { get; set; }
         public List<Log> Emails { get; set; }
+        public bool UseRotativa { get; set; }
     }
 }
