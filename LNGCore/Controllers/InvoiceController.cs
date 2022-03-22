@@ -288,7 +288,7 @@ namespace LNGCore.UI.Controllers
             }
 
             var invoice = _invoiceService.Get(vm.InvoiceId);
-            var attachmentContent = new MemoryStream(GetInvoicePdf(vm.InvoiceId));
+            var attachmentContent = new MemoryStream(GetInvoiceQuestPdf(vm.InvoiceId));
             var attachment = new Attachment(attachmentContent, $"Invoice{vm.InvoiceId}.pdf", "application/pdf");
 
             var mailSubject = $"Your order information is ready to view! (Order #{vm.InvoiceId})";
