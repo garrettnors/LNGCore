@@ -216,7 +216,7 @@ namespace LNGCore.Domain.Infrastructure
                 {
                     table.Cell().Element(x => ElementLeftStyle(x)).Text(item.Quantity);
                     table.Cell().Element(x => ElementLeftStyle(x)).Text(item.Item.ItemName);
-                    table.Cell().Element(x => ElementLeftStyle(x)).Text($"{item.ItemDesc}$");
+                    table.Cell().Element(x => ElementLeftStyle(x)).Text($"{item.ItemDesc}");
                     table.Cell().Element(x => ElementRightStyle(x)).Text($"{item.ItemPrice:c}");
                     table.Cell().Element(x => ElementRightStyle(x)).Text($"{item.ItemPrice * item.Quantity:c}");
                 }
